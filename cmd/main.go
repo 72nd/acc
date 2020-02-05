@@ -36,6 +36,10 @@ func main() {
 								Aliases: []string{"i"},
 								Usage:   "path to bimpf dump json",
 							},
+							&cli.StringFlag{
+								Name: "nc-path",
+								Usage: "path to nextcloud project folder which is used by Bimpf",
+							},
 						},
 					},
 					{
