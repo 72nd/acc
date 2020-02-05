@@ -5,6 +5,9 @@ import (
 	"gitlab.com/72th/acc/pkg/util"
 )
 
+// Projects is a slice of projects.
+type Projects []Project
+
 // Project reassembles the structure of a Project in a Bimpf json dump files.
 type Project struct {
 	Id           int        `json:"id"`
