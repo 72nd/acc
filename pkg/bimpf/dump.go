@@ -1,3 +1,4 @@
+// Provides functionality to validate and import Bimpf json dumps.
 package bimpf
 
 import (
