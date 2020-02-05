@@ -2,7 +2,7 @@ package bimpf
 
 import (
 	"fmt"
-	"gitlab.com/72th/acc/pkg"
+	"gitlab.com/72th/acc/pkg/util"
 )
 
 // Project reassembles the structure of a Project in a Bimpf json dump files.
@@ -30,8 +30,8 @@ func (p Project) String() string {
 }
 
 // Conditions returns the validation conditions.
-func (p Project) Conditions() pkg.Conditions {
-	return pkg.Conditions{
+func (p Project) Conditions() util.Conditions {
+	return util.Conditions{
 		{
 			Condition: p.Id < 1,
 			Message:   "id is not set (id < 1)",
@@ -52,18 +52,18 @@ func (p Project) Conditions() pkg.Conditions {
 }
 
 // Validate the element and return the result.
-func (p Project) Validate() []pkg.ValidateResult {
-	var results []pkg.ValidateResult
+func (p Project) Validate() []util.ValidateResult {
+	var results []util.ValidateResult
 	for i := range p.Quotes {
-		results = append(results, pkg.Check(p.Quotes[i]))
+		results = append(results, util.Check(p.Quotes[i]))
 	}
 	for i := range p.Invoices {
-		results = append(results, pkg.Check(p.Invoices[i]))
+		results = append(results, util.Check(p.Invoices[i]))
 	}
 	for i := range p.Reminders {
-		results = append(results, pkg.Check(p.Reminders[i]))
+		results = append(results, util.Check(p.Reminders[i]))
 	}
-	return append(results, pkg.Check(p))
+	return append(results, util.Check(p))
 }
 
 // Document reassembles the structure of a Document in a Bimpf json dump file.
@@ -89,12 +89,12 @@ func (d Document) Type() string {
 
 // String returns a human readable representation of the element.
 func (d Document) String() string {
-	return fmt.Sprintf("%d/%s (%s) for customer %s in project %s", d.Id, d.SbId, d.Name, d.CustomerName, d.ProjectNamej)
+	return fmt.Sprintf("%d/%s (%s) for customer %s in project %s", d.Id, d.SbId, d.Name, d.CustomerName, d.ProjectName)
 }
 
 // Conditions returns the validation conditions.
-func (d Document) Conditions() pkg.Conditions {
-	return pkg.Conditions{
+func (d Document) Conditions() util.Conditions {
+	return util.Conditions{
 		{
 			Condition: d.Id < 1,
 			Message:   "id is not set (id < 1)",
@@ -119,6 +119,6 @@ func (d Document) Conditions() pkg.Conditions {
 }
 
 // Validate the element and return the result.
-func (d Document) Validate() []pkg.ValidateResult {
-	return []pkg.ValidateResult{pkg.Check(d)}
+func (d Document) Validate() util.ValidateResults {
+	return []util.ValidateResult{util.Check(d)}
 }

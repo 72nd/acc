@@ -1,4 +1,4 @@
-package pkg
+package util
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 type Checkable interface {
-	Validate() []ValidateResult
+	Validate() ValidateResults
 }
 
 // Validatable types can be validated.
@@ -17,6 +17,7 @@ type Validatable interface {
 	Conditions() Conditions
 }
 
+// Check the Validatable and return the results.
 func Check(v Validatable) ValidateResult {
 	var messages []string
 	for i := range v.Conditions() {
@@ -61,6 +62,38 @@ func (v ValidateResult) String() string {
 		result = fmt.Sprintf("%s\n%s %s: %s", result, strings.ToUpper(v.Element.Type()), v.Element.String(), v.Messages[0])
 	}
 	return result
+}
+
+func (v ValidateResult) TableRows() []TableRow {
+	if len(v.Messages) == 0 {
+		return []TableRow{}
+	}
+	var results []TableRow
+	for i := range v.Messages{
+		results = append(results, []string{v.Element.Type(), v.Element.String(), v.Messages[i]})
+	}
+	return results
+}
+
+type ValidateResults []ValidateResult
+
+func (v ValidateResults) String() string {
+	var result string
+	for i := range v {
+		tmp := v[i].String()
+		if tmp != "" {
+			result += "\n" + tmp
+		}
+	}
+	return result
+}
+
+func (v ValidateResults) TableRows() []TableRow {
+	var results []TableRow
+	for i := range v {
+		results = append(results, v[i].TableRows()...)
+	}
+	return results
 }
 
 type Conditions []struct {

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
+	"gitlab.com/72th/acc/pkg/bimpf"
 	"os"
 )
 
@@ -41,6 +42,17 @@ func main() {
 						Name:  "validate",
 						Usage: "validate bimpf json dumps and searches for missing information in the Bimpf data",
 						Action: func(c *cli.Context) error {
+							if c.String("input") == "" {
+								logrus.Fatal("no input file specified (-i)")
+							}
+							inputPath := c.String("input")
+							outputPath := c.Args().First()
+							if outputPath == "" {
+								outputPath = "bimpf-dump-report.txt"
+							}
+							dump := bimpf.OpenDump(inputPath)
+							dump.ValidateAndReport(outputPath)
+							logrus.Info("report saved as ", outputPath)
 							return nil
 						},
 						Flags: []cli.Flag{

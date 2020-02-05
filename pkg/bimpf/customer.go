@@ -2,7 +2,7 @@ package bimpf
 
 import (
 	"fmt"
-	"gitlab.com/72th/acc/pkg"
+	"gitlab.com/72th/acc/pkg/util"
 )
 
 // Customer reassembles the structure of a Customer TimeUnit in a Bimpf json dump file.
@@ -31,8 +31,8 @@ func (c Customer) String() string {
 }
 
 // Conditions returns the validation conditions.
-func (c Customer) Conditions() pkg.Conditions {
-	return pkg.Conditions{
+func (c Customer) Conditions() util.Conditions {
+	return util.Conditions{
 		{
 			Condition: c.Id < 1,
 			Message:   "id is not set (id < 1)",
@@ -53,10 +53,10 @@ func (c Customer) Conditions() pkg.Conditions {
 }
 
 // Validate the element and return the result.
-func (c Customer) Validate() []pkg.ValidateResult {
-	var results []pkg.ValidateResult
+func (c Customer) Validate() util.ValidateResults {
+	var results []util.ValidateResult
 	for i := range c.Projects {
-		results = append(results, pkg.Check(c.Projects[i]))
+		results = append(results, util.Check(c.Projects[i]))
 	}
-	return append(results, pkg.Check(c))
+	return append(results, util.Check(c))
 }

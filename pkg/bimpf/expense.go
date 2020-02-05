@@ -2,7 +2,7 @@ package bimpf
 
 import (
 	"fmt"
-	"gitlab.com/72th/acc/pkg"
+	"gitlab.com/72th/acc/pkg/util"
 )
 
 // Expense reassembles the structure of a Expense in a Bimpf json dump file.
@@ -32,8 +32,8 @@ func (e Expense) String() string {
 }
 
 // Conditions returns the validation conditions.
-func (e Expense) Conditions() pkg.Conditions {
-	return pkg.Conditions{
+func (e Expense) Conditions() util.Conditions {
+	return util.Conditions{
 		{
 			Condition: e.Id < 1,
 			Message:   "id is not set (id < 1)",
@@ -66,6 +66,6 @@ func (e Expense) Conditions() pkg.Conditions {
 }
 
 // Validate the element and return the result.
-func (e Expense) Validate() []pkg.ValidateResult {
-	return []pkg.ValidateResult{pkg.Check(e)}
+func (e Expense) Validate() util.ValidateResults {
+	return []util.ValidateResult{util.Check(e)}
 }

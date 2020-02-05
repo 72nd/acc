@@ -2,7 +2,7 @@ package bimpf
 
 import (
 	"fmt"
-	"gitlab.com/72th/acc/pkg"
+	"gitlab.com/72th/acc/pkg/util"
 )
 
 // TimeUnit reassembles the structure of a TimeUnit in a Bimpf json dump file.
@@ -27,8 +27,8 @@ func (t TimeUnit) String() string {
 }
 
 // Conditions returns the validation conditions.
-func (t TimeUnit) Conditions() pkg.Conditions {
-	return pkg.Conditions{
+func (t TimeUnit) Conditions() util.Conditions {
+	return util.Conditions{
 		{
 			Condition: t.Id < 1,
 			Message:   "id is not set (id < 1)",
@@ -57,6 +57,6 @@ func (t TimeUnit) Conditions() pkg.Conditions {
 }
 
 // Validate the element and return the result.
-func (t TimeUnit) Validate() []pkg.ValidateResult {
-	return []pkg.ValidateResult{pkg.Check(t)}
+func (t TimeUnit) Validate() util.ValidateResults {
+	return []util.ValidateResult{util.Check(t)}
 }
