@@ -32,14 +32,9 @@ func OpenInvoices(path string) Invoices {
 }
 
 // Save writes the element as a json to the given path.
-func (i Invoices) Save(path string) {
-	raw, err := json.Marshal(i)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
-		logrus.Fatal(err)
-	}
+// Indented states whether «prettify» the json output.
+func (i Invoices) Save(path string, indented bool) {
+	SaveToJson(i, path, indented)
 }
 
 // SetId sets a unique id to all elements in the slice.

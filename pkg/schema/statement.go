@@ -42,14 +42,9 @@ func OpenBankStatement(path string) BankStatement {
 }
 
 // Save writes the element as a json to the given path.
-func (s BankStatement) Save(path string) {
-	raw, err := json.Marshal(s)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
-		logrus.Fatal(err)
-	}
+// Indented states whether «prettify» the json output.
+func (s BankStatement) Save(path string, indented bool) {
+	SaveToJson(s, path, indented)
 }
 
 // SetId sets a unique id to all elements in the slice.

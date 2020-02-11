@@ -37,14 +37,9 @@ func OpenParties(path string) Parties {
 }
 
 // Save writes the element as a json to the given path.
-func (p Parties) Save(path string) {
-	raw, err := json.Marshal(p)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
-		logrus.Fatal(err)
-	}
+// Indented states whether «prettify» the json output.
+func (p Parties) Save(path string, indented bool) {
+	SaveToJson(p, path, indented)
 }
 
 // SetId sets a unique id to all elements in the struct.
