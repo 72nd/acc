@@ -56,11 +56,11 @@ func NewProject(folderPath string) {
 	prt := NewParties()
 	stm := NewBankStatement()
 
-	acc.Save(path.Join(folderPath, DefaultAccFile))
-	exp.Save(path.Join(folderPath, DefaultExpensesFile))
-	inv.Save(path.Join(folderPath, DefaultInvoicesFile))
-	prt.Save(path.Join(folderPath, DefaultPartiesFile))
-	stm.Save(path.Join(folderPath, DefaultBankStatementFile))
+	acc.Save(path.Join(folderPath, DefaultAccFile), true)
+	exp.Save(path.Join(folderPath, DefaultExpensesFile), true)
+	inv.Save(path.Join(folderPath, DefaultInvoicesFile), true)
+	prt.Save(path.Join(folderPath, DefaultPartiesFile), true)
+	stm.Save(path.Join(folderPath, DefaultBankStatementFile), true)
 }
 
 // OpenAcc opens a Acc saved in the json file given by the path.
