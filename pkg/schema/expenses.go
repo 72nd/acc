@@ -1,9 +1,44 @@
 package schema
 
-import "github.com/google/uuid"
+import (
+	"encoding/json"
+	"github.com/creasty/defaults"
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
+	"io/ioutil"
+)
 
 // Expenses is a slice of multiple expenses.
 type Expenses []Expense
+
+// NewExpenses returns a new Expense slice with the one Expense in it.
+func NewExpenses() Expenses {
+	return Expenses{NewExpense()}
+}
+
+// OpenExpenses opens a Expenses saved in the json file given by the path.
+func OpenExpenses(path string) Expenses {
+	raw, err := ioutil.ReadFile(path)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	exp := Expenses{}
+	if err := json.Unmarshal(raw, &exp); err != nil {
+		logrus.Fatal(err)
+	}
+	return exp
+}
+
+// Save writes the element as a json to the given path.
+func (e Expenses) Save(path string) {
+	raw, err := json.Marshal(e)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
+		logrus.Fatal(err)
+	}
+}
 
 // SetId sets a unique id to all elements in the slice.
 func (e Expenses) SetId() {
@@ -38,6 +73,15 @@ type Expense struct {
 	DateOfSettlement string `json:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
 	SettlementTransactionId string `json:"settlementTransactionId" default:""`
+}
+
+// NewExpense returns a new Expense element with the default values.
+func NewExpense() Expense {
+	exp := Expense{}
+	if err := defaults.Set(&exp); err != nil {
+		logrus.Fatal(err)
+	}
+	return exp
 }
 
 // GetId returns the unique id of the element.

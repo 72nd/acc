@@ -1,19 +1,58 @@
 package schema
 
-import "github.com/google/uuid"
+import (
+	"encoding/json"
+	"github.com/creasty/defaults"
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
+	"io/ioutil"
+)
 
-// Employees represents a slice of parties as employees.
-type Employees []Party
+type Parties struct {
+	Employees []Party `json:"employees"`
+	Customers []Party `json:"customers"`
+}
 
-func (e Employees) SetId() {
-	for i := range e {
-		e[i].SetId()
+// NewParties returns a new Parties struct with the one Expense in it.
+func NewParties() Parties {
+	return Parties{
+		Employees: []Party{NewParty()},
+		Customers: []Party{NewParty()},
 	}
 }
 
-// Customer represents a customer of the company.
-type Customer struct {
-	Party
+// OpenParties opens a Parties element saved in the json file given by the path.
+func OpenParties(path string) Parties {
+	raw, err := ioutil.ReadFile(path)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	pty := Parties{}
+	if err := json.Unmarshal(raw, &pty); err != nil {
+		logrus.Fatal(err)
+	}
+	return pty
+}
+
+// Save writes the element as a json to the given path.
+func (p Parties) Save(path string) {
+	raw, err := json.Marshal(p)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
+		logrus.Fatal(err)
+	}
+}
+
+// SetId sets a unique id to all elements in the struct.
+func (p Parties) SetId() {
+	for i := range p.Employees {
+		p.Employees[i].SetId()
+	}
+	for i := range p.Customers {
+		p.Customers[i].SetId()
+	}
 }
 
 // Party represents some person or organisation.
@@ -27,6 +66,14 @@ type Party struct {
 	StreetNr   int    `json:"streetNr" default:"1"`
 	Place      string `json:"place" default:"Zurich"`
 	PostalCode int    `json:"postalCode" default:"8000"`
+}
+
+func NewParty() Party {
+	pty := Party{}
+	if err := defaults.Set(&pty); err != nil {
+		logrus.Fatal(err)
+	}
+	return pty
 }
 
 // GetId returns the unique id of the element.

@@ -1,9 +1,44 @@
 package schema
 
-import "github.com/google/uuid"
+import (
+	"encoding/json"
+	"github.com/creasty/defaults"
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
+	"io/ioutil"
+)
 
 // Invoices is a slice of invoices.
 type Invoices []Invoice
+
+// NewInvoices returns a new Expense slice with the one Expense in it.
+func NewInvoices() Invoices {
+	return []Invoice{NewInvoice()}
+}
+
+// OpenInvoices opens a Expenses saved in the json file given by the path.
+func OpenInvoices(path string) Invoices {
+	raw, err := ioutil.ReadFile(path)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	inv := Invoices{}
+	if err := json.Unmarshal(raw, &inv); err != nil {
+		logrus.Fatal(err)
+	}
+	return inv
+}
+
+// Save writes the element as a json to the given path.
+func (i Invoices) Save(path string) {
+	raw, err := json.Marshal(i)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
+		logrus.Fatal(err)
+	}
+}
 
 // SetId sets a unique id to all elements in the slice.
 func (i Invoices) SetId() {
@@ -34,6 +69,15 @@ type Invoice struct {
 	DateOfSettlement string `json:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
 	SettlementTransactionId string `json:"settlementTransactionId" default:""`
+}
+
+// NewInvoice returns a new Acc element with the default values.
+func NewInvoice() Invoice {
+	inv := Invoice{}
+	if err := defaults.Set(&inv); err != nil {
+		logrus.Fatal(err)
+	}
+	return inv
 }
 
 // GetId returns the unique id of the element.
