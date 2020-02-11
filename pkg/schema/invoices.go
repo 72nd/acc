@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 )
 
+const DefaultInvoicesFile = "invoices.json"
+
 // Invoices is a slice of invoices.
 type Invoices []Invoice
 

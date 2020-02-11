@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 )
 
+const DefaultPartiesFile = "parties.json"
+
 type Parties struct {
 	Employees []Party `json:"employees"`
 	Customers []Party `json:"customers"`
@@ -68,12 +70,24 @@ type Party struct {
 	PostalCode int    `json:"postalCode" default:"8000"`
 }
 
+// NewParty returns a new Party with the default values.
 func NewParty() Party {
 	pty := Party{}
 	if err := defaults.Set(&pty); err != nil {
 		logrus.Fatal(err)
 	}
 	return pty
+}
+
+// NewCompanyParty returns a new default company Party.
+func NewCompanyParty() Party {
+	return Party{
+		Name:       "Fantasia Company",
+		Street:     "Main Street",
+		StreetNr:   10,
+		Place:      "Zurich",
+		PostalCode: 8000,
+	}
 }
 
 // GetId returns the unique id of the element.

@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 )
 
+const DefaultExpensesFile = "expenses.json"
+
 // Expenses is a slice of multiple expenses.
 type Expenses []Expense
 

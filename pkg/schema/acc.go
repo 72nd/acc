@@ -2,9 +2,14 @@
 package schema
 
 import (
+	"encoding/json"
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
+	"io/ioutil"
+	"path"
 )
+
+const DefaultAccFile = "acc.json"
 
 // Acc represents an entry point into the data and also provides general information.
 type Acc struct {
@@ -22,17 +27,51 @@ func NewAcc() *Acc {
 	if err := defaults.Set(acc); err != nil {
 		logrus.Fatal(err)
 	}
-	acc.Company = Party{
-		Name:       "Fantasia Company",
-		Street:     "Main Street",
-		StreetNr:   10,
-		Place:      "Zurich",
-		PostalCode: 8000,
-	}
+	acc.Company = NewCompanyParty()
 	return acc
 }
 
 // NewProject creates a new acc project in the given folder path.
 func NewProject(folderPath string) {
+	acc := Acc{
+		Company:               NewCompanyParty(),
+		ExpensesFilePath:      DefaultExpensesFile,
+		InvoicesFilePath:      DefaultInvoicesFile,
+		PartiesFilePath:       DefaultPartiesFile,
+		BankStatementFilePath: DefaultBankStatementFile,
+	}
+	exp := NewExpenses()
+	inv := NewInvoices()
+	prt := NewParties()
+	stm := NewBankStatement()
 
+	acc.Save(path.Join(folderPath, DefaultAccFile))
+	exp.Save(path.Join(folderPath, DefaultExpensesFile))
+	inv.Save(path.Join(folderPath, DefaultInvoicesFile))
+	prt.Save(path.Join(folderPath, DefaultPartiesFile))
+	stm.Save(path.Join(folderPath, DefaultBankStatementFile))
+}
+
+// OpenAcc opens a Acc saved in the json file given by the path.
+func OpenAcc(path string) Acc {
+	raw, err := ioutil.ReadFile(path)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	acc := Acc{}
+	if err := json.Unmarshal(raw, &acc); err != nil {
+		logrus.Fatal(err)
+	}
+	return acc
+}
+
+// Save writes the element as a json to the given path.
+func (a Acc) Save(path string) {
+	raw, err := json.Marshal(a)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
+		logrus.Fatal(err)
+	}
 }

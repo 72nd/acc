@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 )
 
+const DefaultBankStatementFile = "bank-statement.json"
+
 // BankStatement represents a bank statement.
 type BankStatement struct {
 	Id           string        `json:"id" default:"-"`
