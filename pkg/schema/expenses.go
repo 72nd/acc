@@ -71,7 +71,7 @@ type Expense struct {
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
 	SettlementTransactionId string `json:"settlementTransactionId" default:""`
 	// ProjectName refers to the associated project of the expense.
-	ProjectName string `json:"projectId" default:""`
+	ProjectName string `json:"projectName" default:""`
 }
 
 // NewExpense returns a new Expense element with the default values.

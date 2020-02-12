@@ -58,14 +58,14 @@ type Invoice struct {
 	Path string `json:"path" default:"/path/to/file.pdf"`
 	// CustomerId refers to the customer the invoice was sent to.
 	CustomerId string `json:"customerId" default:""`
-	// ProjectName refers to the project the invoice is associated with.
-	ProjectId string `json:"projectId" default:""`
 	// SendDate states the date, the invoice was sent to the customer.
 	SendDate string `json:"sendDate" default:"2019-12-20"`
 	// DateOfSettlement states the date the customer paid the outstanding amount.
 	DateOfSettlement string `json:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
 	SettlementTransactionId string `json:"settlementTransactionId" default:""`
+	// ProjectName refers to the associated project of the expense.
+	ProjectName string `json:"projectName" default:""`
 }
 
 // NewInvoice returns a new Acc element with the default values.
