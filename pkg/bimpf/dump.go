@@ -73,6 +73,7 @@ func (d Dump) Convert(outputFolder, bimpfFolder string) schema.Acc {
 		acc.Parties.Employees[i] = d.Employees[i].Convert()
 	}
 	acc.Expenses = d.Customers.ConvertExpenses(bimpfFolder, acc.Parties, d.Employees)
+	acc.Invoices  = d.Customers.ConvertInvoices(bimpfFolder, acc.Parties)
 
 	return acc
 }

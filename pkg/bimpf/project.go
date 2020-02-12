@@ -35,6 +35,11 @@ func (p Project) String() string {
 	return fmt.Sprintf("%d/%s (%s) for customer %s", p.Id, p.SbId, p.Name, p.CustomerName)
 }
 
+// ShortDescription returns the SbId and the name as a string
+func (p Project) ShortDescription() string {
+	return fmt.Sprintf("%s: %s", p.SbId, p.Name)
+}
+
 // Conditions returns the validation conditions.
 func (p Project) Conditions() util.Conditions {
 	return util.Conditions{
@@ -90,17 +95,17 @@ type Document struct {
 
 // ConvertAsInvoice converts the document to a Bimpf Invoice.
 // Amount is set to -1 as Bimpf does not provide such information.
-func (d Document) ConvertAsInvoice(pathPrefix, customerId, projectId string) schema.Invoice {
+func (d Document) ConvertAsInvoice(pathPrefix, customerId, projectName string, parties schema.Parties) schema.Invoice {
 	inv := schema.Invoice{
 		Identifier:              d.SbId,
 		Name:                    d.Name,
 		Amount:                  -1,
 		Path:                    path.Join(pathPrefix, d.Path),
 		CustomerId:              customerId,
-		ProjectId:               projectId,
 		SendDate:                d.SendDate,
 		DateOfSettlement:        "",
 		SettlementTransactionId: "",
+		ProjectName:             projectName,
 	}
 	inv.SetId()
 	return inv

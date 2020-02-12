@@ -24,11 +24,11 @@ func (c Customers) ConvertExpenses(folderPrefix string, parties schema.Parties, 
 			continue
 		}
 		for j := range c[i].Projects {
-			projectName := fmt.Sprintf("%s: %s", c[i].Projects[j].SbId, c[i].Projects[j].Name)
 			for k := range c[i].Projects[j].Expenses {
 				folder := path.Join(folderPrefix, c[i].Projects[j].NcFolderName)
+				prjDesc := c[i].Projects[j].ShortDescription()
 				ex := c[i].Projects[j].Expenses[k]
-				exp = append(exp, ex.Convert(folder, cst.Id, projectName, parties, bimpfEmployees))
+				exp = append(exp, ex.Convert(folder, cst.Id, prjDesc, parties, bimpfEmployees))
 			}
 		}
 	}
@@ -37,15 +37,21 @@ func (c Customers) ConvertExpenses(folderPrefix string, parties schema.Parties, 
 
 // ConvertInvoices cycles trough the Customers and returns all invoices found as a acc Invoice.
 // As the expenses in Bimpf only contain a relative path to receipts the nextcloud prefix has to be provided.
-func (c Customers) ConvertInvoices(folderPrefix string, customers schema.Parties) schema.Invoices {
+func (c Customers) ConvertInvoices(folderPrefix string, parties schema.Parties) schema.Invoices {
 	var inv []schema.Invoice
 	for i := range c {
-		cst, err := customers.CustomerByIdentifier(c[i].SbId)
+		cst, err := parties.CustomerByIdentifier(c[i].SbId)
 		if err != nil {
 			logrus.Warn(err)
 			continue
 		}
-		fmt.Println(cst)
+		for j := range c[i].Projects {
+			for k := range c[i].Projects[j].Invoices {
+				folder := path.Join(folderPrefix, c[i].Projects[j].NcFolderName)
+				prjDesc := c[i].Projects[j].ShortDescription()
+				inv = append(inv, c[i].Projects[j].Invoices[k].ConvertAsInvoice(folder, cst.Id, prjDesc, parties))
+			}
+		}
 	}
 	return inv
 }
