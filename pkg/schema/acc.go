@@ -3,8 +3,10 @@ package schema
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/util"
 	"io/ioutil"
 	"path"
 )
@@ -105,4 +107,61 @@ func (a Acc) SaveProject(pth string, indented bool) {
 	a.Invoices.Save(path.Join(pth, a.InvoicesFilePath), indented)
 	a.Parties.Save(path.Join(pth, a.PartiesFilePath), indented)
 	a.BankStatement.Save(path.Join(pth, a.BankStatementFilePath), indented)
+}
+
+// Type returns a string with the type name of the element.
+func (a Acc) Type() string {
+	return "Acc-Main"
+}
+
+// String returns a human readable representation of the element.
+func (a Acc) String() string {
+	return fmt.Sprintf("for company %s", a.Company.Name)
+}
+
+// Conditions returns the validation conditions.
+func (a Acc) Conditions() util.Conditions {
+	return util.Conditions{
+		{
+			Condition: a.Company.Name == "",
+			Message:   "company name is not set (Company.Name is empty)",
+		},
+		{
+			Condition: a.Company.Street == "",
+			Message:   "company street name is not set (Company.Street is empty)",
+		},
+		{
+			Condition: a.Company.StreetNr == 0,
+			Message:   "company street number is not set (Company.StreetNr is 0)",
+		},
+		{
+			Condition: a.Company.Place == "",
+			Message:   "company place is not set (Company.Place is empty)",
+		},
+		{
+			Condition: a.Company.PostalCode == 0,
+			Message:   "company postal code is not set (Company.PostalCode is 0)",
+		},
+		{
+			Condition: a.ExpensesFilePath == "",
+			Message: "path to expenses file is not set (ExpensesFilePath is empty)",
+		},
+		{
+			Condition: a.InvoicesFilePath == "",
+			Message: "path to invoices file is not set (InvoicesFilePath is empty)",
+		},
+		{
+			Condition: a.PartiesFilePath == "",
+			Message: "path to parties file is not set (PartiesFilePath is empty)",
+		},
+		{
+			Condition: a.BankStatementFilePath == "",
+			Message: "path to bank statement file is not set (BankStatementFilePath is empty)",
+		},
+	}
+}
+
+// Validate the element and return the result.
+func (a Acc) Validate() util.ValidateResults {
+	return []util.ValidateResult{util.Check(a)}
 }
