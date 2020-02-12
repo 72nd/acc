@@ -2,9 +2,11 @@ package schema
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/util"
 	"io/ioutil"
 )
 
@@ -94,4 +96,26 @@ func (e *Expense) SetId() {
 		return
 	}
 	e.Id = uuid.Must(uuid.NewRandom()).String()
+}
+
+// Type returns a string with the type name of the element.
+func (e Expense) Type() string {
+	return ""
+}
+
+// String returns a human readable representation of the element.
+func (e Expense) String() string {
+	return fmt.Sprintf("")
+}
+
+// Conditions returns the validation conditions.
+func (e Expense) Conditions() util.Conditions {
+	return util.Conditions{
+
+	}
+}
+
+// Validate the element and return the result.
+func (e Expense) Validate() util.ValidateResults {
+	return []util.ValidateResult{util.Check(e)}
 }

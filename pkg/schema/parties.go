@@ -6,6 +6,7 @@ import (
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/util"
 	"io/ioutil"
 )
 
@@ -120,4 +121,26 @@ func (p *Party) SetId() {
 		return
 	}
 	p.Id = uuid.Must(uuid.NewRandom()).String()
+}
+
+// Type returns a string with the type name of the element.
+func (p Party) Type() string {
+	return ""
+}
+
+// String returns a human readable representation of the element.
+func (p Party) String() string {
+	return fmt.Sprintf("")
+}
+
+// Conditions returns the validation conditions.
+func (p Party) Conditions() util.Conditions {
+	return util.Conditions{
+
+	}
+}
+
+// Validate the element and return the result.
+func (p Party) Validate() util.ValidateResults {
+	return []util.ValidateResult{util.Check(p)}
 }

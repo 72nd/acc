@@ -2,9 +2,11 @@ package schema
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/util"
 	"io/ioutil"
 )
 
@@ -54,6 +56,28 @@ func (s BankStatement) SetId() {
 	}
 }
 
+// Type returns a string with the type name of the element.
+func (s BankStatement) Type() string {
+	return ""
+}
+
+// String returns a human readable representation of the element.
+func (s BankStatement) String() string {
+	return fmt.Sprintf("")
+}
+
+// Conditions returns the validation conditions.
+func (s BankStatement) Conditions() util.Conditions {
+	return util.Conditions{
+
+	}
+}
+
+// Validate the element and return the result.
+func (s BankStatement) Validate() util.ValidateResults {
+	return []util.ValidateResult{util.Check(s)}
+}
+
 // Transaction represents a single transaction of a bank statement.
 type Transaction struct {
 	Id     string  `json:"id" default:""`
@@ -79,4 +103,26 @@ func (t *Transaction) SetId() {
 		return
 	}
 	t.Id = uuid.Must(uuid.NewRandom()).String()
+}
+
+// Type returns a string with the type name of the element.
+func (Transaction) Type() string {
+	return ""
+}
+
+// String returns a human readable representation of the element.
+func (Transaction) String() string {
+	return fmt.Sprintf("")
+}
+
+// Conditions returns the validation conditions.
+func (Transaction) Conditions() util.Conditions {
+	return util.Conditions{
+
+	}
+}
+
+// Validate the element and return the result.
+func (t Transaction) Validate() util.ValidateResults {
+	return []util.ValidateResult{util.Check(t)}
 }
