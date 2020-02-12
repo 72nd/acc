@@ -61,15 +61,17 @@ type Expense struct {
 	// Billable states if the costs for the Expense will be forwarded to the customer.
 	Billable bool `json:"billable" default:"false"`
 	// ObligedCustomerId refers to the customer which have to pay the Expense.
-	ObligedCustomerId int `json:"obligedCustomerId" default:"0"`
+	ObligedCustomerId string `json:"obligedCustomerId" default:""`
 	// AdvancedByThirdParty states if a third party (employee, etc.) advanced the payment of this expense for the company.
 	AdvancedByThirdParty bool `json:"advancedByThirdParty" default:"false"`
 	// AdvancePartyId refers to the third party which advanced the payment.
-	AdvancedThirdPartyId int `json:"advancedThirdPartyId" default:"0"`
+	AdvancedThirdPartyId string `json:"advancedThirdPartyId" default:""`
 	// DateOfSettlement states the date of the settlement of the expense (the company has not to take further actions).
 	DateOfSettlement string `json:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
 	SettlementTransactionId string `json:"settlementTransactionId" default:""`
+	// ProjectName refers to the associated project of the expense.
+	ProjectName string `json:"projectId" default:""`
 }
 
 // NewExpense returns a new Expense element with the default values.

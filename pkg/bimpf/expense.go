@@ -2,7 +2,10 @@ package bimpf
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
+	"path"
 )
 
 // Expense reassembles the structure of a Expense in a Bimpf json dump file.
@@ -14,11 +17,11 @@ type Expense struct {
 	Path               string  `json:"path"`
 	Amount             float64 `json:"amount"`
 	DateOfAccrual      string  `json:"date_of_accrual"`
-	AdvancedByEmployee bool    `json:"advanced_by_employee"`
+	AdvancedByEmployee bool    `json:"advance_by_employee"`
 	PaidByCustomer     bool    `json:"paid_by_customer"`
 	IsPaid             bool    `json:"is_paid"`
 	Billable           bool    `json:"billable"`
-	EmployeeId         int     `json:"employee_id"`
+	EmployeeId         int     `json:"employee"`
 }
 
 // Type returns a string with the type name of the element.
@@ -60,7 +63,7 @@ func (e Expense) Conditions() util.Conditions {
 		},
 		{
 			Condition: e.Amount <= 0,
-			Message: "amount not set (amount <= 0)",
+			Message:   "amount not set (amount <= 0)",
 		},
 	}
 }
@@ -69,3 +72,42 @@ func (e Expense) Conditions() util.Conditions {
 func (e Expense) Validate() util.ValidateResults {
 	return []util.ValidateResult{util.Check(e)}
 }
+
+// Convert returns the bimpf Expense as a acc Expense.
+// As the path in the Bimpf Expense structure is not absolute (is relative to project folder in a nextcloud folder), a folder prefix is needed.
+func (e Expense) Convert(pathPrefix, obligedCustomerId, project string, parties schema.Parties, bimpfEmployees Employees) schema.Expense {
+	exp := schema.Expense{
+		Identifier:              e.SbId,
+		Name:                    e.Name,
+		Amount:                  e.Amount,
+		Path:                    path.Join(pathPrefix, e.Path),
+		DateOfAccrual:           e.DateOfAccrual,
+		Billable:                e.Billable,
+		ObligedCustomerId:       obligedCustomerId,
+		AdvancedByThirdParty:    e.AdvancedByEmployee,
+		AdvancedThirdPartyId:    e.getAdvancedPartyId(parties, bimpfEmployees),
+		DateOfSettlement:        "",
+		SettlementTransactionId: "",
+		ProjectName:             project,
+	}
+	exp.SetId()
+	return exp
+}
+
+// getAdvancedPartyId tries to find the Acc Id associated advancing employee.
+// In Bimpf only employees can advance payments.
+func (e Expense) getAdvancedPartyId(parties schema.Parties, bimpfEmployees Employees) string {
+	if e.AdvancedByEmployee {
+		bimpfEmployee, err := bimpfEmployees.ById(e.EmployeeId)
+		if err != nil {
+			logrus.Warn(err)
+		}
+		employee, err := parties.EmployeeByIdentifier(bimpfEmployee.SbId)
+		if err != nil {
+			logrus.Warn(err)
+		}
+		return employee.Id
+	}
+	return ""
+}
+

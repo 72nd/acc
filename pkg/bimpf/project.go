@@ -2,7 +2,9 @@ package bimpf
 
 import (
 	"fmt"
+	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
+	"path"
 )
 
 // Projects is a slice of projects.
@@ -20,6 +22,7 @@ type Project struct {
 	Quotes       []Document `json:"quotes"`
 	Invoices     []Document `json:"invoices"`
 	Reminders    []Document `json:"reminders"`
+	Expenses     []Expense  `json:"expenses"`
 }
 
 // Type returns a string with the type name of the element.
@@ -49,7 +52,7 @@ func (p Project) Conditions() util.Conditions {
 		},
 		{
 			Condition: p.NcFolderName == "",
-			Message: "nextcloud folder not defined",
+			Message:   "nextcloud folder not defined",
 		},
 	}
 }
@@ -85,6 +88,24 @@ type Document struct {
 	IsStalled    bool   `json:"is_stalled"`
 }
 
+// ConvertAsInvoice converts the document to a Bimpf Invoice.
+// Amount is set to -1 as Bimpf does not provide such information.
+func (d Document) ConvertAsInvoice(pathPrefix, customerId, projectId string) schema.Invoice {
+	inv := schema.Invoice{
+		Identifier:              d.SbId,
+		Name:                    d.Name,
+		Amount:                  -1,
+		Path:                    path.Join(pathPrefix, d.Path),
+		CustomerId:              customerId,
+		ProjectId:               projectId,
+		SendDate:                d.SendDate,
+		DateOfSettlement:        "",
+		SettlementTransactionId: "",
+	}
+	inv.SetId()
+	return inv
+}
+
 // Type returns a string with the type name of the element.
 func (d Document) Type() string {
 	return "SB-Document"
@@ -112,11 +133,11 @@ func (d Document) Conditions() util.Conditions {
 		},
 		{
 			Condition: d.Path == "",
-			Message: "attachment path not specified",
+			Message:   "attachment path not specified",
 		},
 		{
 			Condition: d.SendDate == "",
-			Message: "send date not specified",
+			Message:   "send date not specified",
 		},
 	}
 }

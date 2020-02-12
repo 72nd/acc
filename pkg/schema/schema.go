@@ -2,6 +2,7 @@ package schema
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 )
@@ -31,6 +32,7 @@ func SaveToJson(data interface{}, path string, indented bool) {
 	if err != nil {
 		logrus.Fatal(err)
 	}
+	fmt.Println(path)
 	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
 		logrus.Fatal(err)
 	}

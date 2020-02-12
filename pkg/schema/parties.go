@@ -2,6 +2,7 @@ package schema
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -52,6 +53,26 @@ func (p Parties) SetId() {
 	}
 }
 
+// EmployeeByIdentifier returns a Employee if there is one with the given identifier. Otherwise an error will be returned.
+func (p Parties) EmployeeByIdentifier(ident string) (*Party, error) {
+	for i := range p.Employees {
+		if p.Employees[i].Identifier == ident {
+			return &p.Employees[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no employee for identifier «%s» found", ident)
+}
+
+// CustomerByIdentifier returns a Customer if there is one with the given identifier. Otherwise an error will be returned.
+func (p Parties) CustomerByIdentifier(ident string) (*Party, error) {
+	for i := range p.Customers {
+		if p.Customers[i].Identifier == ident {
+			return &p.Customers[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no customer for identifier «%s» found", ident)
+}
+
 // Party represents some person or organisation.
 type Party struct {
 	// Id is the internal unique identifier of the Expense.
@@ -75,14 +96,17 @@ func NewParty() Party {
 }
 
 // NewCompanyParty returns a new default company Party.
-func NewCompanyParty() Party {
-	return Party{
-		Name:       "Fantasia Company",
-		Street:     "Main Street",
-		StreetNr:   10,
-		Place:      "Zurich",
-		PostalCode: 8000,
+func NewCompanyParty(useDefaults bool) Party {
+	if useDefaults {
+		return Party{
+			Name:       "Fantasia Company",
+			Street:     "Main Street",
+			StreetNr:   10,
+			Place:      "Zurich",
+			PostalCode: 8000,
+		}
 	}
+	return Party{}
 }
 
 // GetId returns the unique id of the element.

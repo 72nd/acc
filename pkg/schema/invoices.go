@@ -33,7 +33,7 @@ func OpenInvoices(path string) Invoices {
 
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
-func (i Invoices) Save(path string, indented bool) {
+func (i *Invoices) Save(path string, indented bool) {
 	SaveToJson(i, path, indented)
 }
 
@@ -58,7 +58,7 @@ type Invoice struct {
 	Path string `json:"path" default:"/path/to/file.pdf"`
 	// CustomerId refers to the customer the invoice was sent to.
 	CustomerId string `json:"customerId" default:""`
-	// ProjectId refers to the project the invoice is associated with.
+	// ProjectName refers to the project the invoice is associated with.
 	ProjectId string `json:"projectId" default:""`
 	// SendDate states the date, the invoice was sent to the customer.
 	SendDate string `json:"sendDate" default:"2019-12-20"`

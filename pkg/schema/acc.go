@@ -26,41 +26,47 @@ type Acc struct {
 	InvoicesFilePath      string        `json:"invoicesFilePath" default:"invoices.json"`
 	PartiesFilePath       string        `json:"partiesFilePath" default:"parties.json"`
 	BankStatementFilePath string        `json:"bankStatementFilePath" default:"bank.json"`
-	expenses              Expenses      `json:"-"`
-	invoices              Invoices      `json:"-"`
-	parties               Parties       `json:"-"`
-	bankStatement         BankStatement `json:"-"`
+	Expenses              Expenses      `json:"-"`
+	Invoices              Invoices      `json:"-"`
+	Parties               Parties       `json:"-"`
+	BankStatement         BankStatement `json:"-"`
+	fileName              string        `json:"-"`
 }
 
 // NewAcc returns a new Acc element with the default values.
-func NewAcc() *Acc {
+func NewAcc(useDefaults bool) *Acc {
 	acc := &Acc{}
 	if err := defaults.Set(acc); err != nil {
 		logrus.Fatal(err)
 	}
-	acc.Company = NewCompanyParty()
+	acc.Company = NewCompanyParty(useDefaults)
 	return acc
 }
 
 // NewProject creates a new acc project in the given folder path.
-func NewProject(folderPath string) {
+func NewProject(folderPath string, doSave, useDefaults bool) Acc {
 	acc := Acc{
-		Company:               NewCompanyParty(),
+		Company:               NewCompanyParty(useDefaults),
 		ExpensesFilePath:      DefaultExpensesFile,
 		InvoicesFilePath:      DefaultInvoicesFile,
 		PartiesFilePath:       DefaultPartiesFile,
 		BankStatementFilePath: DefaultBankStatementFile,
+		fileName:              DefaultAccFile,
 	}
 	exp := NewExpenses()
 	inv := NewInvoices()
 	prt := NewParties()
 	stm := NewBankStatement()
 
-	acc.Save(path.Join(folderPath, DefaultAccFile), true)
-	exp.Save(path.Join(folderPath, DefaultExpensesFile), true)
-	inv.Save(path.Join(folderPath, DefaultInvoicesFile), true)
-	prt.Save(path.Join(folderPath, DefaultPartiesFile), true)
-	stm.Save(path.Join(folderPath, DefaultBankStatementFile), true)
+	if doSave {
+		acc.Save(path.Join(folderPath, DefaultAccFile), true)
+		exp.Save(path.Join(folderPath, DefaultExpensesFile), true)
+		inv.Save(path.Join(folderPath, DefaultInvoicesFile), true)
+		prt.Save(path.Join(folderPath, DefaultPartiesFile), true)
+		stm.Save(path.Join(folderPath, DefaultBankStatementFile), true)
+	}
+
+	return acc
 }
 
 // OpenAcc opens a Acc saved in the json file given by the path.
@@ -79,10 +85,10 @@ func OpenAcc(path string) Acc {
 // OpenProject reads first the Acc file and then tries to open all linked files.
 func OpenProject(path string) Acc {
 	acc := OpenAcc(path)
-	acc.expenses = OpenExpenses(acc.ExpensesFilePath)
-	acc.invoices = OpenInvoices(acc.InvoicesFilePath)
-	acc.parties = OpenParties(acc.PartiesFilePath)
-	acc.bankStatement = OpenBankStatement(acc.BankStatementFilePath)
+	acc.Expenses = OpenExpenses(acc.ExpensesFilePath)
+	acc.Invoices = OpenInvoices(acc.InvoicesFilePath)
+	acc.Parties = OpenParties(acc.PartiesFilePath)
+	acc.BankStatement = OpenBankStatement(acc.BankStatementFilePath)
 	return acc
 }
 
@@ -93,10 +99,10 @@ func (a Acc) Save(path string, indented bool) {
 }
 
 // SaveProject saves all files linked in the Acc config.
-func (a Acc) SaveProject(path string, indented bool) {
-	a.Save(path, indented)
-	a.expenses.Save(path, indented)
-	a.invoices.Save(path, indented)
-	a.parties.Save(path, indented)
-	a.bankStatement.Save(path, indented)
+func (a Acc) SaveProject(pth string, indented bool) {
+	a.Save(path.Join(pth, a.fileName), indented)
+	a.Expenses.Save(path.Join(pth, a.ExpensesFilePath), indented)
+	a.Invoices.Save(path.Join(pth, a.InvoicesFilePath), indented)
+	a.Parties.Save(path.Join(pth, a.PartiesFilePath), indented)
+	a.BankStatement.Save(path.Join(pth, a.BankStatementFilePath), indented)
 }

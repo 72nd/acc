@@ -2,8 +2,20 @@ package bimpf
 
 import (
 	"fmt"
+	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
 )
+
+type Employees []Employee
+
+func (e Employees) ById(id int) (*Employee, error) {
+	for i := range e {
+		if e[i].Id == id {
+			return &e[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no employee in Bimpf dump for id «%d» found", id)
+}
 
 // Employee reassembles the structure of a Employee in a Bimpf json dump file.
 type Employee struct {
@@ -45,4 +57,18 @@ func (e Employee) Conditions() util.Conditions {
 // Validate the element and return the result.
 func (e Employee) Validate() util.ValidateResults {
 	return []util.ValidateResult{util.Check(e)}
+}
+
+// Convert returns the employee as a acc Party.
+func (e Employee) Convert() schema.Party {
+	pty := schema.Party{
+		Identifier: e.SbId,
+		Name:       fmt.Sprintf("%s %s", e.FirstName, e.Name),
+		Street:     "",
+		StreetNr:   0,
+		Place:      "",
+		PostalCode: 0,
+	}
+	pty.SetId()
+	return pty
 }
