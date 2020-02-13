@@ -46,18 +46,22 @@ func (p Project) Conditions() util.Conditions {
 		{
 			Condition: p.Id < 1,
 			Message:   "id is not set (id < 1)",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: p.SbId == "",
 			Message:   "solutionsbüro id is not set",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: p.Name == "",
 			Message:   "name not set",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: p.NcFolderName == "",
 			Message:   "nextcloud folder not defined",
+			Level:     util.BeforeImportFlaw,
 		},
 	}
 }
@@ -127,22 +131,27 @@ func (d Document) Conditions() util.Conditions {
 		{
 			Condition: d.Id < 1,
 			Message:   "id is not set (id < 1)",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: d.SbId == "",
 			Message:   "solutionsbüro id is not set",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: d.Name == "",
 			Message:   "name not set",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: d.Path == "",
 			Message:   "attachment path not specified",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: d.SendDate == "",
 			Message:   "send date not specified",
+			Level:     util.BeforeImportFlaw,
 		},
 	}
 }

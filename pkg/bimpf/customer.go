@@ -87,18 +87,22 @@ func (c Customer) Conditions() util.Conditions {
 		{
 			Condition: c.Id < 1,
 			Message:   "id is not set (id < 1)",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: c.SbId == "",
 			Message:   "solutionsbüro id is not set",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: c.Name == "",
 			Message:   "name not set",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: c.NcFolderName == "",
 			Message:   "nextcloud folder not defined",
+			Level:     util.BeforeImportFlaw,
 		},
 	}
 }

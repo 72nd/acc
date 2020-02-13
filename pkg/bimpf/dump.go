@@ -3,19 +3,17 @@ package bimpf
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
 	"io/ioutil"
-	"time"
 )
 
 // Dump reassembles the structure of a Bimpf json dump file.
 type Dump struct {
 	TimeUnits []TimeUnit `json:"time_units"`
 	Customers Customers  `json:"customers"`
-	Employees Employees `json:"employees"`
+	Employees Employees  `json:"employees"`
 	Expenses  []Expense  `json:"expenses"`
 }
 
@@ -51,14 +49,12 @@ func (d Dump) Validate() util.ValidateResults {
 
 // ValidateAndReport validates the bimpf dump and saves the report to the given path.
 func (d Dump) ValidateAndReport(path string) {
-	table := util.Table{
-		Header: []string{"type", "element", "reason"},
-		Rows:   d.Validate().TableRows(),
+	rpt := util.Report{
+		Title:           "Bimpf Dump Json Validation Report",
+		ColumnTitles:    []string{"type", "element", "reason"},
+		ValidateResults: d.Validate(),
 	}
-	output := fmt.Sprintf("BIMPF DUMP JSON VALIDATION REPORT\n---------------------------------\nGenerated at: %s\n\n%s", time.Now().String(), table.Render())
-	if err := ioutil.WriteFile(path, []byte(output), 0644); err != nil {
-		logrus.Fatal(err)
-	}
+	rpt.Write(path)
 }
 
 // Convert returns the bimpf dump as an Acc struct. Needs a project path and a Nextcloud Bimpf folder path.
@@ -73,7 +69,7 @@ func (d Dump) Convert(outputFolder, bimpfFolder string) schema.Acc {
 		acc.Parties.Employees[i] = d.Employees[i].Convert()
 	}
 	acc.Expenses = d.Customers.ConvertExpenses(bimpfFolder, acc.Parties, d.Employees)
-	acc.Invoices  = d.Customers.ConvertInvoices(bimpfFolder, acc.Parties)
+	acc.Invoices = d.Customers.ConvertInvoices(bimpfFolder, acc.Parties)
 
 	return acc
 }

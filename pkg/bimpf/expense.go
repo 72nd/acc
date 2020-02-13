@@ -31,7 +31,7 @@ func (e Expense) Type() string {
 
 // String returns a human readable representation of the element.
 func (e Expense) String() string {
-	return fmt.Sprintf("%d/%s (%s) for employee %d", e.Id, e.SbId, e.Name, e.EmployeeId)
+	return fmt.Sprintf("%d/%s (%s)", e.Id, e.SbId, e.Name)
 }
 
 // Conditions returns the validation conditions.
@@ -40,30 +40,37 @@ func (e Expense) Conditions() util.Conditions {
 		{
 			Condition: e.Id < 1,
 			Message:   "id is not set (id < 1)",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: e.SbId == "",
 			Message:   "solutionsbüro id is not set",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: e.Name == "",
 			Message:   "name not set",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: e.Path == "",
 			Message:   "attachment path not specified",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: e.EmployeeId < 1,
 			Message:   "employee id not set (id < 1)",
+			Level:     util.BeforeMergeFlaw,
 		},
 		{
 			Condition: e.DateOfAccrual == "",
 			Message:   "date of accrual not set",
+			Level:     util.BeforeMergeFlaw,
 		},
 		{
 			Condition: e.Amount <= 0,
 			Message:   "amount not set (amount <= 0)",
+			Level:     util.BeforeMergeFlaw,
 		},
 	}
 }
@@ -110,4 +117,3 @@ func (e Expense) getAdvancedPartyId(parties schema.Parties, bimpfEmployees Emplo
 	}
 	return ""
 }
-

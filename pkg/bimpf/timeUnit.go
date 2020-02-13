@@ -32,26 +32,32 @@ func (t TimeUnit) Conditions() util.Conditions {
 		{
 			Condition: t.Id < 1,
 			Message:   "id is not set (id < 1)",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: t.Description == "",
 			Message:   "description not set",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: t.StartDate == "",
 			Message:   "start date not set",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: t.StartTime == "",
 			Message:   "start time not set",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: t.EndDate == "",
 			Message:   "end date not set",
+			Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: t.EndTime == "",
 			Message:   "end time not set",
+			Level:     util.BeforeImportFlaw,
 		},
 	}
 }

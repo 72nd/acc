@@ -42,14 +42,17 @@ func (e Employee) Conditions() util.Conditions {
 		{
 			Condition: e.Id < 1,
 			Message:   "id is not set (id < 1)",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: e.SbId == "",
 			Message:   "solutionsbüro id is not set",
+			Level:     util.FundamentalFlaw,
 		},
 		{
 			Condition: e.Name == "",
 			Message:   "family name not set",
+			Level:     util.BeforeImportFlaw,
 		},
 	}
 }
