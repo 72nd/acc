@@ -125,12 +125,16 @@ func (p *Pdf) initPdf() {
 	if err != nil {
 		logrus.Errorf("could not load lato heavy: ", err)
 	}
+	latoRegular, err := box.Bytes("Lato-Regular.ttf")
+	if err != nil {
+		logrus.Errorf("could not load lato regular: ", err)
+	}
 	p.pdf = gopdf.GoPdf{}
 	p.pdf.Start(gopdf.Config{PageSize: gopdf.Rect{W: 595.28, H: 841.89}})
 	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoHeavy), gopdf.TtfOption{Style: gopdf.Bold}); err != nil {
 		logrus.Fatal(err)
 	}
-	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoHeavy), gopdf.TtfOption{Style: gopdf.Regular}); err != nil {
+	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoRegular), gopdf.TtfOption{Style: gopdf.Regular}); err != nil {
 		logrus.Fatal(err)
 	}
 }
@@ -149,17 +153,18 @@ func (p *Pdf) processFirstPage(props Properties, maxPageNr int) {
 	p.pdf.AddPage()
 	p.pdf.SetLineWidth(0.1)
 	p.pdf.SetFillColor(255, 255, 255)
-	p.pdf.RectFromUpperLeftWithStyle(40, 115, 500, 700, "FD")
+	p.pdf.RectFromUpperLeftWithStyle(40, 130, 500, 680, "FD")
 	p.pdf.SetFillColor(0, 0, 0)
 
 	titleLine := fmt.Sprintf("%s: %s  //  page 1 of %d", props.Type, props.Identifier, maxPageNr)
 	addText(&p.pdf, titleLine, 40, 40, 20, "Bold")
 	addText(&p.pdf, props.Line1, 40, 63, 12, "")
 	addText(&p.pdf, props.Line2, 40, 79, 12, "")
-	addText(&p.pdf, props.Line2, 40, 95, 12, "")
+	addText(&p.pdf, props.Line3, 40, 95, 12, "")
+	addText(&p.pdf, props.Line4, 40, 111, 12, "")
 
 	tpl := p.pdf.ImportPage(p.getSrcPath(), 1, "/MediaBox")
-	p.pdf.UseImportedTemplate(tpl, 40, 100, 500, 0)
+	p.pdf.UseImportedTemplate(tpl, 45, 150, 480, 0)
 }
 
 func (p *Pdf) processOtherPage(props Properties, pageNr, maxPageNr int) {

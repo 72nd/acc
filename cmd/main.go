@@ -119,7 +119,7 @@ func main() {
 						logrus.Error("creation of document output folder failed: ", err)
 					}
 					acc := schema.OpenProject(inputPath)
-					document.GenerateExpenses(acc.Expenses, c.String("output-folder"))
+					document.GenerateExpenses(acc.Expenses, c.String("output-folder"), c.Bool("do-overwrite"))
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -133,6 +133,12 @@ func main() {
 						Aliases: []string{"output", "o"},
 						Value:   "documents",
 						Usage:   "path to the folder where the exported documents should be stored",
+					},
+					&cli.BoolFlag{
+						Name:    "do-overwrite",
+						Aliases: []string{"overwrite"},
+						Value:   false,
+						Usage:   "force overwrite existing documents",
 					},
 				},
 			},
