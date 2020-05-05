@@ -46,7 +46,7 @@ func OpenBankStatement(path string) BankStatement {
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
 func (s BankStatement) Save(path string, indented bool) {
-	SaveToJson(s, path, indented)
+	SaveToYaml(s, path, indented)
 }
 
 // SetId sets a unique id to all elements in the slice.

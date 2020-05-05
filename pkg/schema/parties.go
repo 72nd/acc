@@ -41,7 +41,7 @@ func OpenParties(path string) Parties {
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
 func (p Parties) Save(path string, indented bool) {
-	SaveToJson(p, path, indented)
+	SaveToYaml(p, path, indented)
 }
 
 // SetId sets a unique id to all elements in the struct.

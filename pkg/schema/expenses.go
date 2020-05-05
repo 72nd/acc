@@ -37,7 +37,7 @@ func OpenExpenses(path string) Expenses {
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
 func (e Expenses) Save(path string, indented bool) {
-	SaveToJson(e, path, indented)
+	SaveToYaml(e, path, indented)
 }
 
 // SetId sets a unique id to all elements in the slice.

@@ -36,7 +36,7 @@ func OpenInvoices(path string) Invoices {
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
 func (i *Invoices) Save(path string, indented bool) {
-	SaveToJson(i, path, indented)
+	SaveToYaml(i, path, indented)
 }
 
 // SetId sets a unique id to all elements in the slice.

@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
 	"io/ioutil"
+	"gopkg.in/yaml.v2"
 	"path"
 )
 
@@ -23,16 +24,16 @@ var DefaultProjectFiles = []string{
 // Acc represents an entry point into the fonts and also provides general information.
 type Acc struct {
 	// Company contains the information about the organisation which uses acc.
-	Company               Party         `json:"company" default:""`
-	ExpensesFilePath      string        `json:"expensesFilePath" default:"expenses.json"`
-	InvoicesFilePath      string        `json:"invoicesFilePath" default:"invoices.json"`
-	PartiesFilePath       string        `json:"partiesFilePath" default:"parties.json"`
-	BankStatementFilePath string        `json:"bankStatementFilePath" default:"bank.json"`
-	Expenses              Expenses      `json:"-"`
-	Invoices              Invoices      `json:"-"`
-	Parties               Parties       `json:"-"`
-	BankStatement         BankStatement `json:"-"`
-	fileName              string        `json:"-"`
+	Company               Party         `yaml:"company" default:""`
+	ExpensesFilePath      string        `yaml:"expensesFilePath" default:"expenses.json"`
+	InvoicesFilePath      string        `yaml:"invoicesFilePath" default:"invoices.json"`
+	PartiesFilePath       string        `yaml:"partiesFilePath" default:"parties.json"`
+	BankStatementFilePath string        `yaml:"bankStatementFilePath" default:"bank.json"`
+	Expenses              Expenses      `yaml:"-"`
+	Invoices              Invoices      `yaml:"-"`
+	Parties               Parties       `yaml:"-"`
+	BankStatement         BankStatement `yaml:"-"`
+	fileName              string        `yaml:"-"`
 }
 
 // NewAcc returns a new Acc element with the default values.
@@ -97,7 +98,7 @@ func OpenProject(path string) Acc {
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
 func (a Acc) Save(path string, indented bool) {
-	SaveToJson(a, path, indented)
+	SaveToYaml(a, path, indented)
 }
 
 // SaveProject saves all files linked in the Acc config.

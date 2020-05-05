@@ -1,8 +1,8 @@
 package schema
 
 import (
-	"encoding/json"
 	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
 
@@ -18,16 +18,12 @@ type Completable interface {
 	SetId()
 }
 
-// SaveToJson writes the element (fonts) as a json file to the given path.
+// SaveToYaml writes the element (fonts) as a json file to the given path.
 // Indented states whether «prettify» the json output.
-func SaveToJson(data interface{}, path string, indented bool) {
+func SaveToYaml(data interface{}, path string) {
 	var raw []byte
 	var err error
-	if indented {
-		raw, err = json.MarshalIndent(data, "", "    ")
-	} else {
-		raw, err = json.Marshal(data)
-	}
+	raw, err = yaml.Marshal(data)
 	if err != nil {
 		logrus.Fatal(err)
 	}
