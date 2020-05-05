@@ -25,7 +25,7 @@ func (c Customers) ConvertExpenses(folderPrefix string, parties schema.Parties, 
 		}
 		for j := range c[i].Projects {
 			for k := range c[i].Projects[j].Expenses {
-				folder := path.Join(folderPrefix, c[i].Projects[j].NcFolderName)
+				folder := path.Join(folderPrefix, c[i].NcFolderName, c[i].Projects[j].NcFolderName)
 				prjDesc := c[i].Projects[j].ShortDescription()
 				ex := c[i].Projects[j].Expenses[k]
 				exp = append(exp, ex.Convert(folder, cst.Id, prjDesc, parties, bimpfEmployees))

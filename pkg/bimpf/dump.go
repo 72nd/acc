@@ -47,7 +47,7 @@ func (d Dump) Validate() util.ValidateResults {
 	return results
 }
 
-// ValidateAndReport validates the bimpf dump and saves the report to the given path.
+// ValidateAndReportProject validates the bimpf dump and saves the report to the given path.
 func (d Dump) ValidateAndReport(path string) {
 	rpt := util.Report{
 		Title:           "Bimpf Dump Json Validation Report",

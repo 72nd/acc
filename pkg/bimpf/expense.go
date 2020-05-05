@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
+	"os"
 	"path"
 )
 
@@ -56,6 +57,16 @@ func (e Expense) Conditions() util.Conditions {
 			Condition: e.Path == "",
 			Message:   "attachment path not specified",
 			Level:     util.BeforeImportFlaw,
+		},
+		{
+			Condition: func() bool {
+				if _, err := os.Stat(e.Path); os.IsNotExist(err) {
+					return false
+				}
+				return true
+			}(),
+			Message: "attachment path doesn't exist",
+			Level:   util.BeforeImportFlaw,
 		},
 		{
 			Condition: e.EmployeeId < 1,
