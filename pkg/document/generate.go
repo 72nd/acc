@@ -3,11 +3,13 @@ package document
 import (
 	"fmt"
 	"gitlab.com/72th/acc/pkg/schema"
+	"path"
 )
 
-func GenerateExpenses(expenses schema.Expenses, dstPath string) {
+func GenerateExpenses(expenses schema.Expenses, dstFolder string) {
 	for i := range expenses {
-		GenerateExpense(expenses[i], dstPath)
+		fileName := fmt.Sprintf("%s.pdf", expenses[i].FileString())
+		GenerateExpense(expenses[i], path.Join(dstFolder, fileName))
 	}
 }
 

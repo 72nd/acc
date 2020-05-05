@@ -11,7 +11,17 @@ acc create PATH/TO/FOLDER/
 ```
 
 ### bimpf
-[Bimpf](https://gitlab.com/solutionsbuero/bimpf)
+
+Hint: You can dump the data of [Bimpf](https://gitlab.com/solutionsbuero/bimpf) with the following command on the server: 
+
+```shell 
+git clone https://gitlab.com/solutionsbuero/bimpf.git
+cd bimpf
+python3 -m venv init .
+source bin/activate
+pip3 install -r requirements.txt
+python3 bimpf/cli/__main__.py dump.json
+```
 
 Import Bimpf JSON dumps and converts them into to the acc-formatted JSON files:
 
@@ -30,3 +40,6 @@ acc bimpf validate -i bimpf.json report.txt
 ### hledger
 
 ## Workflow
+
+1. Dump Bimpf data
+2. Validata dump: `acc bimpf validate -i dump.json`

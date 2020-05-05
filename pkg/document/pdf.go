@@ -1,14 +1,15 @@
 package document
 
 import (
+	"bytes"
 	"fmt"
+	rice "github.com/GeertJohan/go.rice"
 	"github.com/phpdave11/gofpdi"
 	"github.com/signintech/gopdf"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"path"
 	"regexp"
 )
 
@@ -50,7 +51,7 @@ func (p *Pdf) Generate(props Properties) {
 func (p Pdf) getPdfVersion() PdfVersion {
 	out, err := exec.Command("pdfinfo", p.SrcPath).Output()
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatalf("running pdfinfo for file «%s»: %s", p.SrcPath, err)
 	}
 	result := regexp.MustCompile(`PDF version:\s*(.*)`).FindStringSubmatch(string(out))
 	if len(result) != 2 {
@@ -81,12 +82,12 @@ func (p *Pdf) downConvert() string {
 	defer func() { _ = os.Remove(tmpPs.Name()) }()
 	err = exec.Command("pdftops", p.SrcPath, tmpPs.Name()).Run()
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatalf("error running pdftops with %s %s: %s", p.SrcPath, tmpPs.Name(), err)
 	}
 
 	tmpPdf, err := ioutil.TempFile("", "pdf.*.pdf")
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal("failed to create tmp file: ",  err)
 	}
 	err = exec.Command("gs",
 		"-sDEVICE=pdfwrite",
@@ -116,12 +117,20 @@ func (p Pdf) getSrcPath() string {
 }
 
 func (p *Pdf) initPdf() {
+	box, err := rice.FindBox("fonts")
+	if err != nil {
+		logrus.Error("rice find box failed: ", err)
+	}
+	latoHeavy, err := box.Bytes("Lato-Heavy.ttf")
+	if err != nil {
+		logrus.Errorf("could not load lato heavy: ", err)
+	}
 	p.pdf = gopdf.GoPdf{}
 	p.pdf.Start(gopdf.Config{PageSize: gopdf.Rect{W: 595.28, H: 841.89}})
-	if err := p.pdf.AddTTFFontWithOption("lato", "pkg/document/Lato-Heavy.ttf", gopdf.TtfOption{Style: gopdf.Bold}); err != nil {
+	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoHeavy), gopdf.TtfOption{Style: gopdf.Bold}); err != nil {
 		logrus.Fatal(err)
 	}
-	if err := p.pdf.AddTTFFontWithOption("lato", "pkg/document/Lato-Regular.ttf", gopdf.TtfOption{Style: gopdf.Regular}); err != nil {
+	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoHeavy), gopdf.TtfOption{Style: gopdf.Regular}); err != nil {
 		logrus.Fatal(err)
 	}
 }
@@ -174,8 +183,7 @@ func (p *Pdf) safeAndCleanup(fileName string) {
 		}
 		p.DstPath = wd
 	}
-	dst := path.Join(p.DstPath, fmt.Sprintf("%s.pdf", fileName))
-	if err := p.pdf.WritePdf(dst); err != nil {
+	if err := p.pdf.WritePdf(p.DstPath); err != nil {
 		logrus.Fatal("error while writing pdf: ", err)
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
 	"io/ioutil"
+	"strings"
 )
 
 const DefaultExpensesFile = "expenses.json"
@@ -106,6 +107,14 @@ func (e Expense) Type() string {
 // String returns a human readable representation of the element.
 func (e Expense) String() string {
 	return fmt.Sprintf("")
+}
+
+// FileString returns the file name for exporting the expense as a document.
+func (e Expense) FileString() string {
+	result := e.Identifier
+	result = strings.ReplaceAll(result, " ", "-")
+	result = strings.ReplaceAll(result, ".", "-")
+	return result
 }
 
 // Conditions returns the validation conditions.

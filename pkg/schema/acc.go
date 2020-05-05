@@ -1,4 +1,4 @@
-// Schema contains the description of the data structure of acc.
+// Schema contains the description of the fonts structure of acc.
 package schema
 
 import (
@@ -20,7 +20,7 @@ var DefaultProjectFiles = []string{
 	DefaultPartiesFile,
 	DefaultBankStatementFile}
 
-// Acc represents an entry point into the data and also provides general information.
+// Acc represents an entry point into the fonts and also provides general information.
 type Acc struct {
 	// Company contains the information about the organisation which uses acc.
 	Company               Party         `json:"company" default:""`
@@ -165,3 +165,23 @@ func (a Acc) Conditions() util.Conditions {
 func (a Acc) Validate() util.ValidateResults {
 	return []util.ValidateResult{util.Check(a)}
 }
+
+
+func (a Acc) ValidateProject() util.ValidateResults {
+	results := a.Validate()
+	for i := range a.Expenses {
+		results = append(results, util.Check(a.Expenses[i]))
+	}
+	return results
+}
+
+// ValidateAndReportProject validates the acc project files and saves the report to the given path.
+func (a Acc) ValidateAndReportProject(path string) {
+	rpt := util.Report{
+		Title:           "Acc Project Validation Report",
+		ColumnTitles:    []string{"type", "element", "reason"},
+		ValidateResults: a.ValidateProject(),
+	}
+	rpt.Write(path)
+}
+

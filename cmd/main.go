@@ -4,6 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"gitlab.com/72th/acc/pkg/bimpf"
+	"gitlab.com/72th/acc/pkg/document"
 	"gitlab.com/72th/acc/pkg/schema"
 	"os"
 	"path"
@@ -79,7 +80,7 @@ func main() {
 					},
 					{
 						Name:  "validate",
-						Usage: "validate bimpf json dumps and searches for missing information in the Bimpf data",
+						Usage: "validate bimpf json dumps and searches for missing information in the Bimpf fonts",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "the Bimpf input file")
 							outputPath := getPathOrExit(c, c.Bool("force"), "bimpf-dump-report.txt", "report", "the validation report")
@@ -113,18 +114,25 @@ func main() {
 				Aliases: []string{"doc", "document"},
 				Usage:   "aggregate all documents associated with a type of business case",
 				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					if err := os.MkdirAll(c.String("output-folder"), os.ModePerm); err != nil {
+						logrus.Error("creation of document output folder failed: ", err)
+					}
+					acc := schema.OpenProject(inputPath)
+					document.GenerateExpenses(acc.Expenses, c.String("output-folder"))
 					return nil
 				},
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name:    "expenses",
-						Aliases: []string{"e", "expense"},
-						Usage:   "path to expenses json file",
+						Name:    "input",
+						Aliases: []string{"i"},
+						Usage:   "acc project file",
 					},
 					&cli.StringFlag{
-						Name:    "invoice",
-						Aliases: []string{"i", "invoices"},
-						Usage:   "path to invoices json file",
+						Name:    "output-folder",
+						Aliases: []string{"output", "o"},
+						Value:   "documents",
+						Usage:   "path to the folder where the exported documents should be stored",
 					},
 				},
 			},
@@ -148,6 +156,36 @@ func main() {
 						Aliases: []string{"output", "o"},
 						Usage:   "path to the folder where the Acc project files should be written",
 					},
+				},
+			},
+			{
+				Name:    "validate",
+				Aliases: []string{"v"},
+				Usage:   "validates the current project",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:    "force",
+						Aliases: []string{"f"},
+						Usage:   "force overwrite of existing report",
+					},
+					&cli.StringFlag{
+						Name:    "input",
+						Aliases: []string{"i"},
+						Usage:   "acc project file",
+					},
+					&cli.StringFlag{
+						Name:    "report",
+						Aliases: []string{"r", "o"},
+						Usage:   "path for the report",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					outputPath := getPathOrExit(c, c.Bool("force"), "acc-report.txt", "report", "the validation report")
+					acc := schema.OpenProject(inputPath)
+					acc.ValidateAndReportProject(outputPath)
+					logrus.Info("report saved as ", outputPath)
+					return nil
 				},
 			},
 		},

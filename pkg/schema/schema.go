@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 )
 
-// Identifiable describes types which are uniquely identifiable trough out the data structure.
+// Identifiable describes types which are uniquely identifiable trough out the fonts structure.
 type Identifiable interface {
 	GetId() string
 }
@@ -18,7 +18,7 @@ type Completable interface {
 	SetId()
 }
 
-// SaveToJson writes the element (data) as a json file to the given path.
+// SaveToJson writes the element (fonts) as a json file to the given path.
 // Indented states whether «prettify» the json output.
 func SaveToJson(data interface{}, path string, indented bool) {
 	var raw []byte
