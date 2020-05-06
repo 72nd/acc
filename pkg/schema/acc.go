@@ -8,11 +8,10 @@ import (
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
 	"io/ioutil"
-	"gopkg.in/yaml.v2"
 	"path"
 )
 
-const DefaultAccFile = "acc.json"
+const DefaultAccFile = "acc.yaml"
 
 var DefaultProjectFiles = []string{
 	DefaultAccFile,
@@ -25,10 +24,10 @@ var DefaultProjectFiles = []string{
 type Acc struct {
 	// Company contains the information about the organisation which uses acc.
 	Company               Party         `yaml:"company" default:""`
-	ExpensesFilePath      string        `yaml:"expensesFilePath" default:"expenses.json"`
-	InvoicesFilePath      string        `yaml:"invoicesFilePath" default:"invoices.json"`
-	PartiesFilePath       string        `yaml:"partiesFilePath" default:"parties.json"`
-	BankStatementFilePath string        `yaml:"bankStatementFilePath" default:"bank.json"`
+	ExpensesFilePath      string        `yaml:"expensesFilePath" default:"expenses.yaml"`
+	InvoicesFilePath      string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
+	PartiesFilePath       string        `yaml:"partiesFilePath" default:"parties.yaml"`
+	BankStatementFilePath string        `yaml:"bankStatementFilePath" default:"bank.yaml"`
 	Expenses              Expenses      `yaml:"-"`
 	Invoices              Invoices      `yaml:"-"`
 	Parties               Parties       `yaml:"-"`
@@ -62,11 +61,11 @@ func NewProject(folderPath string, doSave, useDefaults bool) Acc {
 	stm := NewBankStatement()
 
 	if doSave {
-		acc.Save(path.Join(folderPath, DefaultAccFile), true)
-		exp.Save(path.Join(folderPath, DefaultExpensesFile), true)
-		inv.Save(path.Join(folderPath, DefaultInvoicesFile), true)
-		prt.Save(path.Join(folderPath, DefaultPartiesFile), true)
-		stm.Save(path.Join(folderPath, DefaultBankStatementFile), true)
+		acc.Save(path.Join(folderPath, DefaultAccFile))
+		exp.Save(path.Join(folderPath, DefaultExpensesFile))
+		inv.Save(path.Join(folderPath, DefaultInvoicesFile))
+		prt.Save(path.Join(folderPath, DefaultPartiesFile))
+		stm.Save(path.Join(folderPath, DefaultBankStatementFile))
 	}
 
 	return acc
@@ -97,17 +96,17 @@ func OpenProject(path string) Acc {
 
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
-func (a Acc) Save(path string, indented bool) {
-	SaveToYaml(a, path, indented)
+func (a Acc) Save(path string) {
+	SaveToYaml(a, path)
 }
 
 // SaveProject saves all files linked in the Acc config.
-func (a Acc) SaveProject(pth string, indented bool) {
-	a.Save(path.Join(pth, a.fileName), indented)
-	a.Expenses.Save(path.Join(pth, a.ExpensesFilePath), indented)
-	a.Invoices.Save(path.Join(pth, a.InvoicesFilePath), indented)
-	a.Parties.Save(path.Join(pth, a.PartiesFilePath), indented)
-	a.BankStatement.Save(path.Join(pth, a.BankStatementFilePath), indented)
+func (a Acc) SaveProject(pth string) {
+	a.Save(path.Join(pth, a.fileName))
+	a.Expenses.Save(path.Join(pth, a.ExpensesFilePath))
+	a.Invoices.Save(path.Join(pth, a.InvoicesFilePath))
+	a.Parties.Save(path.Join(pth, a.PartiesFilePath))
+	a.BankStatement.Save(path.Join(pth, a.BankStatementFilePath))
 }
 
 // Type returns a string with the type name of the element.

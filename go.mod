@@ -16,4 +16,5 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/urfave/cli/v2 v2.1.1
 	github.com/valyala/fasttemplate v1.1.0 // indirect
+	gopkg.in/yaml.v2 v2.2.2
 )

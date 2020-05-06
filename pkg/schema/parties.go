@@ -10,11 +10,11 @@ import (
 	"io/ioutil"
 )
 
-const DefaultPartiesFile = "parties.json"
+const DefaultPartiesFile = "parties.yaml"
 
 type Parties struct {
-	Employees []Party `json:"employees"`
-	Customers []Party `json:"customers"`
+	Employees []Party `yaml:"employees"`
+	Customers []Party `yaml:"customers"`
 }
 
 // NewParties returns a new Parties struct with the one Expense in it.
@@ -40,8 +40,8 @@ func OpenParties(path string) Parties {
 
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
-func (p Parties) Save(path string, indented bool) {
-	SaveToYaml(p, path, indented)
+func (p Parties) Save(path string) {
+	SaveToYaml(p, path)
 }
 
 // SetId sets a unique id to all elements in the struct.
@@ -77,14 +77,14 @@ func (p Parties) CustomerByIdentifier(ident string) (*Party, error) {
 // Party represents some person or organisation.
 type Party struct {
 	// Id is the internal unique identifier of the Expense.
-	Id string `json:"id" default:""`
+	Id string `yaml:"id" default:""`
 	// Identifier is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
-	Identifier string `json:"identifier" default:"c-1"`
-	Name       string `json:"name" default:"Max Mustermann"`
-	Street     string `json:"street" default:"Main Street"`
-	StreetNr   int    `json:"streetNr" default:"1"`
-	Place      string `json:"place" default:"Zurich"`
-	PostalCode int    `json:"postalCode" default:"8000"`
+	Identifier string `yaml:"identifier" default:"c-1"`
+	Name       string `yaml:"name" default:"Max Mustermann"`
+	Street     string `yaml:"street" default:"Main Street"`
+	StreetNr   int    `yaml:"streetNr" default:"1"`
+	Place      string `yaml:"place" default:"Zurich"`
+	PostalCode int    `yaml:"postalCode" default:"8000"`
 }
 
 // NewParty returns a new Party with the default values.

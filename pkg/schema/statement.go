@@ -10,14 +10,14 @@ import (
 	"io/ioutil"
 )
 
-const DefaultBankStatementFile = "bank-statement.json"
+const DefaultBankStatementFile = "bank-statement.yaml"
 
 // BankStatement represents a bank statement.
 type BankStatement struct {
-	Id           string        `json:"id" default:"-"`
-	Identifier   string        `json:"identifier" default:"e-19-01"`
-	Period       string        `json:"period" default:"2019"`
-	Transactions []Transaction `json:"transactions" default:"[]"`
+	Id           string        `yaml:"id" default:"-"`
+	Identifier   string        `yaml:"identifier" default:"e-19-01"`
+	Period       string        `yaml:"period" default:"2019"`
+	Transactions []Transaction `yaml:"transactions" default:"[]"`
 }
 
 // NewBankStatement returns a new BankStatement struct with the one Expense in it.
@@ -45,8 +45,8 @@ func OpenBankStatement(path string) BankStatement {
 
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
-func (s BankStatement) Save(path string, indented bool) {
-	SaveToYaml(s, path, indented)
+func (s BankStatement) Save(path string) {
+	SaveToYaml(s, path)
 }
 
 // SetId sets a unique id to all elements in the slice.
@@ -80,8 +80,8 @@ func (s BankStatement) Validate() util.ValidateResults {
 
 // Transaction represents a single transaction of a bank statement.
 type Transaction struct {
-	Id     string  `json:"id" default:""`
-	Amount float64 `json:"amount" default:"10.00"`
+	Id     string  `yaml:"id" default:""`
+	Amount float64 `yaml:"amount" default:"10.00"`
 }
 
 func NewTransaction() Transaction {

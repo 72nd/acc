@@ -205,6 +205,7 @@ func getPathOrExit(c *cli.Context, doOverwrite bool, fallback, flag, to string) 
 	if flag == "" {
 		if c.Args().Len() < 1 || c.Args().First() == "" {
 			if fallback == "" {
+				cli.ShowCommandHelp(c, c.Command.Name)
 				logrus.Fatalf("path to %s as first argument is needed", to)
 			}
 			logrus.Infof("as no path to %s is provided as first argument the default value (%s) will be used", to, fallback)
@@ -215,6 +216,7 @@ func getPathOrExit(c *cli.Context, doOverwrite bool, fallback, flag, to string) 
 	} else {
 		if c.String(flag) == "" {
 			if fallback == "" {
+				cli.ShowCommandHelp(c, c.Command.Name)
 				logrus.Fatalf("the flag -%s is needed as the path to %s", flag, to)
 			}
 			logrus.Infof("as no path to %s is provided with -%s the default value (%s) will be used", to, flag, fallback)

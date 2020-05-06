@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 )
 
-const DefaultInvoicesFile = "invoices.json"
+const DefaultInvoicesFile = "invoices.yaml"
 
 // Invoices is a slice of invoices.
 type Invoices []Invoice
@@ -35,8 +35,8 @@ func OpenInvoices(path string) Invoices {
 
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
-func (i *Invoices) Save(path string, indented bool) {
-	SaveToYaml(i, path, indented)
+func (i *Invoices) Save(path string) {
+	SaveToYaml(i, path)
 }
 
 // SetId sets a unique id to all elements in the slice.
@@ -49,25 +49,25 @@ func (i Invoices) SetId() {
 // Invoice represents an invoice sent to a customer for some services.
 type Invoice struct {
 	// Id is the internal unique identifier of the Expense.
-	Id string `json:"id" default:"1"`
+	Id string `yaml:"id" default:"1"`
 	// Identifier is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
-	Identifier string `json:"identifier" default:"i-19-1"`
+	Identifier string `yaml:"identifier" default:"i-19-1"`
 	// Name describes meaningful the kind of the Expense.
-	Name string `json:"name" default:"Expense Name"`
+	Name string `yaml:"name" default:"Expense Name"`
 	// Amount states the amount of the Expense.
-	Amount float64 `json:"amount" default:"10.00"`
+	Amount float64 `yaml:"amount" default:"10.00"`
 	// Path is the full path to the voucher pdf.
-	Path string `json:"path" default:"/path/to/file.pdf"`
+	Path string `yaml:"path" default:"/path/to/file.pdf"`
 	// CustomerId refers to the customer the invoice was sent to.
-	CustomerId string `json:"customerId" default:""`
+	CustomerId string `yaml:"customerId" default:""`
 	// SendDate states the date, the invoice was sent to the customer.
-	SendDate string `json:"sendDate" default:"2019-12-20"`
+	SendDate string `yaml:"sendDate" default:"2019-12-20"`
 	// DateOfSettlement states the date the customer paid the outstanding amount.
-	DateOfSettlement string `json:"dateOfSettlement" default:"2019-12-25"`
+	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
-	SettlementTransactionId string `json:"settlementTransactionId" default:""`
+	SettlementTransactionId string `yaml:"settlementTransactionId" default:""`
 	// ProjectName refers to the associated project of the expense.
-	ProjectName string `json:"projectName" default:""`
+	ProjectName string `yaml:"projectName" default:""`
 }
 
 // NewInvoice returns a new Acc element with the default values.
