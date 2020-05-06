@@ -44,7 +44,7 @@ func main() {
 
 							dump := bimpf.OpenDump(dumpPath)
 							project := dump.Convert(outPath, ncPath)
-							project.SaveProject(outPath, !c.Bool("no-indentation"))
+							project.SaveProject(outPath)
 							return nil
 						},
 						Flags: []cli.Flag{
@@ -66,10 +66,6 @@ func main() {
 								Name:    "nextcloud-folder",
 								Aliases: []string{"n", "nc-folder"},
 								Usage:   "path to nextcloud project folder which is used by Bimpf",
-							},
-							&cli.BoolFlag{
-								Name:  "no-indentation",
-								Usage: "suppress indentation of the output JSON files",
 							},
 							&cli.StringFlag{
 								Name:    "output-folder",
