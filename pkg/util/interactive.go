@@ -9,10 +9,8 @@ import (
 	"strings"
 )
 
-func AskString(reader *bufio.Reader, name, defaultValue string) string {
-	fmt.Printf("%s%s %s\n--> ", aurora.Bold(name), aurora.Bold(" (text)"), aurora.Italic(fmt.Sprintf("default: «%s» (choose default with enter)", defaultValue)))
-	input, _ := reader.ReadString('\n')
-	input = strings.Replace(input, "\n", "", -1)
+func AskString(reader *bufio.Reader, name, desc, defaultValue string) string {
+	input := simplePrompt(reader, name, "string", desc, defaultValue)
 	if input == "" {
 		return defaultValue
 	}
@@ -29,10 +27,8 @@ func SetStringFieldFromList(reader *bufio.Reader, field *string, name string, sh
 }
 */
 
-func AskInt(reader *bufio.Reader, name string, defaultValue int) int {
-	fmt.Printf("%s%s %s\n--> ", aurora.Bold(name), aurora.Bold(" (int)"), aurora.Italic(fmt.Sprintf("default: «%d» (choose default with enter)", defaultValue)))
-	input, _ := reader.ReadString('\n')
-	input = strings.Replace(input, "\n", "", -1)
+func AskInt(reader *bufio.Reader, name, desc string, defaultValue int) int {
+	input := simplePrompt(reader, name, "int", desc, string(defaultValue))
 	if input == "" {
 		return defaultValue
 	}
@@ -40,12 +36,12 @@ func AskInt(reader *bufio.Reader, name string, defaultValue int) int {
 	value, err := strconv.Atoi(input)
 	if err != nil {
 		logrus.Warn("Could not parse input as a number (int)")
-		return AskInt(reader, name, defaultValue)
+		return AskInt(reader, name, desc, defaultValue)
 	}
 	return value
 }
 
-func AskIntWithHelp(reader *bufio.Reader, name string, defaultValue int, showList bool, possible map[int]string) int{
+func AskIntWithHelp(reader *bufio.Reader, name string, defaultValue int, showList bool, possible map[int]string) int {
 	if showList {
 		fmt.Printf("%s%s %s", aurora.Bold(name), aurora.Bold(" (int)"), aurora.Italic("Possibilities:"))
 		for value, explanation := range possible {
@@ -83,10 +79,8 @@ func AskIntWithHelp(reader *bufio.Reader, name string, defaultValue int, showLis
 	return value
 }
 
-func AskBool(reader *bufio.Reader, name string, defaultValue bool) bool {
-	fmt.Printf("%s%s %s\n--> ", aurora.Bold(name), aurora.Bold(" (bool)"), aurora.Italic(fmt.Sprintf("default: «%t» (choose default with enter)", defaultValue)))
-	input, _ := reader.ReadString('\n')
-	input = strings.Replace(input, "\n", "", -1)
+func AskBool(reader *bufio.Reader, name, desc string, defaultValue bool) bool {
+	input := simplePrompt(reader, name, "bool", desc, strconv.FormatBool(defaultValue))
 	if input == "" {
 		return defaultValue
 	}
@@ -97,14 +91,12 @@ func AskBool(reader *bufio.Reader, name string, defaultValue bool) bool {
 		return false
 	} else {
 		logrus.Warn("Could not parse input as a boolean value (bool). Please use y/1/true or n/0/false")
-		return AskBool(reader, name, defaultValue)
+		return AskBool(reader, name, desc, defaultValue)
 	}
 }
 
-func AskFloat(reader *bufio.Reader, name string, defaultValue float64) float64 {
-	fmt.Printf("%s%s %s\n--> ", aurora.Bold(name), aurora.Bold(" (float)"), aurora.Italic(fmt.Sprintf("default: «%f» (choose default with enter)", defaultValue)))
-	input, _ := reader.ReadString('\n')
-	input = strings.Replace(input, "\n", "", -1)
+func AskFloat(reader *bufio.Reader, name, desc string, defaultValue float64) float64 {
+	input := simplePrompt(reader, name, "int", desc, fmt.Sprintf("%f", defaultValue))
 	if input == "" {
 		return defaultValue
 	}
@@ -112,7 +104,17 @@ func AskFloat(reader *bufio.Reader, name string, defaultValue float64) float64 {
 	value, err := strconv.ParseFloat(input, 32)
 	if err != nil {
 		logrus.Warn("Could not parse input as a floating number (float)")
-		return AskFloat(reader, name, defaultValue)
+		return AskFloat(reader, name, desc, defaultValue)
 	}
 	return value
+}
+
+func simplePrompt(reader *bufio.Reader, name, typeName, desc, defaultValue string) string {
+	fmt.Printf("%s%s %s %s\n--> ",
+		aurora.BrightCyan(aurora.Bold(name)),
+		aurora.BrightCyan(fmt.Sprintf(" (%s)", typeName)),
+		aurora.Yellow(fmt.Sprintf("%s", desc)),
+		aurora.Green(fmt.Sprintf("Enter for default (%s)", defaultValue)))
+	input, _ := reader.ReadString('\n')
+	return strings.Replace(input, "\n", "", -1)
 }

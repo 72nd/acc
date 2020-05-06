@@ -4,12 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/creasty/defaults"
-	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -48,6 +49,26 @@ func (e Expenses) SetId() {
 	for i := range e {
 		e[i].SetId()
 	}
+}
+
+// SuggestNextIdentifier tries to suggest the next identifier. In the moment this only works if all given Identifiers end with a increasing number at the end.
+func (e Expenses) SuggestNextIdentifier() string {
+	r := regexp.MustCompile(`(\d+)$`)
+	max := 0
+	for i := range e {
+		rsl := r.FindAllString(e[i].Identifier, -1)
+		if len(rsl) != 1 {
+			continue
+		}
+		val, err := strconv.Atoi(rsl[0])
+		if err != nil {
+			logrus.Debugf("regex to find last number in identifier returned something else than a int (%+v), take a look: %s", rsl, err)
+		}
+		if max < val {
+			max = val
+		}
+	}
+	return fmt.Sprintf("%s%d", DefaultExpensePrefix, max+1)
 }
 
 // Expense represents a payment done by the company or a third party to assure the ongoing of the business.
@@ -91,17 +112,19 @@ func NewExpense() Expense {
 
 func NewExpenseWithUuid() Expense {
 	exp := NewExpense()
-	exp.Id = ""
-	exp.SetId()
+	exp.Id = GetUuid()
 	return exp
 }
 
 // InteractiveNewExpense returns a new Expense based on the user input.
-func InteractiveNewExpense() Expense {
+func InteractiveNewExpense(e Expenses) Expense {
 	reader := bufio.NewReader(os.Stdin)
-	exp := NewExpenseWithUuid()
 	fmt.Println("Add new expense")
-	util.AskString(reader, &exp.Identifier, "Unique human readable identifier")
+	exp := NewExpenseWithUuid()
+	exp.Identifier = util.AskString(reader, "Identifier", "Unique human readable identifier", e.SuggestNextIdentifier())
+	exp.Name = util.AskString(reader, "Name", "Name for the expense", "HAL 9000")
+	exp.Amount = util.AskFloat(reader, "Amount", "How much did you spend?", 23.42)
+	// util.AskString(reader, &exp.Identifier, "Unique human readable identifier")
 	return exp
 }
 
@@ -115,7 +138,7 @@ func (e *Expense) SetId() {
 	if e.Id != "" {
 		return
 	}
-	e.Id = uuid.Must(uuid.NewRandom()).String()
+	e.Id = GetUuid()
 }
 
 // Type returns a string with the type name of the element.

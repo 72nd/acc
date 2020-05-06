@@ -161,8 +161,10 @@ func main() {
 							switch elementType {
 							case "expense":
 								if useDefault {
-									acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense())
+									acc.Expenses = append(acc.Expenses, schema.NewExpenseWithUuid())
+									break
 								}
+								acc. Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc.Expenses))
 							case "invoice":
 								fmt.Println("add invoice")
 							case "party":

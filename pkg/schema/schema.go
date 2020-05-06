@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -30,4 +31,8 @@ func SaveToYaml(data interface{}, path string) {
 	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
 		logrus.Fatalf("error writing file %s: %s", path, err)
 	}
+}
+
+func GetUuid() string {
+	return uuid.Must(uuid.NewRandom()).String()
 }
