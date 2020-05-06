@@ -25,9 +25,9 @@ func SaveToYaml(data interface{}, path string) {
 	var err error
 	raw, err = yaml.Marshal(data)
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatalf("error converting data from file %s to YAML (marshalling): %s", path, err)
 	}
 	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
-		logrus.Fatal(err)
+		logrus.Fatalf("error writing file %s: %s", path, err)
 	}
 }

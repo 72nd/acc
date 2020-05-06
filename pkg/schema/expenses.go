@@ -1,17 +1,20 @@
 package schema
 
 import (
-	"encoding/json"
+	"bufio"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
 const DefaultExpensesFile = "expenses.yaml"
+const DefaultExpensePrefix = "e-"
 
 // Expenses is a slice of multiple expenses.
 type Expenses []Expense
@@ -25,11 +28,11 @@ func NewExpenses() Expenses {
 func OpenExpenses(path string) Expenses {
 	raw, err := ioutil.ReadFile(path)
 	if err != nil {
-		logrus.Fatal(err)
+		logrus.Fatalf("error while reading file %s: %s", path, err)
 	}
 	exp := Expenses{}
-	if err := json.Unmarshal(raw, &exp); err != nil {
-		logrus.Fatal(err)
+	if err := yaml.Unmarshal(raw, &exp); err != nil {
+		logrus.Fatalf("error reading (unmarshalling) YAML file %s: %s", path, err)
 	}
 	return exp
 }
@@ -83,6 +86,22 @@ func NewExpense() Expense {
 	if err := defaults.Set(&exp); err != nil {
 		logrus.Fatal(err)
 	}
+	return exp
+}
+
+func NewExpenseWithUuid() Expense {
+	exp := NewExpense()
+	exp.Id = ""
+	exp.SetId()
+	return exp
+}
+
+// InteractiveNewExpense returns a new Expense based on the user input.
+func InteractiveNewExpense() Expense {
+	reader := bufio.NewReader(os.Stdin)
+	exp := NewExpenseWithUuid()
+	fmt.Println("Add new expense")
+	util.AskString(reader, &exp.Identifier, "Unique human readable identifier")
 	return exp
 }
 

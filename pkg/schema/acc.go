@@ -2,13 +2,14 @@
 package schema
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"path"
+	"path/filepath"
 )
 
 const DefaultAccFile = "acc.yaml"
@@ -33,6 +34,7 @@ type Acc struct {
 	Parties               Parties       `yaml:"-"`
 	BankStatement         BankStatement `yaml:"-"`
 	fileName              string        `yaml:"-"`
+	projectFolder         string        `yaml:"-"`
 }
 
 // NewAcc returns a new Acc element with the default values.
@@ -78,9 +80,11 @@ func OpenAcc(path string) Acc {
 		logrus.Fatal(err)
 	}
 	acc := Acc{}
-	if err := json.Unmarshal(raw, &acc); err != nil {
+	if err := yaml.Unmarshal(raw, &acc); err != nil {
 		logrus.Fatal(err)
 	}
+	acc.fileName = filepath.Base(path)
+	acc.projectFolder = filepath.Dir(path)
 	return acc
 }
 
@@ -100,8 +104,12 @@ func (a Acc) Save(path string) {
 	SaveToYaml(a, path)
 }
 
-// SaveProject saves all files linked in the Acc config.
-func (a Acc) SaveProject(pth string) {
+func (a Acc) SaveProject() {
+	a.SaveProjectToFolder(a.projectFolder)
+}
+
+// SaveProjectToFolder saves all files linked in the Acc config to the given folder.
+func (a Acc) SaveProjectToFolder(pth string) {
 	a.Save(path.Join(pth, a.fileName))
 	a.Expenses.Save(path.Join(pth, a.ExpensesFilePath))
 	a.Invoices.Save(path.Join(pth, a.InvoicesFilePath))
@@ -144,19 +152,19 @@ func (a Acc) Conditions() util.Conditions {
 		},
 		{
 			Condition: a.ExpensesFilePath == "",
-			Message: "path to expenses file is not set (ExpensesFilePath is empty)",
+			Message:   "path to expenses file is not set (ExpensesFilePath is empty)",
 		},
 		{
 			Condition: a.InvoicesFilePath == "",
-			Message: "path to invoices file is not set (InvoicesFilePath is empty)",
+			Message:   "path to invoices file is not set (InvoicesFilePath is empty)",
 		},
 		{
 			Condition: a.PartiesFilePath == "",
-			Message: "path to parties file is not set (PartiesFilePath is empty)",
+			Message:   "path to parties file is not set (PartiesFilePath is empty)",
 		},
 		{
 			Condition: a.BankStatementFilePath == "",
-			Message: "path to bank statement file is not set (BankStatementFilePath is empty)",
+			Message:   "path to bank statement file is not set (BankStatementFilePath is empty)",
 		},
 	}
 }
@@ -165,7 +173,6 @@ func (a Acc) Conditions() util.Conditions {
 func (a Acc) Validate() util.ValidateResults {
 	return []util.ValidateResult{util.Check(a)}
 }
-
 
 func (a Acc) ValidateProject() util.ValidateResults {
 	results := a.Validate()
@@ -184,4 +191,3 @@ func (a Acc) ValidateAndReportProject(path string) {
 	}
 	rpt.Write(path)
 }
-

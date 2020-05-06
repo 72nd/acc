@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"gitlab.com/72th/acc/pkg/bimpf"
@@ -44,7 +45,7 @@ func main() {
 
 							dump := bimpf.OpenDump(dumpPath)
 							project := dump.Convert(outPath, ncPath)
-							project.SaveProject(outPath)
+							project.SaveProjectToFolder(outPath)
 							return nil
 						},
 						Flags: []cli.Flag{
@@ -139,12 +140,65 @@ func main() {
 				},
 			},
 			{
+				Name:    "edit",
+				Aliases: []string{"edt", "e"},
+				Usage:   "edit an acc project via the command line interface",
+				Action: func(c *cli.Context) error {
+					_ = cli.ShowCommandHelp(c, c.Command.Name)
+					return nil
+				},
+				Subcommands: []*cli.Command{
+					{
+						Name:    "add",
+						Aliases: []string{"a"},
+						Usage:   "add ",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							elementType := getValidValueOrExit(c, "type", []string{"expense", "invoice", "party"})
+							useDefault := c.Bool("default")
+							acc := schema.OpenProject(inputPath)
+
+							switch elementType {
+							case "expense":
+								if useDefault {
+									acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense())
+								}
+							case "invoice":
+								fmt.Println("add invoice")
+							case "party":
+								fmt.Println("add party")
+							}
+							acc.SaveProject()
+							return nil
+						},
+						Flags: []cli.Flag{
+							&cli.BoolFlag{
+								Name:    "default",
+								Aliases: []string{"d", "default-values"},
+								Usage:   "use default values and do not use interactive input",
+							},
+							&cli.StringFlag{
+								Name:    "input",
+								Aliases: []string{"i"},
+								Usage:   "acc project file",
+							},
+							&cli.StringFlag{
+								Name:     "type",
+								Aliases:  []string{"t"},
+								Usage:    "type of element to be added (expense, invoice, party)",
+								Required: true,
+							},
+						},
+					},
+				},
+			},
+			{
 				Name:    "new",
-				Aliases: []string{"n", "create"},
+				Aliases: []string{"n", "nw", "create"},
 				Usage:   "generates a new acc project with all needed files, use sub-commands to create only a subset",
 				Action: func(c *cli.Context) error {
 					outputPath := getFolderPath(c, "output-folder", c.Bool("force"), true)
-					schema.NewProject(outputPath, false, true)
+					schema.NewProject(outputPath, true, true)
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -197,6 +251,22 @@ func main() {
 	}
 }
 
+// validValueOrExit checks the existence of a given string flag and it's content against a list of allowed variables.
+// If both tests are positive the function returns the content of the flag otherwise it quits the application.
+func getValidValueOrExit(c *cli.Context, flag string, allowed []string) string {
+	content := c.String(flag)
+	if content == "" {
+		logrus.Fatalf("flag %s has to be provided", flag)
+	}
+	for i := range allowed {
+		if allowed[i] == content {
+			return content
+		}
+	}
+	logrus.Fatalf("flag %s was provided with an illegal value (%s). Allowed: %+v", flag, content, allowed)
+	return ""
+}
+
 // getPathOrExit reads the content of the first argument or a given string flag and validates it.
 // The application will exit, when the argument is not provided or the file already exists but doOverwrite is false.
 // When a fallback path is provided it will be used when the user input is empty.
@@ -205,7 +275,7 @@ func getPathOrExit(c *cli.Context, doOverwrite bool, fallback, flag, to string) 
 	if flag == "" {
 		if c.Args().Len() < 1 || c.Args().First() == "" {
 			if fallback == "" {
-				cli.ShowCommandHelp(c, c.Command.Name)
+				_ = cli.ShowCommandHelp(c, c.Command.Name)
 				logrus.Fatalf("path to %s as first argument is needed", to)
 			}
 			logrus.Infof("as no path to %s is provided as first argument the default value (%s) will be used", to, fallback)
@@ -216,7 +286,7 @@ func getPathOrExit(c *cli.Context, doOverwrite bool, fallback, flag, to string) 
 	} else {
 		if c.String(flag) == "" {
 			if fallback == "" {
-				cli.ShowCommandHelp(c, c.Command.Name)
+				_ = cli.ShowCommandHelp(c, c.Command.Name)
 				logrus.Fatalf("the flag -%s is needed as the path to %s", flag, to)
 			}
 			logrus.Infof("as no path to %s is provided with -%s the default value (%s) will be used", to, flag, fallback)

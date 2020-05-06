@@ -7,8 +7,8 @@ require (
 	github.com/akavel/rsrc v0.9.0 // indirect
 	github.com/creasty/defaults v1.3.0
 	github.com/daaku/go.zipexe v1.0.1 // indirect
-	github.com/go-bindata/go-bindata v3.1.2+incompatible
 	github.com/google/uuid v1.1.1
+	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/nkovacs/streamquote v1.0.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/phpdave11/gofpdi v1.0.8

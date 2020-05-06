@@ -1,12 +1,12 @@
 package schema
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
 
@@ -27,7 +27,7 @@ func OpenInvoices(path string) Invoices {
 		logrus.Fatal(err)
 	}
 	inv := Invoices{}
-	if err := json.Unmarshal(raw, &inv); err != nil {
+	if err := yaml.Unmarshal(raw, &inv); err != nil {
 		logrus.Fatal(err)
 	}
 	return inv

@@ -1,12 +1,12 @@
 package schema
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
 
@@ -32,7 +32,7 @@ func OpenParties(path string) Parties {
 		logrus.Fatal(err)
 	}
 	pty := Parties{}
-	if err := json.Unmarshal(raw, &pty); err != nil {
+	if err := yaml.Unmarshal(raw, &pty); err != nil {
 		logrus.Fatal(err)
 	}
 	return pty

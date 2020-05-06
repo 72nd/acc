@@ -1,12 +1,12 @@
 package schema
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 )
 
@@ -37,7 +37,7 @@ func OpenBankStatement(path string) BankStatement {
 		logrus.Fatal(err)
 	}
 	stm := BankStatement{}
-	if err := json.Unmarshal(raw, &stm); err != nil {
+	if err := yaml.Unmarshal(raw, &stm); err != nil {
 		logrus.Fatal(err)
 	}
 	return stm
