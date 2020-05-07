@@ -41,7 +41,12 @@ func AskString(reader *bufio.Reader, name, desc, defaultValue string) string {
 
 func AskStringFromSearch(reader *bufio.Reader, name, desc string, searchItems SearchItems) string {
 	input := searchPrompt(reader, name, desc)
-	return input
+	rsl := searchItems.Match(input)
+	identifier, redo := searchItemsPrompt(reader, rsl, true)
+	if redo {
+		return AskStringFromSearch(reader, name, desc, searchItems)
+	}
+	return identifier
 }
 
 func AskStringFromList(reader *bufio.Reader, name, desc string, showList bool, values map[string]string) string {
@@ -164,13 +169,42 @@ func simplePrompt(reader *bufio.Reader, name, typeName, desc, defaultValue strin
 
 func searchPrompt(reader *bufio.Reader, name, desc string) string {
 	fmt.Printf("%s %s: ",
-		aurora.BrightCyan(fmt.Sprintf("Search for %s", aurora.Bold(name))),
+		aurora.BrightCyan(fmt.Sprintf("Search for a %s", aurora.Bold(name))),
 		aurora.Yellow(fmt.Sprintf("(%s)", desc)))
 	input, _ := reader.ReadString('\n')
 	return strings.Replace(input, "\n", "", -1)
 }
 
-func searchItemsPrompt(reader *bufio.Reader, items SearchItems) string {
-	return ""
-}
+func searchItemsPrompt(reader *bufio.Reader, items SearchItems, showList bool) (result string, back bool) {
+	if len(items) == 0 {
+		fmt.Printf("%s: ", aurora.BrightCyan("No entry found, 'T' for free text, any other key for search again"))
+		input, _ := reader.ReadString('\n')
+		if input == "T\n" {
+			fmt.Print("--> ")
+			input, _ := reader.ReadString('\n')
+			return strings.Replace(input, "\n", "", -1), false
+		}
+		return "", true
+	}
+	if showList {
+		for i := range items {
+			fmt.Printf("%s %s %s\n",
+				aurora.Yellow(fmt.Sprintf("%d)", i+1)),
+				items[i].Name,
+				aurora.Green(fmt.Sprintf("(%s)", items[i].Identifier)))
+		}
+	}
+	fmt.Printf("%s ", aurora.BrightCyan("Choose item, 'S' to search again:"))
+	input, _ := reader.ReadString('\n')
+	input = strings.Replace(input, "\n", "", -1)
+	if input == "S" {
+		return "", true
+	}
 
+	value, err := strconv.Atoi(input)
+	if err != nil || value < 1 || value > len(items) {
+		logrus.Error("invalid input, try again")
+		return searchItemsPrompt(reader, items, false)
+	}
+	return items[value-1].Identifier, false
+}
