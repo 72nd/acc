@@ -122,18 +122,79 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Add new expense")
 	exp := NewExpenseWithUuid()
-	print(util.AskStringFromSearch(reader, "Test", "foo", a.Parties.CustomersSearchItems()))
-	exp.Identifier = util.AskString(reader, "Identifier", "Unique human readable identifier", a.Expenses.SuggestNextIdentifier())
-	exp.Name = util.AskString(reader, "Name", "Name for the expense", "HAL 9000")
-	exp.Amount = util.AskFloat(reader, "Amount", "How much did you spend?", 23.42)
+	exp.Identifier = util.AskString(
+		reader,
+		"Identifier",
+		"Unique human readable identifier",
+		a.Expenses.SuggestNextIdentifier(),
+	)
+	exp.Name = util.AskString(reader,
+		"Name",
+		"Name for the expense",
+		"HAL 9000",
+	)
+	exp.Amount = util.AskFloat(reader,
+		"Amount",
+		"How much did you spend?",
+		23.42,
+	)
 	if asset == "" {
-		exp.Path = util.AskString(reader, "Asset", "Path to asset file (use --asset to set with flag)", "")
+		exp.Path = util.AskString(
+			reader,
+			"Asset",
+			"Path to asset file (use --asset to set with flag)",
+			"",
+		)
 	} else {
 		exp.Path = asset
 	}
-	exp.DateOfAccrual = util.AskDate(reader, "Date of Accrual", "Date when the obligation accrued", time.Now())
-	exp.Billable = util.AskBool(reader, "Billable?", "Is expense billable to customer?", false)
-	// util.AskString(reader, &exp.Identifier, "Unique human readable identifier")
+	exp.DateOfAccrual = util.AskDate(reader,
+		"Date of Accrual",
+		"Date when the obligation accrued",
+		time.Now(),
+	)
+	exp.Billable = util.AskBool(
+		reader,
+		"Billable?",
+		"Is expense billable to customer?",
+		false,
+	)
+	if exp.Billable {
+		exp.ObligedCustomerId = util.AskStringFromSearch(
+			reader,
+			"Obliged Customer",
+			"Customer which has to pay this expense",
+			a.Parties.CustomersSearchItems(),
+		)
+	} else {
+		exp.ObligedCustomerId = ""
+	}
+	exp.AdvancedByThirdParty = util.AskBool(
+		reader,
+		"Advanced?",
+		"Was this expense advanced by some third party (ex: employee)?",
+		false,
+	)
+	if exp.AdvancedByThirdParty {
+		exp.AdvancedThirdPartyId = util.AskStringFromSearch(
+			reader,
+			"Advanced party",
+			"Employee which advanced the expense",
+			a.Parties.EmployeesSearchItems(),
+		)
+	}
+	exp.DateOfSettlement = util.AskDate(
+		reader,
+		"Date of settelment",
+		"Date when the obligation was settelt for the company",
+		time.Now(),
+	)
+	exp.ProjectName = util.AskString(
+		reader,
+		"Project Name",
+		"Name of the assiciated project",
+		"",
+	)
 	return exp
 }
 

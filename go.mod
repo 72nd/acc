@@ -9,7 +9,6 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/lithammer/fuzzysearch v1.1.0
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
-	github.com/manifoldco/promptui v0.7.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/phpdave11/gofpdi v1.0.8
 	github.com/signintech/gopdf v0.9.5

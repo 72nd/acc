@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const IsoLayout = "2006-01-02"
+const GermanLayout = "02-01-2006"
 
 type SearchItems []SearchItem
 
@@ -40,7 +40,12 @@ func AskString(reader *bufio.Reader, name, desc, defaultValue string) string {
 }
 
 func AskStringFromSearch(reader *bufio.Reader, name, desc string, searchItems SearchItems) string {
-	input := searchPrompt(reader, name, desc)
+	input, freeText, empty := searchPrompt(reader, name, desc)
+	if freeText {
+		return AskString(reader, name, desc, "")
+	} else if empty {
+		return ""
+	}
 	rsl := searchItems.Match(input)
 	identifier, redo := searchItemsPrompt(reader, rsl, true)
 	if redo {
@@ -145,16 +150,33 @@ func AskFloat(reader *bufio.Reader, name, desc string, defaultValue float64) flo
 }
 
 func AskDate(reader *bufio.Reader, name, desc string, defaultValue time.Time) string {
-	input := simplePrompt(reader, name, IsoLayout, desc, defaultValue.Format(IsoLayout))
-	if input == "" {
-		return defaultValue.Format(IsoLayout)
+	possibleLayouts := []string{
+		GermanLayout,
+		"01.02.2006",
+		"2006-01-02",
 	}
-	value, err := time.Parse(IsoLayout, input)
-	if err != nil {
-		logrus.Warnf("Could not parse input as date with format: %s", IsoLayout)
+	input, empty := simplePromptWithEmpty(reader, name, "DD-MM-YYYY", desc, defaultValue.Format(GermanLayout))
+	if empty {
+		return ""
+	}
+	if input == "" {
+		return defaultValue.Format(GermanLayout)
+	}
+	success := false
+	var value time.Time
+	for i := range possibleLayouts {
+		var err error
+		value, err = time.Parse(GermanLayout, possibleLayouts[i])
+		if err == nil {
+			success = true
+			break
+		}
+	}
+	if !success {
+		logrus.Warnf("Could not parse input as date with format: %s", GermanLayout)
 		return AskDate(reader, name, desc, defaultValue)
 	}
-	return value.Format(IsoLayout)
+	return value.Format(GermanLayout)
 }
 
 func simplePrompt(reader *bufio.Reader, name, typeName, desc, defaultValue string) string {
@@ -167,23 +189,36 @@ func simplePrompt(reader *bufio.Reader, name, typeName, desc, defaultValue strin
 	return strings.Replace(input, "\n", "", -1)
 }
 
-func searchPrompt(reader *bufio.Reader, name, desc string) string {
-	fmt.Printf("%s %s: ",
-		aurora.BrightCyan(fmt.Sprintf("Search for a %s", aurora.Bold(name))),
-		aurora.Yellow(fmt.Sprintf("(%s)", desc)))
+func simplePromptWithEmpty(reader *bufio.Reader, name, typeName, desc, defaultValue string) (value string, empty bool) {
+	fmt.Printf("%s%s %s %s\n--> ",
+		aurora.BrightCyan(aurora.Bold(name)),
+		aurora.BrightCyan(fmt.Sprintf(" (%s)", typeName)),
+		aurora.Yellow(fmt.Sprintf("%s", desc)),
+		aurora.Green(fmt.Sprintf("Enter for default (%s), 'E' for empty", defaultValue)))
 	input, _ := reader.ReadString('\n')
-	return strings.Replace(input, "\n", "", -1)
+	if input == "E\n" {
+		return "", true
+	}
+	return strings.Replace(input, "\n", "", -1), true
+}
+
+func searchPrompt(reader *bufio.Reader, name, desc string) (value string, freeText bool, empty bool) {
+	fmt.Printf("%s %s %s: ",
+		aurora.BrightCyan(fmt.Sprintf("Search for a %s", aurora.Bold(name))),
+		aurora.Yellow(fmt.Sprintf("(%s)", desc)),
+		aurora.Green("'T' for free text form, 'E' for empty"))
+	input, _ := reader.ReadString('\n')
+	if input == "T\n" {
+		return "", true, false
+	} else if input == "E\n" {
+		return "", false, true
+	}
+	return strings.Replace(input, "\n", "", -1), false, false
 }
 
 func searchItemsPrompt(reader *bufio.Reader, items SearchItems, showList bool) (result string, back bool) {
 	if len(items) == 0 {
-		fmt.Printf("%s: ", aurora.BrightCyan("No entry found, 'T' for free text, any other key for search again"))
-		input, _ := reader.ReadString('\n')
-		if input == "T\n" {
-			fmt.Print("--> ")
-			input, _ := reader.ReadString('\n')
-			return strings.Replace(input, "\n", "", -1), false
-		}
+		fmt.Printf("%s: ", aurora.BrightCyan("No entry found."))
 		return "", true
 	}
 	if showList {

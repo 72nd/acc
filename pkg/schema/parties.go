@@ -128,7 +128,7 @@ func NewCompanyParty(useDefaults bool) Party {
 
 func (p Party) SearchItem() util.SearchItem {
 	return util.SearchItem{
-		Name:       p.String(),
+		Name:       p.Name,
 		Identifier: p.Identifier,
 		Value:      fmt.Sprintf("%s %s %s", p.Name, p.Identifier, p.Place),
 	}
