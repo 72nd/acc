@@ -3,11 +3,33 @@ package util
 import (
 	"bufio"
 	"fmt"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
+	"time"
 )
+
+const IsoLayout = "2006-01-02"
+
+type SearchItems []SearchItem
+
+func (s SearchItems) Match(search string) SearchItems {
+	var result SearchItems
+	for i := range s {
+		if fuzzy.MatchFold(search, s[i].Value) {
+			result = append(result, s[i])
+		}
+	}
+	return result
+}
+
+type SearchItem struct {
+	Name       string
+	Identifier string
+	Value      string
+}
 
 func AskString(reader *bufio.Reader, name, desc, defaultValue string) string {
 	input := simplePrompt(reader, name, "string", desc, defaultValue)
@@ -15,6 +37,15 @@ func AskString(reader *bufio.Reader, name, desc, defaultValue string) string {
 		return defaultValue
 	}
 	return input
+}
+
+func AskStringFromSearch(reader *bufio.Reader, name, desc string, searchItems SearchItems) string {
+	input := searchPrompt(reader, name, desc)
+	return input
+}
+
+func AskStringFromList(reader *bufio.Reader, name, desc string, showList bool, values map[string]string) string {
+	return ""
 }
 
 /**
@@ -32,7 +63,6 @@ func AskInt(reader *bufio.Reader, name, desc string, defaultValue int) int {
 	if input == "" {
 		return defaultValue
 	}
-
 	value, err := strconv.Atoi(input)
 	if err != nil {
 		logrus.Warn("Could not parse input as a number (int)")
@@ -109,6 +139,19 @@ func AskFloat(reader *bufio.Reader, name, desc string, defaultValue float64) flo
 	return value
 }
 
+func AskDate(reader *bufio.Reader, name, desc string, defaultValue time.Time) string {
+	input := simplePrompt(reader, name, IsoLayout, desc, defaultValue.Format(IsoLayout))
+	if input == "" {
+		return defaultValue.Format(IsoLayout)
+	}
+	value, err := time.Parse(IsoLayout, input)
+	if err != nil {
+		logrus.Warnf("Could not parse input as date with format: %s", IsoLayout)
+		return AskDate(reader, name, desc, defaultValue)
+	}
+	return value.Format(IsoLayout)
+}
+
 func simplePrompt(reader *bufio.Reader, name, typeName, desc, defaultValue string) string {
 	fmt.Printf("%s%s %s %s\n--> ",
 		aurora.BrightCyan(aurora.Bold(name)),
@@ -118,3 +161,16 @@ func simplePrompt(reader *bufio.Reader, name, typeName, desc, defaultValue strin
 	input, _ := reader.ReadString('\n')
 	return strings.Replace(input, "\n", "", -1)
 }
+
+func searchPrompt(reader *bufio.Reader, name, desc string) string {
+	fmt.Printf("%s %s: ",
+		aurora.BrightCyan(fmt.Sprintf("Search for %s", aurora.Bold(name))),
+		aurora.Yellow(fmt.Sprintf("(%s)", desc)))
+	input, _ := reader.ReadString('\n')
+	return strings.Replace(input, "\n", "", -1)
+}
+
+func searchItemsPrompt(reader *bufio.Reader, items SearchItems) string {
+	return ""
+}
+

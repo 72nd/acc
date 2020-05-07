@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const DefaultExpensesFile = "expenses.yaml"
@@ -117,13 +118,21 @@ func NewExpenseWithUuid() Expense {
 }
 
 // InteractiveNewExpense returns a new Expense based on the user input.
-func InteractiveNewExpense(e Expenses) Expense {
+func InteractiveNewExpense(a Acc, asset string) Expense {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Println("Add new expense")
 	exp := NewExpenseWithUuid()
-	exp.Identifier = util.AskString(reader, "Identifier", "Unique human readable identifier", e.SuggestNextIdentifier())
+	print(util.AskStringFromSearch(reader, "Test", "foo", a.Parties.CustomersSearchItems()))
+	exp.Identifier = util.AskString(reader, "Identifier", "Unique human readable identifier", a.Expenses.SuggestNextIdentifier())
 	exp.Name = util.AskString(reader, "Name", "Name for the expense", "HAL 9000")
 	exp.Amount = util.AskFloat(reader, "Amount", "How much did you spend?", 23.42)
+	if asset == "" {
+		exp.Path = util.AskString(reader, "Asset", "Path to asset file (use --asset to set with flag)", "")
+	} else {
+		exp.Path = asset
+	}
+	exp.DateOfAccrual = util.AskDate(reader, "Date of Accrual", "Date when the obligation accrued", time.Now())
+	exp.Billable = util.AskBool(reader, "Billable?", "Is expense billable to customer?", false)
 	// util.AskString(reader, &exp.Identifier, "Unique human readable identifier")
 	return exp
 }

@@ -36,3 +36,5 @@ func SaveToYaml(data interface{}, path string) {
 func GetUuid() string {
 	return uuid.Must(uuid.NewRandom()).String()
 }
+
+

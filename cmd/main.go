@@ -164,7 +164,7 @@ func main() {
 									acc.Expenses = append(acc.Expenses, schema.NewExpenseWithUuid())
 									break
 								}
-								acc. Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc.Expenses))
+								acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc, c.String("asset")))
 							case "invoice":
 								fmt.Println("add invoice")
 							case "party":
@@ -174,6 +174,11 @@ func main() {
 							return nil
 						},
 						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:    "asset",
+								Aliases: []string{"a"},
+								Usage:   "path to the asset file",
+							},
 							&cli.BoolFlag{
 								Name:    "default",
 								Aliases: []string{"d", "default-values"},

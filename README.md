@@ -18,8 +18,9 @@ Hint: You can dump the data of [Bimpf](https://gitlab.com/solutionsbuero/bimpf) 
 git clone https://gitlab.com/solutionsbuero/bimpf.git
 cd bimpf
 python3 -m venv init .
-source bin/activate
+source venv/bin/activate
 pip3 install -r requirements.txt
+python3 setup.py install
 python3 bimpf/cli/__main__.py dump.json
 ```
 

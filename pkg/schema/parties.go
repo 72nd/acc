@@ -74,6 +74,22 @@ func (p Parties) CustomerByIdentifier(ident string) (*Party, error) {
 	return nil, fmt.Errorf("no customer for identifier «%s» found", ident)
 }
 
+func (p Parties) EmployeesSearchItems() util.SearchItems {
+	result := make(util.SearchItems, len(p.Employees))
+	for i := range p.Employees {
+		result[i] = p.Employees[i].SearchItem()
+	}
+	return result
+}
+
+func (p Parties) CustomersSearchItems() util.SearchItems {
+	result := make(util.SearchItems, len(p.Customers))
+	for i := range p.Customers {
+		result[i] = p.Customers[i].SearchItem()
+	}
+	return result
+}
+
 // Party represents some person or organisation.
 type Party struct {
 	// Id is the internal unique identifier of the Expense.
@@ -110,6 +126,14 @@ func NewCompanyParty(useDefaults bool) Party {
 	return Party{}
 }
 
+func (p Party) SearchItem() util.SearchItem {
+	return util.SearchItem{
+		Name:       p.String(),
+		Identifier: p.Identifier,
+		Value:      fmt.Sprintf("%s %s %s", p.Name, p.Identifier, p.Place),
+	}
+}
+
 // GetId returns the unique id of the element.
 func (p Party) GetId() string {
 	return p.Id
@@ -130,7 +154,7 @@ func (p Party) Type() string {
 
 // String returns a human readable representation of the element.
 func (p Party) String() string {
-	return fmt.Sprintf("")
+	return fmt.Sprintf("%s (%s), %s", p.Name, p.Identifier, p.Place)
 }
 
 // Conditions returns the validation conditions.
