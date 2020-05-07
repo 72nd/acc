@@ -154,7 +154,7 @@ func main() {
 						Usage:   "add ",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							elementType := getValidValueOrExit(c, "type", []string{"expense", "invoice", "party"})
+							elementType := getValidValueOrExit(c, "type", []string{"expense", "invoice", "customer", "employee"})
 							useDefault := c.Bool("default")
 							acc := schema.OpenProject(inputPath)
 
@@ -167,8 +167,18 @@ func main() {
 								acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc, c.String("asset")))
 							case "invoice":
 								fmt.Println("add invoice")
-							case "party":
-								fmt.Println("add party")
+							case "customer":
+								if useDefault {
+									acc.Parties.Customers = append(acc.Parties.Customers, schema.NewPartyWithUuid())
+									break
+								}
+								acc.Parties.Customers = append(acc.Parties.Customers, schema.InteractiveNewCustomer(acc))
+							case "employee":
+								if useDefault {
+									acc.Parties.Customers = append(acc.Parties.Customers, schema.NewPartyWithUuid())
+									break
+								}
+								acc.Parties.Employees = append(acc.Parties.Employees, schema.InteractiveNewEmployee(acc))
 							}
 							acc.SaveProject()
 							return nil
@@ -192,7 +202,7 @@ func main() {
 							&cli.StringFlag{
 								Name:     "type",
 								Aliases:  []string{"t"},
-								Usage:    "type of element to be added (expense, invoice, party)",
+								Usage:    "type of element to be added (expense, invoice, customer, employee)",
 								Required: true,
 							},
 						},

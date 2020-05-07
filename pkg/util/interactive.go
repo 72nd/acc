@@ -69,7 +69,7 @@ func SetStringFieldFromList(reader *bufio.Reader, field *string, name string, sh
 */
 
 func AskInt(reader *bufio.Reader, name, desc string, defaultValue int) int {
-	input := simplePrompt(reader, name, "int", desc, string(defaultValue))
+	input := simplePrompt(reader, name, "int", desc, fmt.Sprintf("%d",defaultValue))
 	if input == "" {
 		return defaultValue
 	}
