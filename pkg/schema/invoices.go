@@ -158,7 +158,6 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 		"Name of the associated project",
 		"",
 	)
-
 	return inv
 }
 

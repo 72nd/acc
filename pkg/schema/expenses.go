@@ -106,7 +106,6 @@ func NewExpenseWithUuid() Expense {
 // InteractiveNewExpense returns a new Expense based on the user input.
 func InteractiveNewExpense(a Acc, asset string) Expense {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Add new expense")
 	exp := NewExpenseWithUuid()
 	exp.Identifier = util.AskString(
 		reader,
