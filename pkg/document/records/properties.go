@@ -1,4 +1,4 @@
-package document
+package records
 
 type Properties struct {
 	Type       string

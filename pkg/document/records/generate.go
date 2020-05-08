@@ -1,4 +1,4 @@
-package document
+package records
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"path"
 )
 
-func GenerateExpenses(expenses schema.Expenses, dstFolder string, doOverwrite bool) {
+func GenerateExpensesRec(expenses schema.Expenses, dstFolder string, doOverwrite bool) {
 	nFiles := len(expenses)
 	for i := range expenses {
 		fileName := fmt.Sprintf("%s.pdf", expenses[i].FileString())
@@ -18,11 +18,11 @@ func GenerateExpenses(expenses schema.Expenses, dstFolder string, doOverwrite bo
 			continue
 		}
 		logrus.Infof("(%d/%d) Generate %s...", i+1, nFiles, fileName)
-		GenerateExpense(expenses[i], filePath)
+		GenerateExpenseRec(expenses[i], filePath)
 	}
 }
 
-func GenerateExpense(expense schema.Expense, dstPath string) {
+func GenerateExpenseRec(expense schema.Expense, dstPath string) {
 	props := Properties{
 		Type:       "Expense",
 		Identifier: expense.Identifier,
@@ -36,13 +36,13 @@ func GenerateExpense(expense schema.Expense, dstPath string) {
 	pdf.Generate(props)
 }
 
-func GenerateInvoices(invoices schema.Invoices, dstPath string) {
+func GenerateInvoicesRec(invoices schema.Invoices, dstPath string) {
 	for i := range invoices {
-		GenerateInvoice(invoices[i], dstPath)
+		GenerateInvoiceRec(invoices[i], dstPath)
 	}
 
 }
 
-func GenerateInvoice(invoice schema.Invoice, dstPath string) {
+func GenerateInvoiceRec(invoice schema.Invoice, dstPath string) {
 
 }

@@ -8,6 +8,7 @@ import (
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"strings"
 )
 
 const DefaultInvoicesFile = "invoices.yaml"
@@ -100,6 +101,13 @@ func (i Invoice) Type() string {
 // String returns a human readable representation of the element.
 func (i Invoice) String() string {
 	return fmt.Sprintf("")
+}
+
+func (i Invoice) FileString() string {
+	result := fmt.Sprintf("%s_%s", i.Name, i.Identifier)
+	result = strings.ReplaceAll(result, " ", "-")
+	result = strings.ReplaceAll(result, ".", "-")
+	return result
 }
 
 // Conditions returns the validation conditions.

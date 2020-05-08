@@ -1,4 +1,4 @@
-package document
+package records
 
 import (
 	"bytes"
@@ -130,12 +130,12 @@ func (p *Pdf) initPdf() {
 		logrus.Errorf("could not load lato regular: ", err)
 	}
 	p.pdf = gopdf.GoPdf{}
-	p.pdf.Start(gopdf.Config{PageSize: gopdf.Rect{W: 595.28, H: 841.89}})
+	p.pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4 })
 	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoHeavy), gopdf.TtfOption{Style: gopdf.Bold}); err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal("error adding lato heavy to pdf: ", err)
 	}
 	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoRegular), gopdf.TtfOption{Style: gopdf.Regular}); err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal("error adding lato regular to pdf: ", err)
 	}
 }
 

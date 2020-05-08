@@ -1,17 +1,35 @@
 package main
 
 import (
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"gitlab.com/72th/acc/pkg/bimpf"
-	"gitlab.com/72th/acc/pkg/document"
+	"gitlab.com/72th/acc/pkg/document/invoices"
+	"gitlab.com/72th/acc/pkg/document/records"
 	"gitlab.com/72th/acc/pkg/schema"
 	"os"
 	"path"
 )
 
 func main() {
+	addFlags := []cli.Flag{
+		&cli.StringFlag{
+			Name:    "asset",
+			Aliases: []string{"a"},
+			Usage:   "path to the asset file",
+		},
+		&cli.BoolFlag{
+			Name:    "default",
+			Aliases: []string{"d", "default-values"},
+			Usage:   "use default values and do not use interactive input",
+		},
+		&cli.StringFlag{
+			Name:    "input",
+			Aliases: []string{"i"},
+			Usage:   "acc project file",
+		},
+	}
+
 	app := &cli.App{
 		Name:  "acc",
 		Usage: "collection of tools for accounting with hledger",
@@ -20,6 +38,80 @@ func main() {
 			return nil
 		},
 		Commands: []*cli.Command{
+			{
+				Name:  "add",
+				Usage: "add an element (expense, invoice etc.) to a project",
+				Action: func(c *cli.Context) error {
+					_ = cli.ShowCommandHelp(c, c.Command.Name)
+					return nil
+				},
+				Subcommands: []*cli.Command{
+					{
+						Name:    "customer",
+						Aliases: []string{"cst"},
+						Usage:   "add a customer",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							if c.Bool("default") {
+								acc.Parties.Customers = append(acc.Parties.Customers, schema.NewPartyWithUuid())
+							} else {
+								acc.Parties.Customers = append(acc.Parties.Customers, schema.InteractiveNewCustomer(acc))
+							}
+							return nil
+						},
+						Flags: addFlags,
+					},
+					{
+						Name:    "employee",
+						Aliases: []string{"epy"},
+						Usage:   "add a employee",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							if c.Bool("default") {
+								acc.Parties.Employees = append(acc.Parties.Employees, schema.NewPartyWithUuid())
+							} else {
+								acc.Parties.Employees = append(acc.Parties.Employees, schema.InteractiveNewEmployee(acc))
+							}
+							return nil
+						},
+						Flags: addFlags,
+					},
+					{
+						Name:    "expense",
+						Aliases: []string{"exp"},
+						Usage:   "add a expense",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							if c.Bool("default") {
+								acc.Expenses = append(acc.Expenses, schema.NewExpenseWithUuid())
+							} else {
+								acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc, c.String("asset")))
+							}
+							return nil
+						},
+						Flags: addFlags,
+					},
+					{
+						Name:    "invoice",
+						Aliases: []string{"inv"},
+						Usage:   "add a invoice",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							if c.Bool("default") {
+								acc.Invoices = append(acc.Invoices, schema.InteractiveInvoice(acc))
+							} else {
+								acc.Invoices = append(acc.Invoices, schema.InteractiveInvoice(acc))
+							}
+							return nil
+						},
+						Flags: addFlags,
+					},
+				},
+			},
 			{
 				Name:  "bimpf",
 				Usage: "Bimpf related functions",
@@ -107,19 +199,25 @@ func main() {
 				},
 			},
 			{
-				Name:    "documents",
-				Aliases: []string{"doc", "document"},
-				Usage:   "aggregate all documents associated with a type of business case",
+				Name:  "invoices",
+				Usage: "generate simple invoices based on a project",
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					if err := os.MkdirAll(c.String("output-folder"), os.ModePerm); err != nil {
 						logrus.Error("creation of document output folder failed: ", err)
 					}
 					acc := schema.OpenProject(inputPath)
-					document.GenerateExpenses(acc.Expenses, c.String("output-folder"), c.Bool("do-overwrite"))
+					if c.Bool("all") {
+						invoices.GenerateAllInvoices(acc.Invoices, c.String("output-folder"), c.Bool("do-overwrite"))
+					}
 					return nil
 				},
 				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name: "all",
+						Aliases: []string{"a"},
+						Usage: "export all existing invoices",
+					},
 					&cli.StringFlag{
 						Name:    "input",
 						Aliases: []string{"i"},
@@ -128,7 +226,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "output-folder",
 						Aliases: []string{"output", "o"},
-						Value:   "documents",
+						Value:   "invoices",
 						Usage:   "path to the folder where the exported documents should be stored",
 					},
 					&cli.BoolFlag{
@@ -136,76 +234,6 @@ func main() {
 						Aliases: []string{"overwrite"},
 						Value:   false,
 						Usage:   "force overwrite existing documents",
-					},
-				},
-			},
-			{
-				Name:    "edit",
-				Aliases: []string{"edt", "e"},
-				Usage:   "edit an acc project via the command line interface",
-				Action: func(c *cli.Context) error {
-					_ = cli.ShowCommandHelp(c, c.Command.Name)
-					return nil
-				},
-				Subcommands: []*cli.Command{
-					{
-						Name:    "add",
-						Aliases: []string{"a"},
-						Usage:   "add ",
-						Action: func(c *cli.Context) error {
-							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							elementType := getValidValueOrExit(c, "type", []string{"expense", "invoice", "customer", "employee"})
-							useDefault := c.Bool("default")
-							acc := schema.OpenProject(inputPath)
-
-							switch elementType {
-							case "expense":
-								if useDefault {
-									acc.Expenses = append(acc.Expenses, schema.NewExpenseWithUuid())
-									break
-								}
-								acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc, c.String("asset")))
-							case "invoice":
-								fmt.Println("add invoice")
-							case "customer":
-								if useDefault {
-									acc.Parties.Customers = append(acc.Parties.Customers, schema.NewPartyWithUuid())
-									break
-								}
-								acc.Parties.Customers = append(acc.Parties.Customers, schema.InteractiveNewCustomer(acc))
-							case "employee":
-								if useDefault {
-									acc.Parties.Customers = append(acc.Parties.Customers, schema.NewPartyWithUuid())
-									break
-								}
-								acc.Parties.Employees = append(acc.Parties.Employees, schema.InteractiveNewEmployee(acc))
-							}
-							acc.SaveProject()
-							return nil
-						},
-						Flags: []cli.Flag{
-							&cli.StringFlag{
-								Name:    "asset",
-								Aliases: []string{"a"},
-								Usage:   "path to the asset file",
-							},
-							&cli.BoolFlag{
-								Name:    "default",
-								Aliases: []string{"d", "default-values"},
-								Usage:   "use default values and do not use interactive input",
-							},
-							&cli.StringFlag{
-								Name:    "input",
-								Aliases: []string{"i"},
-								Usage:   "acc project file",
-							},
-							&cli.StringFlag{
-								Name:     "type",
-								Aliases:  []string{"t"},
-								Usage:    "type of element to be added (expense, invoice, customer, employee)",
-								Required: true,
-							},
-						},
 					},
 				},
 			},
@@ -228,6 +256,39 @@ func main() {
 						Name:    "output-folder",
 						Aliases: []string{"output", "o"},
 						Usage:   "path to the folder where the Acc project files should be written",
+					},
+				},
+			},
+			{
+				Name:    "records",
+				Aliases: []string{"rec"},
+				Usage:   "aggregate all business records associated with a type of business case",
+				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					if err := os.MkdirAll(c.String("output-folder"), os.ModePerm); err != nil {
+						logrus.Error("creation of document output folder failed: ", err)
+					}
+					acc := schema.OpenProject(inputPath)
+					records.GenerateExpensesRec(acc.Expenses, c.String("output-folder"), c.Bool("do-overwrite"))
+					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "input",
+						Aliases: []string{"i"},
+						Usage:   "acc project file",
+					},
+					&cli.StringFlag{
+						Name:    "output-folder",
+						Aliases: []string{"output", "o"},
+						Value:   "documents",
+						Usage:   "path to the folder where the exported documents should be stored",
+					},
+					&cli.BoolFlag{
+						Name:    "do-overwrite",
+						Aliases: []string{"overwrite"},
+						Value:   false,
+						Usage:   "force overwrite existing documents",
 					},
 				},
 			},
@@ -268,6 +329,7 @@ func main() {
 	}
 }
 
+/*
 // validValueOrExit checks the existence of a given string flag and it's content against a list of allowed variables.
 // If both tests are positive the function returns the content of the flag otherwise it quits the application.
 func getValidValueOrExit(c *cli.Context, flag string, allowed []string) string {
@@ -283,6 +345,7 @@ func getValidValueOrExit(c *cli.Context, flag string, allowed []string) string {
 	logrus.Fatalf("flag %s was provided with an illegal value (%s). Allowed: %+v", flag, content, allowed)
 	return ""
 }
+*/
 
 // getPathOrExit reads the content of the first argument or a given string flag and validates it.
 // The application will exit, when the argument is not provided or the file already exists but doOverwrite is false.
