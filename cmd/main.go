@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"gitlab.com/72th/acc/pkg/bimpf"
@@ -166,7 +165,11 @@ func main() {
 								}
 								acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc, c.String("asset")))
 							case "invoice":
-								fmt.Println("add invoice")
+								if useDefault {
+									acc.Invoices = append(acc.Invoices, schema.NewInvoiceWithUuid())
+									break
+								}
+								acc.Invoices = append(acc.Invoices, schema.InteractiveNewInvoice(acc, c.String("asset")))
 							case "customer":
 								if useDefault {
 									acc.Parties.Customers = append(acc.Parties.Customers, schema.NewPartyWithUuid())

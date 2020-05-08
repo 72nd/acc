@@ -9,8 +9,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"regexp"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -52,24 +50,12 @@ func (e Expenses) SetId() {
 	}
 }
 
-// SuggestNextIdentifier tries to suggest the next identifier. In the moment this only works if all given Identifiers end with a increasing number at the end.
-func (e Expenses) SuggestNextIdentifier() string {
-	r := regexp.MustCompile(`(\d+)$`)
-	max := 0
+func (e Expenses) GetIdentifiables() []Identifiable {
+	exp := make([]Identifiable, len(e))
 	for i := range e {
-		rsl := r.FindAllString(e[i].Identifier, -1)
-		if len(rsl) != 1 {
-			continue
-		}
-		val, err := strconv.Atoi(rsl[0])
-		if err != nil {
-			logrus.Debugf("regex to find last number in identifier returned something else than a int (%+v), take a look: %s", rsl, err)
-		}
-		if max < val {
-			max = val
-		}
+		exp[i] = e[i]
 	}
-	return fmt.Sprintf("%s%d", DefaultExpensePrefix, max+1)
+	return exp
 }
 
 // Expense represents a payment done by the company or a third party to assure the ongoing of the business.
@@ -126,11 +112,11 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		reader,
 		"Identifier",
 		"Unique human readable identifier",
-		a.Expenses.SuggestNextIdentifier(),
+		SuggestNextIdentifier(a.Expenses.GetIdentifiables(), DefaultExpensePrefix),
 	)
 	exp.Name = util.AskString(reader,
 		"Name",
-		"Name for the expense",
+		"Name of the expense",
 		"HAL 9000",
 	)
 	exp.Amount = util.AskFloat(reader,
@@ -185,14 +171,14 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	}
 	exp.DateOfSettlement = util.AskDate(
 		reader,
-		"Date of settelment",
+		"Date of settlement",
 		"Date when the obligation was settelt for the company",
 		time.Now(),
 	)
 	exp.ProjectName = util.AskString(
 		reader,
 		"Project Name",
-		"Name of the assiciated project",
+		"Name of the associated project",
 		"",
 	)
 	return exp

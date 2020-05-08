@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
@@ -8,9 +9,12 @@ import (
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
+	"time"
 )
 
 const DefaultInvoicesFile = "invoices.yaml"
+const DefaultInvoicesPrefix = "i-"
 
 // Invoices is a slice of invoices.
 type Invoices []Invoice
@@ -46,6 +50,14 @@ func (i Invoices) SetId() {
 	}
 }
 
+func (i Invoices) GetIdentifiables() []Identifiable {
+	ivs := make([]Identifiable, len(i))
+	for j := range i {
+		ivs[j] = i[j]
+	}
+	return ivs
+}
+
 // Invoice represents an invoice sent to a customer for some services.
 type Invoice struct {
 	// Id is the internal unique identifier of the Expense.
@@ -76,6 +88,77 @@ func NewInvoice() Invoice {
 	if err := defaults.Set(&inv); err != nil {
 		logrus.Fatal(err)
 	}
+	return inv
+}
+
+func NewInvoiceWithUuid() Invoice {
+	inv := NewInvoice()
+	inv.Id = GetUuid()
+	return inv
+}
+
+func InteractiveNewInvoice(a Acc, asset string) Invoice {
+	reader := bufio.NewReader(os.Stdin)
+	inv := NewInvoiceWithUuid()
+	inv.Identifier = util.AskString(
+		reader,
+		"Identifier",
+		"Unique human readable identifier",
+		SuggestNextIdentifier(a.Invoices.GetIdentifiables(), DefaultInvoicesPrefix),
+	)
+	inv.Name = util.AskString(
+		reader,
+		"Name",
+		"Name of the invoice",
+		"Invoice for clingfilm",
+	)
+	inv.Amount = util.AskFloat(
+		reader,
+		"Amount",
+		"How much is the outstanding balance",
+		23.42,
+	)
+	if asset == "" {
+		inv.Path = util.AskString(
+			reader,
+			"Asset",
+			"Path to asset file (use --asset to set with flag)",
+			"",
+		)
+	} else {
+		inv.Path = asset
+	}
+	inv.CustomerId = util.AskStringFromSearch(
+		reader,
+		"Obliged Customer",
+		"Customer which has to pay the invoice",
+		a.Parties.CustomersSearchItems(),
+	)
+	inv.SendDate = util.AskDate(
+		reader,
+		"Send Date",
+		"Date the invoice was sent",
+		time.Now(),
+	)
+	inv.DateOfSettlement = util.AskDate(
+		reader,
+		"Date of settlement",
+		"Date when invoice was paid",
+		time.Now(),
+	)
+	inv.SettlementTransactionId = util.AskStringFromSearch(
+		reader,
+		"Settlement Transaction",
+		"Transaction which settled the invoice",
+		a.BankStatement.TransactionSearchItems(),
+	)
+	inv.ProjectName = util.AskString(
+		reader,
+		"Project Name",
+		"Name of the associated project",
+		"",
+	)
+
 	return inv
 }
 
