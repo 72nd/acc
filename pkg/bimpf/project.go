@@ -81,7 +81,7 @@ func (p Project) Validate() []util.ValidateResult {
 	return append(results, util.Check(p))
 }
 
-// Document reassembles the structure of a Document in a Bimpf json dump file.
+// Doc reassembles the structure of a Doc in a Bimpf json dump file.
 type Document struct {
 	Id           int    `json:"id"`
 	SbId         string `json:"sb_id"`
@@ -117,7 +117,7 @@ func (d Document) ConvertAsInvoice(pathPrefix, customerId, projectName string, p
 
 // Type returns a string with the type name of the element.
 func (d Document) Type() string {
-	return "SB-Document"
+	return "SB-Doc"
 }
 
 // String returns a human readable representation of the element.

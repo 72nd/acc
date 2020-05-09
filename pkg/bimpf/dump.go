@@ -59,7 +59,7 @@ func (d Dump) ValidateAndReport(path string) {
 
 // Convert returns the bimpf dump as an Acc struct. Needs a project path and a Nextcloud Bimpf folder path.
 func (d Dump) Convert(outputFolder, bimpfFolder string) schema.Acc {
-	acc := schema.NewProject(outputFolder, false, false)
+	acc := schema.NewProject(outputFolder, false)
 	acc.Parties.Customers = make([]schema.Party, len(d.Customers))
 	for i := range d.Customers {
 		acc.Parties.Customers[i] = d.Customers[i].Convert()

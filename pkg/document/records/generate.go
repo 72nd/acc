@@ -11,7 +11,7 @@ import (
 func GenerateExpensesRec(expenses schema.Expenses, dstFolder string, doOverwrite bool) {
 	nFiles := len(expenses)
 	for i := range expenses {
-		fileName := fmt.Sprintf("%s.pdf", expenses[i].FileString())
+		fileName := fmt.Sprintf("%s.utils", expenses[i].FileString())
 		filePath := path.Join(dstFolder, fileName)
 		if _, err := os.Stat(filePath); !os.IsNotExist(err) && !doOverwrite {
 			logrus.Infof("(%d/%d) File %s exists, skipping", i+i, nFiles, fileName)

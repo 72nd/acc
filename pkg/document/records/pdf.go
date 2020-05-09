@@ -3,10 +3,10 @@ package records
 import (
 	"bytes"
 	"fmt"
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/phpdave11/gofpdi"
 	"github.com/signintech/gopdf"
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/document/utils"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -85,7 +85,7 @@ func (p *Pdf) downConvert() string {
 		logrus.Fatalf("error running pdftops with %s %s: %s", p.SrcPath, tmpPs.Name(), err)
 	}
 
-	tmpPdf, err := ioutil.TempFile("", "pdf.*.pdf")
+	tmpPdf, err := ioutil.TempFile("", "utils.*.utils")
 	if err != nil {
 		logrus.Fatal("failed to create tmp file: ",  err)
 	}
@@ -117,25 +117,13 @@ func (p Pdf) getSrcPath() string {
 }
 
 func (p *Pdf) initPdf() {
-	box, err := rice.FindBox("fonts")
-	if err != nil {
-		logrus.Error("rice find box failed: ", err)
-	}
-	latoHeavy, err := box.Bytes("Lato-Heavy.ttf")
-	if err != nil {
-		logrus.Errorf("could not load lato heavy: ", err)
-	}
-	latoRegular, err := box.Bytes("Lato-Regular.ttf")
-	if err != nil {
-		logrus.Errorf("could not load lato regular: ", err)
-	}
 	p.pdf = gopdf.GoPdf{}
 	p.pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4 })
-	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoHeavy), gopdf.TtfOption{Style: gopdf.Bold}); err != nil {
-		logrus.Fatal("error adding lato heavy to pdf: ", err)
+	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(utils.LatoHeavy()), gopdf.TtfOption{Style: gopdf.Bold}); err != nil {
+		logrus.Fatal("error adding lato heavy to utils: ", err)
 	}
-	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoRegular), gopdf.TtfOption{Style: gopdf.Regular}); err != nil {
-		logrus.Fatal("error adding lato regular to pdf: ", err)
+	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(utils.LatoRegular()), gopdf.TtfOption{Style: gopdf.Regular}); err != nil {
+		logrus.Fatal("error adding lato regular to utils: ", err)
 	}
 }
 
@@ -173,7 +161,7 @@ func (p *Pdf) processOtherPage(props Properties, pageNr, maxPageNr int) {
 	p.pdf.RectFromUpperLeftWithStyle(40, 100, 500, 700, "FD")
 	p.pdf.SetFillColor(0, 0, 0)
 
-	titleLine := fmt.Sprintf("Document: %s  //  page %d of %d", props.Identifier, pageNr, maxPageNr)
+	titleLine := fmt.Sprintf("Doc: %s  //  page %d of %d", props.Identifier, pageNr, maxPageNr)
 	addText(&p.pdf, titleLine, 40, 40, 20, "Bold")
 
 	tpl := p.pdf.ImportPage(p.getSrcPath(), pageNr, "/MediaBox")
@@ -189,7 +177,7 @@ func (p *Pdf) safeAndCleanup(fileName string) {
 		p.DstPath = wd
 	}
 	if err := p.pdf.WritePdf(p.DstPath); err != nil {
-		logrus.Fatal("error while writing pdf: ", err)
+		logrus.Fatal("error while writing utils: ", err)
 	}
 }
 

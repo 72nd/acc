@@ -1,44 +1,63 @@
 package invoices
 
 import (
-	"bytes"
-	rice "github.com/GeertJohan/go.rice"
+	"fmt"
 	"github.com/signintech/gopdf"
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/document"
 	"gitlab.com/72th/acc/pkg/schema"
+	"math"
 	"os"
 )
 
-func initPdf() gopdf.GoPdf {
-	box, err := rice.FindBox("fonts")
-	if err != nil {
-		logrus.Error("rice find box failed: ", err)
-	}
-	latoHeavy, err := box.Bytes("Lato-Heavy.ttf")
-	if err != nil {
-		logrus.Errorf("could not load lato heavy: ", err)
-	}
-	latoRegular, err := box.Bytes("Lato-Regular.ttf")
-	if err != nil {
-		logrus.Errorf("could not load lato regular: ", err)
-	}
-	pdf := gopdf.GoPdf{}
-	if err := pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoHeavy), gopdf.TtfOption{Style: gopdf.Bold}); err != nil {
-		logrus.Fatal("error adding lato heavy to pdf: ", err)
-	}
-	if err := pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(latoRegular), gopdf.TtfOption{Style: gopdf.Regular}); err != nil {
-		logrus.Fatal("error adding lato regular to pdf: ", err)
-	}
-	return pdf
+type InvoiceDocument struct {
+	document.Doc
 }
 
-func page(pdf gopdf.GoPdf, inv schema.Invoice) gopdf.GoPdf {
-	pdf.AddPage()
-	pdf.SetLineWidth(0.1)
-	pdf.SetFillColor(255, 255, 255)
-	pdf.RectFromUpperLeftWithStyle(40, 130, 500, 680, "FD")
-	pdf.SetFillColor(0, 0, 0)
-	return pdf
+func NewInvoiceDocument(fontSize int) InvoiceDocument {
+	return InvoiceDocument{
+		Doc: document.NewDoc(fontSize, 1.2),
+	}
+}
+
+func (d *InvoiceDocument) Generate(company schema.Company, invoice schema.Invoice, customer schema.Party) gopdf.GoPdf {
+	d.Doc.Pdf.AddPage()
+	d.Doc.Pdf.SetLineWidth(0.1)
+	d.Doc.Pdf.SetMargins(20, 10, 20, 10)
+	d.Doc.Pdf.SetFillColor(0, 0, 0)
+	d.header(company)
+	d.address(company, customer)
+
+	return d.Doc.Pdf
+}
+
+func (d *InvoiceDocument) header(company schema.Company) {
+	d.Doc.AddFormattedMultilineText(20, 20, fmt.Sprintf(
+		"%s\n%s %d\n%d %s\nTelefon: %s\nE-Mail: %s\nURL: %s",
+		company.Name,
+		company.Street,
+		company.StreetNr,
+		company.PostalCode,
+		company.Place,
+		company.Phone,
+		company.Mail,
+		company.Url,
+	), 10, "")
+}
+
+func (d *InvoiceDocument) address(company schema.Company, customer schema.Party) {
+	sender := fmt.Sprintf(
+		"%s, %s %d, %d %s",
+		company.Name,
+		company.Street,
+		company.StreetNr,
+		company.PostalCode,
+		company.Place,
+	)
+	d.Doc.AddFormattedText(115, 50, sender, 7, "")
+	y := 50 + math.Round(d.Doc.LineHeight()/1.3)
+	d.Doc.Pdf.Line(115, y, 190, y)
+	d.Doc.AddFormattedMultilineText(115, y+2*d.Doc.LineHeight(), customer.AddressLines(), 10, "")
 }
 
 func save(pdf gopdf.GoPdf, dstPath string) {
@@ -50,6 +69,6 @@ func save(pdf gopdf.GoPdf, dstPath string) {
 		dstPath = wd
 	}
 	if err := pdf.WritePdf(dstPath); err != nil {
-		logrus.Fatal("error while writing pdf: ", err)
+		logrus.Fatal("error while writing utils: ", err)
 	}
 }

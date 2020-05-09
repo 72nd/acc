@@ -102,9 +102,9 @@ func main() {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							acc := schema.OpenProject(inputPath)
 							if c.Bool("default") {
-								acc.Invoices = append(acc.Invoices, schema.InteractiveInvoice(acc))
+								acc.Invoices = append(acc.Invoices, schema.InteractiveNewInvoice(acc, c.String("asset")))
 							} else {
-								acc.Invoices = append(acc.Invoices, schema.InteractiveInvoice(acc))
+								acc.Invoices = append(acc.Invoices, schema.InteractiveNewInvoice(acc, c.String("asset")))
 							}
 							return nil
 						},
@@ -169,7 +169,7 @@ func main() {
 					},
 					{
 						Name:  "validate",
-						Usage: "validate bimpf json dumps and searches for missing information in the Bimpf fonts",
+						Usage: "validate bimpf json dumps and searches for missing information in the Bimpf utils",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "the Bimpf input file")
 							outputPath := getPathOrExit(c, c.Bool("force"), "bimpf-dump-report.txt", "report", "the validation report")
@@ -204,11 +204,11 @@ func main() {
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					if err := os.MkdirAll(c.String("output-folder"), os.ModePerm); err != nil {
-						logrus.Error("creation of document output folder failed: ", err)
+						logrus.Fatal("creation of document output folder failed: ", err)
 					}
 					acc := schema.OpenProject(inputPath)
 					if c.Bool("all") {
-						invoices.GenerateAllInvoices(acc.Invoices, c.String("output-folder"), c.Bool("do-overwrite"))
+						invoices.GenerateAllInvoices(acc, c.String("output-folder"), c.Bool("do-overwrite"))
 					}
 					return nil
 				},
@@ -243,7 +243,7 @@ func main() {
 				Usage:   "generates a new acc project with all needed files, use sub-commands to create only a subset",
 				Action: func(c *cli.Context) error {
 					outputPath := getFolderPath(c, "output-folder", c.Bool("force"), true)
-					schema.NewProject(outputPath, true, true)
+					schema.NewProject(outputPath, true)
 					return nil
 				},
 				Flags: []cli.Flag{
