@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
@@ -8,6 +9,7 @@ import (
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -77,6 +79,24 @@ func NewInvoice() Invoice {
 	if err := defaults.Set(&inv); err != nil {
 		logrus.Fatal(err)
 	}
+	return inv
+}
+
+func NewInvoiceWithUuid() Invoice {
+	inv := NewInvoice()
+	inv.Id = GetUuid()
+	return inv
+}
+
+func InteractiveNewInvoice(a Acc, asset string) Invoice {
+	reader := bufio.NewReader(os.Stdin)
+	inv := NewInvoiceWithUuid()
+	inv.Identifier = util.AskString(
+		reader,
+		"Identifier",
+		"Unique human readable identifier",
+		a.Invoices.SuggestNextIdentifier(),
+	)
 	return inv
 }
 
