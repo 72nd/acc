@@ -78,10 +78,19 @@ func (s BankStatement) Validate() util.ValidateResults {
 	return []util.ValidateResult{util.Check(s)}
 }
 
+func (s BankStatement) TransactionSearchItems() util.SearchItems {
+	result := make(util.SearchItems, len(s.Transactions))
+	for i := range s.Transactions {
+		result[i] = s.Transactions[i].SearchItem()
+	}
+	return result
+}
+
 // Transaction represents a single transaction of a bank statement.
 type Transaction struct {
-	Id     string  `yaml:"id" default:""`
-	Amount float64 `yaml:"amount" default:"10.00"`
+	Id          string  `yaml:"id" default:""`
+	Description string  `yaml:"description" default:""`
+	Amount      float64 `yaml:"amount" default:"10.00"`
 }
 
 func NewTransaction() Transaction {
@@ -125,4 +134,12 @@ func (Transaction) Conditions() util.Conditions {
 // Validate the element and return the result.
 func (t Transaction) Validate() util.ValidateResults {
 	return []util.ValidateResult{util.Check(t)}
+}
+
+func (t Transaction) SearchItem() util.SearchItem {
+	return util.SearchItem{
+		Name:       t.Description,
+		Identifier: t.Id,
+		Value:      t.Description,
+	}
 }

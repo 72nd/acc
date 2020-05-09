@@ -10,8 +10,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"regexp"
-	"strconv"
 )
 
 const DefaultPartiesFile = "parties.yaml"
@@ -67,32 +65,20 @@ func (p Parties) SetId() {
 	}
 }
 
-func (p Parties) SuggestNextIdentifier(typ PartyType) string {
-	r := regexp.MustCompile(`(\d+)$`)
-	var ele []Party
-	var prefix string
-	if typ == CustomerType {
-		ele = p.Customers
-		prefix = DefaultCustomerPrefix
-	} else if typ == EmployeeType {
-		ele = p.Employees
-		prefix = DefaultEmployeePrefix
+func (p Parties) GetCustomerIdentifiables() []Identifiable {
+	pty := make([]Identifiable, len(p.Customers))
+	for i := range p.Customers {
+		pty[i] = p.Customers[i]
 	}
-	max := 0
-	for i := range ele {
-		rsl := r.FindAllString(ele[i].Identifier, -1)
-		if len(rsl) != 1 {
-			continue
-		}
-		val, err := strconv.Atoi(rsl[0])
-		if err != nil {
-			logrus.Debugf("regex to find last number in identifier returned something else than a int (%+v), take a look: %s", rsl, err)
-		}
-		if max < val {
-			max = val
-		}
+	return pty
+}
+
+func (p Parties) GetEmployeeIdentifiables() []Identifiable {
+	pty := make([]Identifiable, len(p.Employees))
+	for i := range p.Employees {
+		pty[i] = p.Employees[i]
 	}
-	return fmt.Sprintf("%s%d", prefix, max+1)
+	return pty
 }
 
 // EmployeeByIdentifier returns a Employee if there is one with the given identifier. Otherwise an error will be returned.
@@ -216,7 +202,7 @@ func InteractiveNewCustomer(a Acc) Party {
 		reader,
 		"Identifier",
 		"Unique human readable identifier",
-		a.Parties.SuggestNextIdentifier(CustomerType),
+		SuggestNextIdentifier(a.Parties.GetCustomerIdentifiables(), DefaultCustomerPrefix),
 	)
 	return pty
 }
@@ -228,7 +214,7 @@ func InteractiveNewEmployee(a Acc) Party {
 		reader,
 		"Identifier",
 		"Unique human readable identifier",
-		a.Parties.SuggestNextIdentifier(EmployeeType),
+		SuggestNextIdentifier(a.Parties.GetEmployeeIdentifiables(), DefaultEmployeePrefix),
 	)
 	return pty
 }
