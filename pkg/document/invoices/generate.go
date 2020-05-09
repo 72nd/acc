@@ -8,7 +8,7 @@ import (
 	"path"
 )
 
-func GenerateAllInvoices(acc schema.Acc, dstFolder string, doOverwrite bool) {
+func GenerateAllInvoices(acc schema.Acc, dstFolder, place string, doOverwrite bool) {
 	nFiles := len(acc.Invoices)
 	for i := range acc.Invoices {
 		fileName := fmt.Sprintf("%s.pdf", acc.Invoices[i].FileString())
@@ -23,11 +23,11 @@ func GenerateAllInvoices(acc schema.Acc, dstFolder string, doOverwrite bool) {
 			logrus.Errorf("found for invoice %s no customer (given: %s): %s", acc.Invoices[i].Id, acc.Invoices[i].CustomerId, err)
 			continue
 		}
-		GenerateInvoice(acc.Company, acc.Invoices[i], *customer, filePath)
+		GenerateInvoice(acc.Company, acc.Invoices[i], *customer, place, filePath)
 	}
 }
 
-func GenerateInvoice(company schema.Company, invoice schema.Invoice, customer schema.Party, dstPath string) {
-	doc := NewInvoiceDocument(12)
+func GenerateInvoice(company schema.Company, invoice schema.Invoice, customer schema.Party, place, dstPath string) {
+	doc := NewInvoiceDocument(12, place)
 	save(doc.Generate(company, invoice, customer), dstPath)
 }

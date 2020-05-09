@@ -208,15 +208,20 @@ func main() {
 					}
 					acc := schema.OpenProject(inputPath)
 					if c.Bool("all") {
-						invoices.GenerateAllInvoices(acc, c.String("output-folder"), c.Bool("do-overwrite"))
+						invoices.GenerateAllInvoices(
+							acc,
+							c.String("output-folder"),
+							c.String("place"),
+							c.Bool("do-overwrite"),
+						)
 					}
 					return nil
 				},
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
-						Name: "all",
+						Name:    "all",
 						Aliases: []string{"a"},
-						Usage: "export all existing invoices",
+						Usage:   "export all existing invoices",
 					},
 					&cli.StringFlag{
 						Name:    "input",
@@ -234,6 +239,11 @@ func main() {
 						Aliases: []string{"overwrite"},
 						Value:   false,
 						Usage:   "force overwrite existing documents",
+					},
+					&cli.StringFlag{
+						Name:  "place",
+						Value: "PLACE-UNSET",
+						Usage: "place where the invoice originates from",
 					},
 				},
 			},

@@ -8,15 +8,18 @@ import (
 	"gitlab.com/72th/acc/pkg/schema"
 	"math"
 	"os"
+	"time"
 )
 
 type InvoiceDocument struct {
 	document.Doc
+	place string
 }
 
-func NewInvoiceDocument(fontSize int) InvoiceDocument {
+func NewInvoiceDocument(fontSize int, place string) InvoiceDocument {
 	return InvoiceDocument{
-		Doc: document.NewDoc(fontSize, 1.2),
+		Doc:   document.NewDoc(fontSize, 1.2),
+		place: place,
 	}
 }
 
@@ -56,8 +59,13 @@ func (d *InvoiceDocument) address(company schema.Company, customer schema.Party)
 	)
 	d.Doc.AddFormattedText(115, 50, sender, 7, "")
 	y := 50 + math.Round(d.Doc.LineHeight()/1.3)
-	d.Doc.Pdf.Line(115, y, 190, y)
+	d.Pdf.Line(115, y, 190, y)
 	d.Doc.AddFormattedMultilineText(115, y+2*d.Doc.LineHeight(), customer.AddressLines(), 10, "")
+
+	placeDate := fmt.Sprintf("%s, %s", d.place, time.Now().Format("02.01.2006"))
+	placeDateWidth, _ := d.Pdf.MeasureTextWidth(placeDate)
+	placeDateX := gopdf.PointsToUnits(gopdf.Unit_MM, gopdf.PageSizeA4.W) - d.Pdf.MarginRight() - placeDateWidth
+	d.Doc.AddText(placeDateX, 100, placeDate)
 }
 
 func save(pdf gopdf.GoPdf, dstPath string) {
