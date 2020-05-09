@@ -101,6 +101,15 @@ func (p Parties) CustomerByIdentifier(ident string) (*Party, error) {
 	return nil, fmt.Errorf("no customer for identifier «%s» found", ident)
 }
 
+func (p Parties) CustomerById(id string) (*Party, error) {
+	for i := range p.Customers {
+		if p.Customers[i].Id == id {
+			return &p.Customers[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no customer for id «%s» found", id)
+}
+
 func (p Parties) EmployeesSearchItems() util.SearchItems {
 	result := make(util.SearchItems, len(p.Employees))
 	for i := range p.Employees {
@@ -143,20 +152,6 @@ func NewPartyWithUuid() Party {
 	pty := NewParty()
 	pty.Id = GetUuid()
 	return pty
-}
-
-// NewCompanyParty returns a new default company Party.
-func NewCompanyParty(useDefaults bool) Party {
-	if useDefaults {
-		return Party{
-			Name:       "Fantasia Company",
-			Street:     "Main Street",
-			StreetNr:   10,
-			Place:      "Zurich",
-			PostalCode: 8000,
-		}
-	}
-	return Party{}
 }
 
 func InteractiveNewParty(a Acc, partyType string) Party {
@@ -248,6 +243,17 @@ func (p Party) Type() string {
 // String returns a human readable representation of the element.
 func (p Party) String() string {
 	return fmt.Sprintf("%s (%s), %s", p.Name, p.Identifier, p.Place)
+}
+
+func (p Party) AddressLines() string {
+	result := p.Name
+	if p.Street != "" && p.StreetNr != 0 {
+		result = fmt.Sprintf("%s\n%s %d", result, p.Street, p.StreetNr)
+	}
+	if p.PostalCode != 0 && p.Place != "" {
+		result = fmt.Sprintf("%s\n%d %s", result, p.PostalCode, p.Place)
+	}
+	return result
 }
 
 // Conditions returns the validation conditions.

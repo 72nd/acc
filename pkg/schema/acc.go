@@ -1,4 +1,4 @@
-// Schema contains the description of the fonts structure of acc.
+// Schema contains the description of the utils structure of acc.
 package schema
 
 import (
@@ -21,10 +21,10 @@ var DefaultProjectFiles = []string{
 	DefaultPartiesFile,
 	DefaultBankStatementFile}
 
-// Acc represents an entry point into the fonts and also provides general information.
+// Acc represents an entry point into the utils and also provides general information.
 type Acc struct {
 	// Company contains the information about the organisation which uses acc.
-	Company               Party         `yaml:"company" default:""`
+	Company               Company       `yaml:"company" default:""`
 	ExpensesFilePath      string        `yaml:"expensesFilePath" default:"expenses.yaml"`
 	InvoicesFilePath      string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
 	PartiesFilePath       string        `yaml:"partiesFilePath" default:"parties.yaml"`
@@ -38,19 +38,19 @@ type Acc struct {
 }
 
 // NewAcc returns a new Acc element with the default values.
-func NewAcc(useDefaults bool) *Acc {
+func NewAcc() *Acc {
 	acc := &Acc{}
 	if err := defaults.Set(acc); err != nil {
 		logrus.Fatal(err)
 	}
-	acc.Company = NewCompanyParty(useDefaults)
+	acc.Company = NewCompany()
 	return acc
 }
 
 // NewProject creates a new acc project in the given folder path.
-func NewProject(folderPath string, doSave, useDefaults bool) Acc {
+func NewProject(folderPath string, doSave bool) Acc {
 	acc := Acc{
-		Company:               NewCompanyParty(useDefaults),
+		Company:               NewCompany(),
 		ExpensesFilePath:      DefaultExpensesFile,
 		InvoicesFilePath:      DefaultInvoicesFile,
 		PartiesFilePath:       DefaultPartiesFile,

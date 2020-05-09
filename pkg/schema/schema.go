@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-// Identifiable describes types which are uniquely identifiable trough out the fonts structure.
+// Identifiable describes types which are uniquely identifiable trough out the utils structure.
 type Identifiable interface {
 	GetId() string
 }
@@ -41,7 +41,7 @@ type Completable interface {
 	SetId()
 }
 
-// SaveToYaml writes the element (fonts) as a json file to the given path.
+// SaveToYaml writes the element (utils) as a json file to the given path.
 // Indented states whether «prettify» the json output.
 func SaveToYaml(data interface{}, path string) {
 	var raw []byte

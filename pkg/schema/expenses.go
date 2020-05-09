@@ -68,8 +68,8 @@ type Expense struct {
 	Name string `yaml:"name" default:"Expense Name"`
 	// Amount states the amount of the Expense.
 	Amount float64 `yaml:"amount" default:"10.00"`
-	// Path is the full path to the voucher pdf.
-	Path string `yaml:"path" default:"/path/to/file.pdf"`
+	// Path is the full path to the voucher utils.
+	Path string `yaml:"path" default:"/path/to/file.utils"`
 	// DateOfAccrual represents the day the obligation emerged.
 	DateOfAccrual string `yaml:"dateOfAccrual" default:"2019-12-20"`
 	// Billable states if the costs for the Expense will be forwarded to the customer.

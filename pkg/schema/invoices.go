@@ -69,8 +69,8 @@ type Invoice struct {
 	Name string `yaml:"name" default:"Expense Name"`
 	// Amount states the amount of the Expense.
 	Amount float64 `yaml:"amount" default:"10.00"`
-	// Path is the full path to the voucher pdf.
-	Path string `yaml:"path" default:"/path/to/file.pdf"`
+	// Path is the full path to the voucher utils.
+	Path string `yaml:"path" default:"/path/to/file.utils"`
 	// CustomerId refers to the customer the invoice was sent to.
 	CustomerId string `yaml:"customerId" default:""`
 	// SendDate states the date, the invoice was sent to the customer.
