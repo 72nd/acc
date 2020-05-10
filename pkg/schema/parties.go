@@ -101,6 +101,16 @@ func (p Parties) CustomerByIdentifier(ident string) (*Party, error) {
 	return nil, fmt.Errorf("no customer for identifier «%s» found", ident)
 }
 
+
+func (p Parties) EmployeeById(id string) (*Party, error) {
+	for i := range p.Employees {
+		if p.Employees[i].Id == id {
+			return &p.Employees[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no employee for id «%s» found", id)
+}
+
 func (p Parties) CustomerById(id string) (*Party, error) {
 	for i := range p.Customers {
 		if p.Customers[i].Id == id {
@@ -108,6 +118,24 @@ func (p Parties) CustomerById(id string) (*Party, error) {
 		}
 	}
 	return nil, fmt.Errorf("no customer for id «%s» found", id)
+}
+
+func (p Parties) EmployeeStringById(id string) string {
+	emp, err := p.EmployeeById(id)
+	if err != nil {
+		logrus.Error("no employee found: ", err)
+		return "no employee for id"
+	}
+	return emp.String()
+}
+
+func (p Parties) CustomerStringById(id string) string {
+	cst, err := p.CustomerById(id)
+	if err != nil {
+		logrus.Error("no  found: ", err)
+		return "no customer for id"
+	}
+	return cst.String()
 }
 
 func (p Parties) EmployeesSearchItems() util.SearchItems {
@@ -154,7 +182,7 @@ func NewPartyWithUuid() Party {
 	return pty
 }
 
-func InteractiveNewParty(a Acc, partyType string) Party {
+func InteractiveNewParty(partyType string) Party {
 	reader := bufio.NewReader(os.Stdin)
 	pty := NewPartyWithUuid()
 	pty.Name = util.AskString(
@@ -192,7 +220,7 @@ func InteractiveNewParty(a Acc, partyType string) Party {
 
 func InteractiveNewCustomer(a Acc) Party {
 	reader := bufio.NewReader(os.Stdin)
-	pty := InteractiveNewParty(a, "Customer")
+	pty := InteractiveNewParty("Customer")
 	pty.Identifier = util.AskString(
 		reader,
 		"Identifier",
@@ -204,7 +232,7 @@ func InteractiveNewCustomer(a Acc) Party {
 
 func InteractiveNewEmployee(a Acc) Party {
 	reader := bufio.NewReader(os.Stdin)
-	pty := InteractiveNewParty(a, "Employee")
+	pty := InteractiveNewParty("Employee")
 	pty.Identifier = util.AskString(
 		reader,
 		"Identifier",
@@ -217,7 +245,7 @@ func InteractiveNewEmployee(a Acc) Party {
 func (p Party) SearchItem() util.SearchItem {
 	return util.SearchItem{
 		Name:       p.Name,
-		Identifier: p.Identifier,
+		Identifier: p.Id,
 		Value:      fmt.Sprintf("%s %s %s", p.Name, p.Identifier, p.Place),
 	}
 }

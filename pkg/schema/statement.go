@@ -8,6 +8,7 @@ import (
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"time"
 )
 
 const DefaultBankStatementFile = "bank-statement.yaml"
@@ -88,9 +89,10 @@ func (s BankStatement) TransactionSearchItems() util.SearchItems {
 
 // Transaction represents a single transaction of a bank statement.
 type Transaction struct {
-	Id          string  `yaml:"id" default:""`
-	Description string  `yaml:"description" default:""`
-	Amount      float64 `yaml:"amount" default:"10.00"`
+	Id          string    `yaml:"id" default:""`
+	Description string    `yaml:"description" default:""`
+	Date        time.Time `yaml:"date" default:""`
+	Amount      float64   `yaml:"amount" default:"10.00"`
 }
 
 func NewTransaction() Transaction {
@@ -98,6 +100,12 @@ func NewTransaction() Transaction {
 	if err := defaults.Set(&trn); err != nil {
 		logrus.Fatal(err)
 	}
+	return trn
+}
+
+func NewTransactionWithUuid() Transaction {
+	trn := NewTransaction()
+	trn.Id = GetUuid()
 	return trn
 }
 

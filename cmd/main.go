@@ -58,6 +58,7 @@ func main() {
 							} else {
 								acc.Parties.Customers = append(acc.Parties.Customers, schema.InteractiveNewCustomer(acc))
 							}
+							acc.SaveProject()
 							return nil
 						},
 						Flags: addFlags,
@@ -74,6 +75,7 @@ func main() {
 							} else {
 								acc.Parties.Employees = append(acc.Parties.Employees, schema.InteractiveNewEmployee(acc))
 							}
+							acc.SaveProject()
 							return nil
 						},
 						Flags: addFlags,
@@ -90,6 +92,7 @@ func main() {
 							} else {
 								acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc, c.String("asset")))
 							}
+							acc.SaveProject()
 							return nil
 						},
 						Flags: addFlags,
@@ -106,6 +109,7 @@ func main() {
 							} else {
 								acc.Invoices = append(acc.Invoices, schema.InteractiveNewInvoice(acc, c.String("asset")))
 							}
+							acc.SaveProject()
 							return nil
 						},
 						Flags: addFlags,
@@ -279,7 +283,7 @@ func main() {
 						logrus.Error("creation of document output folder failed: ", err)
 					}
 					acc := schema.OpenProject(inputPath)
-					records.GenerateExpensesRec(acc.Expenses, c.String("output-folder"), c.Bool("do-overwrite"))
+					records.GenerateExpensesRec(acc, c.String("output-folder"), c.Bool("do-overwrite"))
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -291,7 +295,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "output-folder",
 						Aliases: []string{"output", "o"},
-						Value:   "documents",
+						Value:   "records",
 						Usage:   "path to the folder where the exported documents should be stored",
 					},
 					&cli.BoolFlag{

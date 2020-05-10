@@ -58,6 +58,25 @@ func (e Expenses) GetIdentifiables() []Identifiable {
 	return exp
 }
 
+func (e Expenses) GetExpenseCategories() []string {
+	var result []string
+	for i := range e {
+		if e[i].ExpenseCategory == "" {
+			continue
+		}
+		existing := false
+		for j := range result {
+			if e[i].ExpenseCategory == result[j] {
+				existing = true
+			}
+		}
+		if !existing {
+			result = append(result, e[i].ExpenseCategory)
+		}
+	}
+	return result
+}
+
 // Expense represents a payment done by the company or a third party to assure the ongoing of the business.
 type Expense struct {
 	// Id is the internal unique identifier of the Expense.
@@ -84,6 +103,8 @@ type Expense struct {
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
 	SettlementTransactionId string `yaml:"settlementTransactionId" default:""`
+	// ExpenseCategory gives additional info for the categorization of the expense in the journal.
+	ExpenseCategory string `yaml:"expenseCategory" default:""`
 	// ProjectName refers to the associated project of the expense.
 	ProjectName string `yaml:"projectName" default:""`
 }

@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"regexp"
 )
 
@@ -23,8 +24,16 @@ const (
 	v17
 )
 
+type ScrType int
+
+const (
+	PDF ScrType = iota
+	PNG
+)
+
 type Pdf struct {
 	SrcPath             string
+	ScrType             ScrType
 	DstPath             string
 	useConvertedVersion bool
 	tmpPath             string
@@ -32,20 +41,25 @@ type Pdf struct {
 }
 
 func NewPdf(srcPath, dstPath string) *Pdf {
+	scrType := PDF
+	if path.Ext(srcPath) == ".png" {
+		scrType = PNG
+	}
 	return &Pdf{
 		SrcPath: srcPath,
+		ScrType: scrType,
 		DstPath: dstPath,
 	}
 }
 
 func (p *Pdf) Generate(props Properties) {
-	if p.getPdfVersion() > v15 {
+	if p.ScrType == PDF && p.getPdfVersion() > v15 {
 		p.useConvertedVersion = true
 		p.tmpPath = p.downConvert()
 	}
 	p.initPdf()
 	p.processPdf(props)
-	p.safeAndCleanup(props.DstName)
+	p.safeAndCleanup()
 }
 
 func (p Pdf) getPdfVersion() PdfVersion {
@@ -87,7 +101,7 @@ func (p *Pdf) downConvert() string {
 
 	tmpPdf, err := ioutil.TempFile("", "utils.*.utils")
 	if err != nil {
-		logrus.Fatal("failed to create tmp file: ",  err)
+		logrus.Fatal("failed to create tmp file: ", err)
 	}
 	err = exec.Command("gs",
 		"-sDEVICE=pdfwrite",
@@ -104,6 +118,9 @@ func (p *Pdf) downConvert() string {
 }
 
 func (p Pdf) countPages() int {
+	if p.ScrType == PNG {
+		return 1
+	}
 	imp := gofpdi.NewImporter()
 	imp.SetSourceFile(p.getSrcPath())
 	return len(imp.GetPageSizes())
@@ -118,7 +135,7 @@ func (p Pdf) getSrcPath() string {
 
 func (p *Pdf) initPdf() {
 	p.pdf = gopdf.GoPdf{}
-	p.pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4 })
+	p.pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	if err := p.pdf.AddTTFFontByReaderWithOption("lato", bytes.NewBuffer(utils.LatoHeavy()), gopdf.TtfOption{Style: gopdf.Bold}); err != nil {
 		logrus.Fatal("error adding lato heavy to utils: ", err)
 	}
@@ -151,8 +168,16 @@ func (p *Pdf) processFirstPage(props Properties, maxPageNr int) {
 	addText(&p.pdf, props.Line3, 40, 95, 12, "")
 	addText(&p.pdf, props.Line4, 40, 111, 12, "")
 
-	tpl := p.pdf.ImportPage(p.getSrcPath(), 1, "/MediaBox")
-	p.pdf.UseImportedTemplate(tpl, 45, 150, 480, 0)
+	if p.ScrType == PDF {
+		tpl := p.pdf.ImportPage(p.getSrcPath(), 1, "/MediaBox")
+		p.pdf.UseImportedTemplate(tpl, 45, 150, 480, 0)
+	} else {
+		p.pdf.SetX(45)
+		p.pdf.SetY(150)
+		if err := p.pdf.Image(p.SrcPath, 45, 150, nil); err != nil {
+			logrus.Errorf("error while including image %s into pdf: %s", p.SrcPath, err)
+		}
+	}
 }
 
 func (p *Pdf) processOtherPage(props Properties, pageNr, maxPageNr int) {
@@ -168,7 +193,7 @@ func (p *Pdf) processOtherPage(props Properties, pageNr, maxPageNr int) {
 	p.pdf.UseImportedTemplate(tpl, 40, 100, 500, 0)
 }
 
-func (p *Pdf) safeAndCleanup(fileName string) {
+func (p *Pdf) safeAndCleanup() {
 	if p.DstPath == "" {
 		wd, err := os.Getwd()
 		if err != nil {
@@ -183,7 +208,7 @@ func (p *Pdf) safeAndCleanup(fileName string) {
 
 func addText(pdf *gopdf.GoPdf, content string, x, y float64, size int, style string) {
 	if err := pdf.SetFont("lato", style, size); err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal("error while changing Pdf font style: ", err)
 	}
 	pdf.SetX(x)
 	pdf.SetY(y)

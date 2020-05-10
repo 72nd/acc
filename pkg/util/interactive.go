@@ -202,7 +202,7 @@ func simplePromptWithEmpty(reader *bufio.Reader, name, typeName, desc, defaultVa
 	return strings.Replace(input, "\n", "", -1), true
 }
 
-func searchPrompt(reader *bufio.Reader, name, desc string) (value string, freeText bool, empty bool) {
+func searchPrompt(reader *bufio.Reader, name, desc string, items *SearchItems) (value string, freeText bool, empty bool) {
 	fmt.Printf("%s %s %s: ",
 		aurora.BrightCyan(fmt.Sprintf("Search for a %s", aurora.Bold(name))),
 		aurora.Yellow(fmt.Sprintf("(%s)", desc)),
@@ -243,3 +243,4 @@ func searchItemsPrompt(reader *bufio.Reader, items SearchItems, showList bool) (
 	}
 	return items[value-1].Identifier, false
 }
+
