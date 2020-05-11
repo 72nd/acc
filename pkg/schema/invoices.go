@@ -170,6 +170,15 @@ func (i *Invoice) SetId() {
 	i.Id = uuid.Must(uuid.NewRandom()).String()
 }
 
+func (i Invoices) InvoiceByIdent(ident string) (*Invoice, error) {
+	for j := range i {
+		if i[j].Identifier == ident {
+			return &i[j], nil
+		}
+	}
+	return nil, fmt.Errorf("no invoice for identifier «%s» found", ident)
+}
+
 // Type returns a string with the type name of the element.
 func (i Invoice) Type() string {
 	return ""

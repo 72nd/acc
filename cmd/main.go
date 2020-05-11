@@ -143,35 +143,6 @@ func main() {
 				},
 			},
 			{
-				Name:  "bank",
-				Usage: "import bank-to-customer statement (camt.053.001.04)",
-				Action: func(c *cli.Context) error {
-					inputPath := getReadPathOrExit(c, "input", "acc project file")
-					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
-					acc := schema.OpenProject(inputPath)
-					fmt.Println(aurora.BrightMagenta("Use the --no-interactive flag to suppress user assisted check and completion"))
-					acc.BankStatement.AddTransaction(btcStatement.Transactions(!c.Bool("no-interactive")))
-					acc.SaveProject()
-					return nil
-				},
-				Flags: []cli.Flag{
-					&cli.StringFlag{
-						Name:    "input",
-						Aliases: []string{"i"},
-						Usage:   "acc project file",
-					},
-					&cli.BoolFlag{
-						Name: "no-interactive",
-						Usage: "suppress user assisted transaction check and completion",
-					},
-					&cli.StringFlag{
-						Name:    "statement",
-						Aliases: []string{"s"},
-						Usage:   "path to camt xml",
-					},
-				},
-			},
-			{
 				Name:  "bimpf",
 				Usage: "bimpf related functions",
 				Action: func(c *cli.Context) error {
@@ -255,6 +226,38 @@ func main() {
 							},
 						},
 					},
+				},
+			},
+			{
+				Name:  "camt",
+				Usage: "import bank-to-customer statement (camt.053.001.04)",
+				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
+					acc := schema.OpenProject(inputPath)
+					// fmt.Println(aurora.BrightMagenta("Use the --no-interactive flag to suppress user assisted check and completion"))
+					acc.BankStatement.AddTransaction(btcStatement.Transactions())
+					acc.SaveProject()
+					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "input",
+						Aliases: []string{"i"},
+						Usage:   "acc project file",
+					},
+					&cli.StringFlag{
+						Name:    "statement",
+						Aliases: []string{"s"},
+						Usage:   "path to camt xml",
+					},
+				},
+			},
+			{
+				Name:  "complete",
+				Usage: "complete incorrect validated entries",
+				Action: func(c *cli.Context) error {
+					return nil
 				},
 			},
 			{

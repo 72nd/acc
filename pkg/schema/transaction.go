@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
+	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
+	"regexp"
 	"time"
 )
 
@@ -18,13 +20,14 @@ const (
 
 // Transaction represents a single transaction of a bank statement.
 type Transaction struct {
-	Id              string          `yaml:"id" default:""`
-	Identifier      string          `yaml:"identifier" default:""`
-	Description     string          `yaml:"description" default:""`
-	TransactionType TransactionType `yaml:"transactionType" default:"0"`
-	ThirdPartyIdent string          `yaml:"thirdPartyIdent" default:""`
-	Date            string          `yaml:"date" default:""`
-	Amount          float64         `yaml:"amount" default:"10.00"`
+	Id                   string          `yaml:"id" default:""`
+	Identifier           string          `yaml:"identifier" default:""`
+	Description          string          `yaml:"description" default:""`
+	TransactionType      TransactionType `yaml:"transactionType" default:"0"`
+	AssociatedPartyId    string          `yaml:"associatedPartyId" default:""`
+	AssociatedDocumentId string          `yaml:"associatedDocumentId" default:""`
+	Date                 string          `yaml:"date" default:""`
+	Amount               float64         `yaml:"amount" default:"10.00"`
 }
 
 func NewTransaction() Transaction {
@@ -81,7 +84,47 @@ func InteractiveNewTransaction(s BankStatement) Transaction {
 	return trn
 }
 
-func (t *Transaction) AssistedCompletion(thirdParty string) {
+func (t *Transaction) AssistedCompletion(a Acc) {
+	t.SetId()
+	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize transaction:")), aurora.BrightMagenta(t.Description))
+	identifier := SuggestNextIdentifier(a.BankStatement.GetIdentifiables(), DefaultTransactionPrefix)
+	if t.Identifier == "" && identifier != "" {
+		t.Identifier = util.AskString(
+			"Identifier",
+			"Unique human readable identifier",
+			identifier)
+	}
+	t.Description = util.AskString(
+		"Description",
+		"Description of the transaction",
+		t.Description)
+	parties := append(a.Parties.CustomersSearchItems(), a.Parties.EmployeesSearchItems()...)
+	t.AssociatedPartyId = util.AskStringFromSearch(
+		"Associated Party",
+		"customer/employee which is originator/recipient of the transaction",
+		parties)
+	document, err := t.parseAssociatedDocument(a.Expenses, a.Invoices)
+	if err == nil && util.AskForConformation(fmt.Sprintf("Use «%s» as associated document?", document.String())) {
+		t.AssociatedDocumentId = document.GetId()
+	}
+}
+
+func (t Transaction) parseAssociatedDocument(expenses Expenses, invoices Invoices) (Identifiable, error) {
+	r := regexp.MustCompile(`([ei]-(|.*-)(\d+))(\s|$)`)
+	matches := r.FindAllStringSubmatch(t.Description, -1)
+	if len(matches) != 1 || len(matches[0]) != 5 {
+		return nil, fmt.Errorf("no document identifier found")
+	}
+	ident := matches[0][1]
+	expense, err1 := expenses.ExpenseByIdent(ident)
+	invoice, err2 := invoices.InvoiceByIdent(ident)
+	if err1 != nil && err2 != nil {
+		return nil, fmt.Errorf("no expense or invoice for identifier %s found", ident)
+	}
+	if invoice == nil {
+		return expense, nil
+	}
+	return invoice, nil
 }
 
 // GetId returns the unique id of the element.

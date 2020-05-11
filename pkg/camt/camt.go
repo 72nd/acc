@@ -13,10 +13,10 @@ type Document struct {
 	Entries []Entry  `xml:"BkToCstmrStmt>Stmt>Ntry"`
 }
 
-func (d Document) AccTransactions(assisted bool) []schema.Transaction {
+func (d Document) AccTransactions() []schema.Transaction {
 	var result []schema.Transaction
 	for i := range d.Entries {
-		result = append(result, d.Entries[i].AccTransactions(assisted)...)
+		result = append(result, d.Entries[i].AccTransactions()...)
 	}
 	return result
 }
@@ -36,10 +36,10 @@ type Entry struct {
 	Transactions             []Transaction `xml:"NtryDtls>TxDtls"`
 }
 
-func (e Entry) AccTransactions(assisted bool) []schema.Transaction {
+func (e Entry) AccTransactions() []schema.Transaction {
 	result := make([]schema.Transaction, len(e.Transactions))
 	for i := range e.Transactions {
-		result[i] = e.Transactions[i].AccTransaction(e.BookingData, assisted)
+		result[i] = e.Transactions[i].AccTransaction(e.BookingData)
 	}
 	return result
 }
@@ -56,24 +56,19 @@ type Transaction struct {
 	BankName             string   `xml:"RltdAgts>CdtrAgt>FinInstnId>Nm"`
 }
 
-func (t Transaction) AccTransaction(date string, assisted bool) schema.Transaction {
+func (t Transaction) AccTransaction(date string) schema.Transaction {
 	trnType := schema.CreditTransaction
-	thirdParty := t.Debitor.String()
 	if t.CreditDebitIndicator == "DBIT" {
 		trnType = schema.DebitTransaction
-		thirdParty = t.Creditor.String()
 	}
 	trn := schema.Transaction{
-		Description:     t.String(),
-		TransactionType: trnType,
-		ThirdPartyIdent: "",
-		Date:            date,
-		Amount:          t.Amount,
+		Description:       t.String(),
+		TransactionType:   trnType,
+		AssociatedPartyId: "",
+		Date:              date,
+		Amount:            t.Amount,
 	}
 	trn.SetId()
-	if assisted {
-		trn.AssistedCompletion(thirdParty)
-	}
 	return trn
 }
 

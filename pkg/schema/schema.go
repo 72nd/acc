@@ -14,6 +14,7 @@ import (
 type Identifiable interface {
 	GetId() string
 	GetIdentifier() string
+	String() string
 }
 
 func SuggestNextIdentifier(idt []Identifiable, prefix string) string {

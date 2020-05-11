@@ -120,15 +120,23 @@ func AskBool(name, desc string, defaultValue bool) bool {
 	if input == "" {
 		return defaultValue
 	}
-
-	if input == "y" || input == "1" || input == "true" {
-		return true
-	} else if input == "n" || input == "0" || input == "false" {
-		return false
-	} else {
-		logrus.Warn("Could not parse input as a boolean value (bool). Please use y/1/true or n/0/false")
+	value, err := parseBool(input)
+	if err != nil {
+		logrus.Warn(err)
 		return AskBool(name, desc, defaultValue)
 	}
+	return value
+}
+
+func AskForConformation(question string) bool {
+	fmt.Printf("%s (Y/n)\n--> ", aurora.BrightCyan(question))
+	input := getInput()
+	value, err := parseBool(input)
+	if err != nil {
+		logrus.Warn(err)
+		return AskForConformation(question)
+	}
+	return value
 }
 
 func AskFloat(name, desc string, defaultValue float64) float64 {
@@ -283,4 +291,13 @@ func getInput() string {
 	reader := bufio.NewReader(os.Stdin)
 	input, _ := reader.ReadString('\n')
 	return input[:len(input)-1]
+}
+
+func parseBool(input string) (bool, error) {
+	if input == "y" || input == "1" || input == "true" || input == "t" {
+		return true, nil
+	} else if input == "n" || input == "0" || input == "false" || input == "f" {
+		return false, nil
+	}
+	return false, errors.New("could not parse input as a boolean value (bool). Please use y/t/1/true or n/f/0/false")
 }
