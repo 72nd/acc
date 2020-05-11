@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
@@ -9,7 +8,6 @@ import (
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"os"
 	"strings"
 	"time"
 )
@@ -99,29 +97,24 @@ func NewInvoiceWithUuid() Invoice {
 }
 
 func InteractiveNewInvoice(a Acc, asset string) Invoice {
-	reader := bufio.NewReader(os.Stdin)
 	inv := NewInvoiceWithUuid()
 	inv.Identifier = util.AskString(
-		reader,
 		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Invoices.GetIdentifiables(), DefaultInvoicesPrefix),
 	)
 	inv.Name = util.AskString(
-		reader,
 		"Name",
 		"Name of the invoice",
 		"Invoice for clingfilm",
 	)
 	inv.Amount = util.AskFloat(
-		reader,
 		"Amount",
 		"How much is the outstanding balance",
 		23.42,
 	)
 	if asset == "" {
 		inv.Path = util.AskString(
-			reader,
 			"Asset",
 			"Path to asset file (use --asset to set with flag)",
 			"",
@@ -130,31 +123,26 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 		inv.Path = asset
 	}
 	inv.CustomerId = util.AskStringFromSearch(
-		reader,
 		"Obliged Customer",
 		"Customer which has to pay the invoice",
 		a.Parties.CustomersSearchItems(),
 	)
 	inv.SendDate = util.AskDate(
-		reader,
 		"Send Date",
 		"Date the invoice was sent",
 		time.Now(),
 	)
 	inv.DateOfSettlement = util.AskDate(
-		reader,
 		"Date of settlement",
 		"Date when invoice was paid",
 		time.Now(),
 	)
 	inv.SettlementTransactionId = util.AskStringFromSearch(
-		reader,
 		"Settlement Transaction",
 		"Transaction which settled the invoice",
 		a.BankStatement.TransactionSearchItems(),
 	)
 	inv.ProjectName = util.AskString(
-		reader,
 		"Project Name",
 		"Name of the associated project",
 		"",

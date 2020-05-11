@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
@@ -9,7 +8,6 @@ import (
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"os"
 )
 
 const DefaultPartiesFile = "parties.yaml"
@@ -183,34 +181,28 @@ func NewPartyWithUuid() Party {
 }
 
 func InteractiveNewParty(partyType string) Party {
-	reader := bufio.NewReader(os.Stdin)
 	pty := NewPartyWithUuid()
 	pty.Name = util.AskString(
-		reader,
 		"Name",
 		fmt.Sprintf("Name of the %s", partyType),
 		"Bimpf the first",
 	)
 	pty.Street = util.AskString(
-		reader,
 		"Street",
 		fmt.Sprintf("Street of the %s", partyType),
 		"Society Street",
 	)
 	pty.StreetNr = util.AskInt(
-		reader,
 		"Street Nr.",
 		"Number of the street",
 		49,
 	)
 	pty.Place = util.AskString(
-		reader,
 		"Place",
 		fmt.Sprintf("Place/City of %s", partyType),
 		"Zurich",
 	)
 	pty.PostalCode = util.AskInt(
-		reader,
 		"Postal Code",
 		"Postal/ZIP Code",
 		4223,
@@ -219,10 +211,8 @@ func InteractiveNewParty(partyType string) Party {
 }
 
 func InteractiveNewCustomer(a Acc) Party {
-	reader := bufio.NewReader(os.Stdin)
 	pty := InteractiveNewParty("Customer")
 	pty.Identifier = util.AskString(
-		reader,
 		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Parties.GetCustomerIdentifiables(), DefaultCustomerPrefix),
@@ -231,10 +221,8 @@ func InteractiveNewCustomer(a Acc) Party {
 }
 
 func InteractiveNewEmployee(a Acc) Party {
-	reader := bufio.NewReader(os.Stdin)
 	pty := InteractiveNewParty("Employee")
 	pty.Identifier = util.AskString(
-		reader,
 		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Parties.GetEmployeeIdentifiables(), DefaultEmployeePrefix),

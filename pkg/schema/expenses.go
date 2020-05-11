@@ -1,14 +1,12 @@
 package schema
 
 import (
-	"bufio"
 	"fmt"
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"os"
 	"strings"
 	"time"
 )
@@ -130,33 +128,31 @@ func NewExpenseWithUuid() Expense {
 
 // InteractiveNewExpense returns a new Expense based on the user input.
 func InteractiveNewExpense(a Acc, asset string) Expense {
-	reader := bufio.NewReader(os.Stdin)
 	exp := NewExpenseWithUuid()
 	exp.Identifier = util.AskString(
-		reader,
+
 		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Expenses.GetIdentifiables(), DefaultExpensePrefix),
 	)
 	exp.ExpenseCategory = util.AskStringFromListSearch(
-		reader,
+
 		"Expense Category",
 		"Used for journal generation",
 		a.Expenses.GetExpenseCategories(),
 	)
-	exp.Name = util.AskString(reader,
+	exp.Name = util.AskString(
 		"Name",
 		"Name of the expense",
 		"HAL 9000",
 	)
-	exp.Amount = util.AskFloat(reader,
+	exp.Amount = util.AskFloat(
 		"Amount",
 		"How much did you spend?",
 		23.42,
 	)
 	if asset == "" {
 		exp.Path = util.AskString(
-			reader,
 			"Asset",
 			"Path to asset file (use --asset to set with flag)",
 			"",
@@ -164,20 +160,18 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	} else {
 		exp.Path = asset
 	}
-	exp.DateOfAccrual = util.AskDate(reader,
+	exp.DateOfAccrual = util.AskDate(
 		"Date of Accrual",
 		"Date when the obligation accrued",
 		time.Now(),
 	)
 	exp.Billable = util.AskBool(
-		reader,
 		"Billable?",
 		"Is expense billable to customer?",
 		false,
 	)
 	if exp.Billable {
 		exp.ObligedCustomerId = util.AskStringFromSearch(
-			reader,
 			"Obliged Customer",
 			"Customer which has to pay this expense",
 			a.Parties.CustomersSearchItems(),
@@ -186,27 +180,23 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		exp.ObligedCustomerId = ""
 	}
 	exp.AdvancedByThirdParty = util.AskBool(
-		reader,
 		"Advanced?",
 		"Was this expense advanced by some third party (ex: employee)?",
 		false,
 	)
 	if exp.AdvancedByThirdParty {
 		exp.AdvancedThirdPartyId = util.AskStringFromSearch(
-			reader,
 			"Advanced party",
 			"Employee which advanced the expense",
 			a.Parties.EmployeesSearchItems(),
 		)
 	}
 	exp.DateOfSettlement = util.AskDate(
-		reader,
 		"Date of settlement",
 		"Date when the obligation was settelt for the company",
 		time.Now(),
 	)
 	exp.ProjectName = util.AskString(
-		reader,
 		"Project Name",
 		"Name of the associated project",
 		"",
