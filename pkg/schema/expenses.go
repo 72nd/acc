@@ -130,16 +130,9 @@ func NewExpenseWithUuid() Expense {
 func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp := NewExpenseWithUuid()
 	exp.Identifier = util.AskString(
-
 		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Expenses.GetIdentifiables(), DefaultExpensePrefix),
-	)
-	exp.ExpenseCategory = util.AskStringFromListSearch(
-
-		"Expense Category",
-		"Used for journal generation",
-		a.Expenses.GetExpenseCategories(),
 	)
 	exp.Name = util.AskString(
 		"Name",
@@ -195,6 +188,11 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		"Date of settlement",
 		"Date when the obligation was settelt for the company",
 		time.Now(),
+	)
+	exp.ExpenseCategory = util.AskStringFromListSearch(
+		"Expense Category",
+		"Used for journal generation",
+		a.Expenses.GetExpenseCategories(),
 	)
 	exp.ProjectName = util.AskString(
 		"Project Name",
