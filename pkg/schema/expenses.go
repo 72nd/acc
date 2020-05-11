@@ -18,8 +18,11 @@ const DefaultExpensePrefix = "e-"
 type Expenses []Expense
 
 // NewExpenses returns a new Expense slice with the one Expense in it.
-func NewExpenses() Expenses {
-	return Expenses{NewExpense()}
+func NewExpenses(useDefaults bool) Expenses {
+	if useDefaults {
+		return Expenses{NewExpense()}
+	}
+	return Expenses{}
 }
 
 // OpenExpenses opens a Expenses saved in the json file given by the path.

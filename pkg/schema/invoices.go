@@ -19,8 +19,11 @@ const DefaultInvoicesPrefix = "i-"
 type Invoices []Invoice
 
 // NewInvoices returns a new Expense slice with the one Expense in it.
-func NewInvoices() Invoices {
-	return []Invoice{NewInvoice()}
+func NewInvoices(useDefaults bool) Invoices {
+	if useDefaults {
+		return []Invoice{NewInvoice()}
+	}
+	return []Invoice{}
 }
 
 // OpenInvoices opens a Expenses saved in the json file given by the path.
@@ -85,7 +88,7 @@ type Invoice struct {
 func NewInvoice() Invoice {
 	inv := Invoice{}
 	if err := defaults.Set(&inv); err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal("error setting defaults: ", err)
 	}
 	return inv
 }

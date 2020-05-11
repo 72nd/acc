@@ -3,7 +3,6 @@ package schema
 
 import (
 	"fmt"
-	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
@@ -37,30 +36,26 @@ type Acc struct {
 	projectFolder         string        `yaml:"-"`
 }
 
-// NewAcc returns a new Acc element with the default values.
-func NewAcc() *Acc {
-	acc := &Acc{}
-	if err := defaults.Set(acc); err != nil {
-		logrus.Fatal(err)
-	}
-	acc.Company = NewCompany()
-	return acc
-}
-
 // NewProject creates a new acc project in the given folder path.
-func NewProject(folderPath string, doSave bool) Acc {
+func NewProject(folderPath, logo string, doSave, interactive bool) Acc {
+	var cmp Company
+	if interactive {
+		cmp = InteractiveNewCompany(logo)
+	} else {
+		cmp = NewCompany(logo)
+	}
 	acc := Acc{
-		Company:               NewCompany(),
+		Company:               cmp,
 		ExpensesFilePath:      DefaultExpensesFile,
 		InvoicesFilePath:      DefaultInvoicesFile,
 		PartiesFilePath:       DefaultPartiesFile,
 		BankStatementFilePath: DefaultBankStatementFile,
 		fileName:              DefaultAccFile,
 	}
-	exp := NewExpenses()
-	inv := NewInvoices()
-	prt := NewParties()
-	stm := NewBankStatement()
+	exp := NewExpenses(!interactive)
+	inv := NewInvoices(!interactive)
+	prt := NewParties(!interactive)
+	stm := NewBankStatement(!interactive)
 
 	if doSave {
 		acc.Save(path.Join(folderPath, DefaultAccFile))

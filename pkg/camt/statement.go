@@ -13,5 +13,5 @@ func NewBankToCustomerStatement(path string) BankToCustomerStatement {
 }
 
 func (s BankToCustomerStatement) Transactions() []schema.Transaction {
-
+	return []schema.Transaction{}
 }

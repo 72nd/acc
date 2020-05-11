@@ -23,12 +23,14 @@ type BankStatement struct {
 }
 
 // NewBankStatement returns a new BankStatement struct with the one Expense in it.
-func NewBankStatement() BankStatement {
+func NewBankStatement(useDefaults bool) BankStatement {
 	stm := BankStatement{}
-	if err := defaults.Set(&stm); err != nil {
-		logrus.Fatal(err)
+	if useDefaults {
+		if err := defaults.Set(&stm); err != nil {
+			logrus.Fatal("error setting defaults: ", err)
+		}
+		stm.Transactions = []Transaction{NewTransaction()}
 	}
-	stm.Transactions = []Transaction{NewTransaction()}
 	return stm
 }
 

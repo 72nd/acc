@@ -27,10 +27,16 @@ type Parties struct {
 }
 
 // NewParties returns a new Parties struct with the one Expense in it.
-func NewParties() Parties {
+func NewParties(useDefault bool) Parties {
+	if useDefault {
+		return Parties{
+			Employees: []Party{NewParty()},
+			Customers: []Party{NewParty()},
+		}
+	}
 	return Parties{
-		Employees: []Party{NewParty()},
-		Customers: []Party{NewParty()},
+		Employees: []Party{},
+		Customers: []Party{},
 	}
 }
 
@@ -164,15 +170,15 @@ type Party struct {
 	Name       string `yaml:"name" default:"Max Mustermann"`
 	Street     string `yaml:"street" default:"Main Street"`
 	StreetNr   int    `yaml:"streetNr" default:"1"`
-	Place      string `yaml:"place" default:"Zurich"`
 	PostalCode int    `yaml:"postalCode" default:"8000"`
+	Place      string `yaml:"place" default:"Zurich"`
 }
 
 // NewParty returns a new Party with the default values.
 func NewParty() Party {
 	pty := Party{}
 	if err := defaults.Set(&pty); err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal("error setting defaults: ", err)
 	}
 	return pty
 }
@@ -200,15 +206,15 @@ func InteractiveNewParty(partyType string) Party {
 		"Number of the street",
 		49,
 	)
-	pty.Place = util.AskString(
-		"Place",
-		fmt.Sprintf("Place/City of %s", partyType),
-		"Zurich",
-	)
 	pty.PostalCode = util.AskInt(
 		"Postal Code",
 		"Postal/ZIP Code",
 		4223,
+	)
+	pty.Place = util.AskString(
+		"Place",
+		fmt.Sprintf("Place/City of %s", partyType),
+		"Zurich",
 	)
 	return pty
 }

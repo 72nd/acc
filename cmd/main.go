@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"gitlab.com/72th/acc/pkg/bimpf"
@@ -300,14 +301,26 @@ func main() {
 				Usage:   "generates a new acc project with all needed files, use sub-commands to create only a subset",
 				Action: func(c *cli.Context) error {
 					outputPath := getFolderPath(c, "output-folder", c.Bool("force"), true)
-					schema.NewProject(outputPath, true)
+					if !c.Bool("default") {
+						fmt.Println("assistant for new acc project, use --default for non interactive use")
+					}
+					schema.NewProject(outputPath, c.String("logo"), true, !c.Bool("default"))
 					return nil
 				},
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
+						Name:    "default",
+						Aliases: []string{"d", "default-values"},
+						Usage:   "use default values and do not use interactive input",
+					},
+					&cli.BoolFlag{
 						Name:    "force",
 						Aliases: []string{"f"},
 						Usage:   "force overwrite of existing files",
+					},
+					&cli.StringFlag{
+						Name:  "logo",
+						Usage: "path to the logo file",
 					},
 					&cli.StringFlag{
 						Name:    "output-folder",
