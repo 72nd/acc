@@ -27,7 +27,7 @@ func (s SearchItems) Match(search string) SearchItems {
 }
 
 func (s SearchItems) ByIndex(index int) (*SearchItem, error) {
-	if index < 0 || len(s) >= index+1 {
+	if index < 0 || len(s) <= index+1 {
 		return nil, errors.New(fmt.Sprintf("no item found for index %d", index))
 	}
 	return &s[index], nil
@@ -202,16 +202,17 @@ func simplePromptWithEmpty(reader *bufio.Reader, name, typeName, desc, defaultVa
 func searchPrompt(reader *bufio.Reader, name, desc string, items SearchItems, showList bool) (result string) {
 	functions := "'T(text)' for free text form, 'E' for empty"
 	if showList {
-		functions = fmt.Sprintf("%s %s", functions, "'L(number)' for selecting by number")
+		functions = fmt.Sprintf("%s, 'L(number)' for selecting by number", functions)
 	}
-	if showList {
-		listItems(items)
-	}
-	fmt.Printf("%s %s %s\n--> ",
+	fmt.Printf("%s %s %s\n",
 		aurora.BrightCyan(fmt.Sprintf("Search for a %s", aurora.Bold(name))),
 		aurora.Yellow(fmt.Sprintf("(%s)", desc)),
 		aurora.Green(functions),
 	)
+	if showList {
+		listItems(items)
+	}
+	fmt.Print("--> ")
 	input, _ := reader.ReadString('\n')
 	input = strings.Replace(input, "\n", "", -1)
 	if input == "T" {
@@ -227,14 +228,21 @@ func searchPrompt(reader *bufio.Reader, name, desc string, items SearchItems, sh
 		}
 		return ele.Identifier
 	} else if strings.HasPrefix(input, "T") {
+		if strings.HasPrefix(input, "T ") {
+			return input[2:]
+		}
 		return input[1:]
 	} else if strings.HasPrefix(input, "L") {
-		index, err := strconv.Atoi(input[1:])
+		input2 := input[1:]
+		if strings.HasPrefix(input, "L ") {
+			input2 = input[2:]
+		}
+		index, err := strconv.Atoi(input2)
 		if err != nil {
 			fmt.Println(aurora.BrightCyan("invalid input, try again"))
 			return searchPrompt(reader, name, desc, items, showList)
 		}
-		ele, err := items.ByIndex(index)
+		ele, err := items.ByIndex(index - 1)
 		if err != nil {
 			fmt.Println(aurora.BrightCyan("invalid input, try again"))
 			return searchPrompt(reader, name, desc, items, showList)
@@ -273,3 +281,4 @@ func listItems(items SearchItems) {
 			aurora.Green(fmt.Sprintf("(%s)", items[i].Identifier)))
 	}
 }
+

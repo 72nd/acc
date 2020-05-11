@@ -138,6 +138,12 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Expenses.GetIdentifiables(), DefaultExpensePrefix),
 	)
+	exp.ExpenseCategory = util.AskStringFromListSearch(
+		reader,
+		"Expense Category",
+		"Used for journal generation",
+		a.Expenses.GetExpenseCategories(),
+	)
 	exp.Name = util.AskString(reader,
 		"Name",
 		"Name of the expense",
