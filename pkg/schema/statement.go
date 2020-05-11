@@ -99,3 +99,9 @@ func (s BankStatement) TransactionSearchItems() util.SearchItems {
 	}
 	return result
 }
+
+func (s *BankStatement) AssistedCompletion(a Acc) {
+	for i := range s.Transactions {
+		s.Transactions[i].AssistedCompletion(a)
+	}
+}

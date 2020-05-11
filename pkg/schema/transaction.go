@@ -18,6 +18,15 @@ const (
 	DebitTransaction                         // Outgoing transaction
 )
 
+type JournalMode int
+
+const (
+	UnknownJournalMode JournalMode = iota
+	ManualJournalMode
+	AutoJournalMode
+	k
+)
+
 // Transaction represents a single transaction of a bank statement.
 type Transaction struct {
 	Id                   string          `yaml:"id" default:""`
@@ -28,6 +37,7 @@ type Transaction struct {
 	AssociatedDocumentId string          `yaml:"associatedDocumentId" default:""`
 	Date                 string          `yaml:"date" default:""`
 	Amount               float64         `yaml:"amount" default:"10.00"`
+	JournalMode          JournalMode     `yaml:"journalMode" default:"0"`
 }
 
 func NewTransaction() Transaction {
@@ -158,9 +168,48 @@ func (t Transaction) String() string {
 }
 
 // Conditions returns the validation conditions.
-func (Transaction) Conditions() util.Conditions {
+func (t Transaction) Conditions() util.Conditions {
 	return util.Conditions{
-
+		{
+			Condition: t.Id == "",
+			Message:   "unique identifier not set",
+			Level:     util.BeforeExportFlaw,
+		},
+		{
+			Condition: t.Identifier == "",
+			Message:   "human readable identifier not set",
+			Level:     util.BeforeExportFlaw,
+		},
+		{
+			Condition: t.Description == "",
+			Message:   "no description set",
+			Level:     util.BeforeExportFlaw,
+		},
+		{
+			Condition: t.TransactionType < 0 || t.TransactionType > 1,
+			Message:   "transaction type not valid",
+			Level:     util.BeforeExportFlaw,
+		},
+		{
+			Condition: t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode,
+			Message:   "no associated party set although auto journal mode is set",
+			Level:     util.BeforeMergeFlaw,
+		},
+		{
+			Condition: t.AssociatedDocumentId == "" && t.JournalMode == AutoJournalMode,
+			Message:   "no associated document set although auto journal mode is set",
+			Level:     util.BeforeMergeFlaw,
+		},
+		{
+			Condition: t.Date == "",
+			Message:   "date not set",
+			Level:     util.BeforeMergeFlaw,
+		},
+		{
+			Condition: t.Amount >= 0,
+			Message:   "amount is not set",
+			Level:     util.BeforeMergeFlaw,
+		},
 	}
 }
 

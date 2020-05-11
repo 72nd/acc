@@ -257,6 +257,10 @@ func main() {
 				Name:  "complete",
 				Usage: "complete incorrect validated entries",
 				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					acc := schema.OpenProject(inputPath)
+					acc.BankStatement.AssistedCompletion(acc)
+					acc.SaveProject()
 					return nil
 				},
 			},
