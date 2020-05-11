@@ -105,8 +105,8 @@ func (s BankStatement) TransactionSearchItems() util.SearchItems {
 type TransactionType int
 
 const (
-	IncomingTransaction TransactionType = iota
-	OutgoingTransaction
+	CreditTransaction TransactionType = iota // Incoming transaction
+	DebitTransaction                         // Outgoing transaction
 )
 
 // Transaction represents a single transaction of a bank statement.
@@ -115,6 +115,8 @@ type Transaction struct {
 	Identifier      string          `yaml:"identifier" default:""`
 	Description     string          `yaml:"description" default:""`
 	TransactionType TransactionType `yaml:"transactionType" default:"0"`
+	ThirdParty      string          `yaml:"thirdParty" default:""`
+	ThirdPartyIdent string          `yaml:"thirdPartyIdent" default:""`
 	Date            string          `yaml:"date" default:""`
 	Amount          float64         `yaml:"amount" default:"10.00"`
 }

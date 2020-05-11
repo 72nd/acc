@@ -141,7 +141,7 @@ func main() {
 				Usage: "import bank-to-customer statement (camt.053.001.04)",
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
-					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "input", "camt xml file"))
+					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
 					acc := schema.OpenProject(inputPath)
 					acc.BankStatement.AddTransaction(btcStatement.Transactions())
 					acc.SaveProject()

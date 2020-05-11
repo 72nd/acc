@@ -132,7 +132,7 @@ func AskBool(name, desc string, defaultValue bool) bool {
 }
 
 func AskFloat(name, desc string, defaultValue float64) float64 {
-	input := simplePrompt(name, "int", desc, fmt.Sprintf("%f", defaultValue))
+	input := simplePrompt(name, "int", desc, fmt.Sprintf("%.2f", defaultValue))
 	if input == "" {
 		return defaultValue
 	}
