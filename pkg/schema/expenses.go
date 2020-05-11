@@ -229,7 +229,7 @@ func (e Expense) Type() string {
 
 // String returns a human readable representation of the element.
 func (e Expense) String() string {
-	return fmt.Sprintf("")
+	return fmt.Sprintf("%s (%s): %.2f", e.Name, e.Identifier, e.Amount)
 }
 
 // FileString returns the file name for exporting the expense as a document.

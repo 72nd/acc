@@ -177,7 +177,7 @@ func (i Invoice) Type() string {
 
 // String returns a human readable representation of the element.
 func (i Invoice) String() string {
-	return fmt.Sprintf("")
+	return fmt.Sprintf("%s (%s): %.2f", i.Name, i.Identifier, i.Amount)
 }
 
 func (i Invoice) FileString() string {

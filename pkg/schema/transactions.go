@@ -22,7 +22,6 @@ type Transaction struct {
 	Identifier      string          `yaml:"identifier" default:""`
 	Description     string          `yaml:"description" default:""`
 	TransactionType TransactionType `yaml:"transactionType" default:"0"`
-	ThirdParty      string          `yaml:"thirdParty" default:""`
 	ThirdPartyIdent string          `yaml:"thirdPartyIdent" default:""`
 	Date            string          `yaml:"date" default:""`
 	Amount          float64         `yaml:"amount" default:"10.00"`
@@ -82,6 +81,9 @@ func InteractiveNewTransaction(s BankStatement) Transaction {
 	return trn
 }
 
+func (t *Transaction) AssistedCompletion(thirdParty string) {
+}
+
 // GetId returns the unique id of the element.
 func (t Transaction) GetId() string {
 	return t.Id
@@ -105,8 +107,11 @@ func (Transaction) Type() string {
 }
 
 // String returns a human readable representation of the element.
-func (Transaction) String() string {
-	return fmt.Sprintf("")
+func (t Transaction) String() string {
+	if t.TransactionType == CreditTransaction {
+		return fmt.Sprintf("%s: received %.2f at %s", t.Identifier, t.Amount, t.Date)
+	}
+	return fmt.Sprintf("%s: payed %.2f at %s", t.Identifier, t.Amount, t.Date)
 }
 
 // Conditions returns the validation conditions.
