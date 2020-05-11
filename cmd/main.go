@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"gitlab.com/72th/acc/pkg/bimpf"
@@ -59,6 +60,7 @@ func main() {
 							if c.Bool("default") {
 								acc.Parties.Customers = append(acc.Parties.Customers, schema.NewPartyWithUuid())
 							} else {
+								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.Parties.Customers = append(acc.Parties.Customers, schema.InteractiveNewCustomer(acc))
 							}
 							acc.SaveProject()
@@ -76,6 +78,7 @@ func main() {
 							if c.Bool("default") {
 								acc.Parties.Employees = append(acc.Parties.Employees, schema.NewPartyWithUuid())
 							} else {
+								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.Parties.Employees = append(acc.Parties.Employees, schema.InteractiveNewEmployee(acc))
 							}
 							acc.SaveProject()
@@ -93,6 +96,7 @@ func main() {
 							if c.Bool("default") {
 								acc.Expenses = append(acc.Expenses, schema.NewExpenseWithUuid())
 							} else {
+								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc, c.String("asset")))
 							}
 							acc.SaveProject()
@@ -110,6 +114,7 @@ func main() {
 							if c.Bool("default") {
 								acc.Invoices = append(acc.Invoices, schema.NewInvoiceWithUuid())
 							} else {
+								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.Invoices = append(acc.Invoices, schema.InteractiveNewInvoice(acc, c.String("asset")))
 							}
 							acc.SaveProject()
@@ -127,6 +132,7 @@ func main() {
 							if c.Bool("default") {
 								acc.BankStatement.Transactions = append(acc.BankStatement.Transactions, schema.NewTransactionWithUuid())
 							} else {
+								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.BankStatement.Transactions = append(acc.BankStatement.Transactions, schema.InteractiveNewTransaction(acc.BankStatement))
 							}
 							acc.SaveProject()
@@ -143,7 +149,8 @@ func main() {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
 					acc := schema.OpenProject(inputPath)
-					acc.BankStatement.AddTransaction(btcStatement.Transactions())
+					fmt.Println(aurora.BrightMagenta("Use the --no-interactive flag to suppress user assisted check and completion"))
+					acc.BankStatement.AddTransaction(btcStatement.Transactions(!c.Bool("no-interactive")))
 					acc.SaveProject()
 					return nil
 				},
@@ -152,6 +159,10 @@ func main() {
 						Name:    "input",
 						Aliases: []string{"i"},
 						Usage:   "acc project file",
+					},
+					&cli.BoolFlag{
+						Name: "no-interactive",
+						Usage: "suppress user assisted transaction check and completion",
 					},
 					&cli.StringFlag{
 						Name:    "statement",
@@ -302,7 +313,7 @@ func main() {
 				Action: func(c *cli.Context) error {
 					outputPath := getFolderPath(c, "output-folder", c.Bool("force"), true)
 					if !c.Bool("default") {
-						fmt.Println("assistant for new acc project, use --default for non interactive use")
+						fmt.Println(aurora.BrightMagenta("assistant for new acc project, use --default for non interactive use"))
 					}
 					schema.NewProject(outputPath, c.String("logo"), true, !c.Bool("default"))
 					return nil
