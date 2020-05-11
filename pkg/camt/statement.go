@@ -18,7 +18,7 @@ func NewBankToCustomerStatement(path string) BankToCustomerStatement {
 	}
 }
 
-func (s BankToCustomerStatement) Transactions(interactive bool) []schema.Transaction {
+func (s BankToCustomerStatement) Transactions(assisted bool) []schema.Transaction {
 	file, err := os.Open(s.CamtPath)
 	if err != nil {
 		logrus.Fatalf("error reading %s: %s", s.CamtPath, err)
@@ -28,5 +28,5 @@ func (s BankToCustomerStatement) Transactions(interactive bool) []schema.Transac
 	if err := xml.Unmarshal(raw, &doc); err != nil {
 		logrus.Fatalf("error unmarshalling %s: %s", s.CamtPath, err)
 	}
-	return []schema.Transaction{}
+	return doc.AccTransactions(assisted)
 }
