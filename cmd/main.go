@@ -301,7 +301,7 @@ func main() {
 					},
 					&cli.BoolFlag{
 						Name:    "do-overwrite",
-						Aliases: []string{"overwrite"},
+						Aliases: []string{"overwrite", "r"},
 						Value:   false,
 						Usage:   "force overwrite existing documents",
 					},

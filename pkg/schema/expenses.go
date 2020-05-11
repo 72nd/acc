@@ -115,7 +115,7 @@ type Expense struct {
 func NewExpense() Expense {
 	exp := Expense{}
 	if err := defaults.Set(&exp); err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal("error setting defaults: ", err)
 	}
 	return exp
 }

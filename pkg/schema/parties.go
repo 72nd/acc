@@ -128,6 +128,9 @@ func (p Parties) EmployeeStringById(id string) string {
 }
 
 func (p Parties) CustomerStringById(id string) string {
+	if id == "" {
+		return "no customer associated"
+	}
 	cst, err := p.CustomerById(id)
 	if err != nil {
 		logrus.Error("no  found: ", err)
