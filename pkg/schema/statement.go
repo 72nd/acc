@@ -51,6 +51,10 @@ func (s BankStatement) Save(path string) {
 	SaveToYaml(s, path)
 }
 
+func (s *BankStatement) AddTransaction(trn []Transaction) {
+	s.Transactions = append(s.Transactions, trn...)
+}
+
 // SetId sets a unique id to all elements in the slice.
 func (s BankStatement) SetId() {
 	for i := range s.Transactions {

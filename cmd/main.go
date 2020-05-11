@@ -4,6 +4,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 	"gitlab.com/72th/acc/pkg/bimpf"
+	"gitlab.com/72th/acc/pkg/camt"
 	"gitlab.com/72th/acc/pkg/document/invoices"
 	"gitlab.com/72th/acc/pkg/document/records"
 	"gitlab.com/72th/acc/pkg/schema"
@@ -106,7 +107,7 @@ func main() {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							acc := schema.OpenProject(inputPath)
 							if c.Bool("default") {
-								acc.Invoices = append(acc.Invoices, schema.InteractiveNewInvoice(acc, c.String("asset")))
+								acc.Invoices = append(acc.Invoices, schema.NewInvoiceWithUuid())
 							} else {
 								acc.Invoices = append(acc.Invoices, schema.InteractiveNewInvoice(acc, c.String("asset")))
 							}
@@ -123,7 +124,7 @@ func main() {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							acc := schema.OpenProject(inputPath)
 							if c.Bool("default") {
-								acc.BankStatement.Transactions = append(acc.BankStatement.Transactions, schema.InteractiveNewTransaction(acc.BankStatement))
+								acc.BankStatement.Transactions = append(acc.BankStatement.Transactions, schema.NewTransactionWithUuid())
 							} else {
 								acc.BankStatement.Transactions = append(acc.BankStatement.Transactions, schema.InteractiveNewTransaction(acc.BankStatement))
 							}
@@ -135,8 +136,32 @@ func main() {
 				},
 			},
 			{
+				Name:  "bank",
+				Usage: "import bank-to-customer statement (camt.053.001.04)",
+				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "input", "camt xml file"))
+					acc := schema.OpenProject(inputPath)
+					acc.BankStatement.AddTransaction(btcStatement.Transactions())
+					acc.SaveProject()
+					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "input",
+						Aliases: []string{"i"},
+						Usage:   "acc project file",
+					},
+					&cli.StringFlag{
+						Name:    "statement",
+						Aliases: []string{"s"},
+						Usage:   "path to camt xml",
+					},
+				},
+			},
+			{
 				Name:  "bimpf",
-				Usage: "Bimpf related functions",
+				Usage: "bimpf related functions",
 				Action: func(c *cli.Context) error {
 					_ = cli.ShowCommandHelp(c, c.Command.Name)
 					return nil
