@@ -2,7 +2,6 @@ package camt
 
 import (
 	"encoding/xml"
-	"fmt"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/schema"
 	"io/ioutil"
@@ -19,7 +18,7 @@ func NewBankToCustomerStatement(path string) BankToCustomerStatement {
 	}
 }
 
-func (s BankToCustomerStatement) Transactions() []schema.Transaction {
+func (s BankToCustomerStatement) Transactions(interactive bool) []schema.Transaction {
 	file, err := os.Open(s.CamtPath)
 	if err != nil {
 		logrus.Fatalf("error reading %s: %s", s.CamtPath, err)
@@ -28,15 +27,6 @@ func (s BankToCustomerStatement) Transactions() []schema.Transaction {
 	var doc Document
 	if err := xml.Unmarshal(raw, &doc); err != nil {
 		logrus.Fatalf("error unmarshalling %s: %s", s.CamtPath, err)
-	}
-	fmt.Println(doc)
-	fmt.Println("++++++")
-	for _, entry := range doc.Entries {
-		fmt.Printf("%.2f %s %s\n", entry.Amount, entry.BookingData, entry.ValueData)
-		for _, trans := range entry.Transactions {
-			fmt.Println(trans)
-		}
-		fmt.Println("-------------")
 	}
 	return []schema.Transaction{}
 }
