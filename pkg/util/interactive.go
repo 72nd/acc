@@ -2,6 +2,7 @@ package util
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/logrusorgru/aurora"
@@ -25,6 +26,13 @@ func (s SearchItems) Match(search string) SearchItems {
 	return result
 }
 
+func (s SearchItems) ByIndex(index int) (*SearchItem, error) {
+	if index < 0 || len(s) >= index+1 {
+		return nil, errors.New(fmt.Sprintf("no item found for index %d", index))
+	}
+	return &s[index], nil
+}
+
 type SearchItem struct {
 	Name       string
 	Identifier string
@@ -40,22 +48,11 @@ func AskString(reader *bufio.Reader, name, desc, defaultValue string) string {
 }
 
 func AskStringFromSearch(reader *bufio.Reader, name, desc string, searchItems SearchItems) string {
-	input, freeText, empty := searchPrompt(reader, name, desc)
-	if freeText {
-		return AskString(reader, name, desc, "")
-	} else if empty {
-		return ""
-	}
-	rsl := searchItems.Match(input)
-	identifier, redo := searchItemsPrompt(reader, rsl, true)
-	if redo {
-		return AskStringFromSearch(reader, name, desc, searchItems)
-	}
-	return identifier
+	return searchPrompt(reader, name, desc, searchItems, false)
 }
 
-func AskStringFromList(reader *bufio.Reader, name, desc string, showList bool, values map[string]string) string {
-	return ""
+func AskStringFromListSearch(reader *bufio.Reader, name, desc string, searchItems SearchItems) string {
+	return searchPrompt(reader, name, desc, searchItems, true)
 }
 
 /**
@@ -69,7 +66,7 @@ func SetStringFieldFromList(reader *bufio.Reader, field *string, name string, sh
 */
 
 func AskInt(reader *bufio.Reader, name, desc string, defaultValue int) int {
-	input := simplePrompt(reader, name, "int", desc, fmt.Sprintf("%d",defaultValue))
+	input := simplePrompt(reader, name, "int", desc, fmt.Sprintf("%d", defaultValue))
 	if input == "" {
 		return defaultValue
 	}
@@ -202,45 +199,77 @@ func simplePromptWithEmpty(reader *bufio.Reader, name, typeName, desc, defaultVa
 	return strings.Replace(input, "\n", "", -1), true
 }
 
-func searchPrompt(reader *bufio.Reader, name, desc string, items *SearchItems) (value string, freeText bool, empty bool) {
-	fmt.Printf("%s %s %s: ",
-		aurora.BrightCyan(fmt.Sprintf("Search for a %s", aurora.Bold(name))),
-		aurora.Yellow(fmt.Sprintf("(%s)", desc)),
-		aurora.Green("'T' for free text form, 'E' for empty"))
-	input, _ := reader.ReadString('\n')
-	if input == "T\n" {
-		return "", true, false
-	} else if input == "E\n" {
-		return "", false, true
-	}
-	return strings.Replace(input, "\n", "", -1), false, false
-}
-
-func searchItemsPrompt(reader *bufio.Reader, items SearchItems, showList bool) (result string, back bool) {
-	if len(items) == 0 {
-		fmt.Printf("%s: ", aurora.BrightCyan("No entry found."))
-		return "", true
+func searchPrompt(reader *bufio.Reader, name, desc string, items SearchItems, showList bool) (result string) {
+	functions := "'T(text)' for free text form, 'E' for empty"
+	if showList {
+		functions = fmt.Sprintf("%s %s", functions, "'L(number)' for selecting by number")
 	}
 	if showList {
-		for i := range items {
-			fmt.Printf("%s %s %s\n",
-				aurora.Yellow(fmt.Sprintf("%d)", i+1)),
-				items[i].Name,
-				aurora.Green(fmt.Sprintf("(%s)", items[i].Identifier)))
-		}
+		listItems(items)
 	}
-	fmt.Printf("%s ", aurora.BrightCyan("Choose item, 'S' to search again:"))
+	fmt.Printf("%s %s %s\n--> ",
+		aurora.BrightCyan(fmt.Sprintf("Search for a %s", aurora.Bold(name))),
+		aurora.Yellow(fmt.Sprintf("(%s)", desc)),
+		aurora.Green(functions),
+	)
 	input, _ := reader.ReadString('\n')
 	input = strings.Replace(input, "\n", "", -1)
-	if input == "S" {
-		return "", true
+	if input == "T" {
+		return AskString(reader, name, desc, "")
+	} else if input == "E" {
+		return ""
+	} else if input == "L" && showList {
+		index := AskInt(reader, "index", fmt.Sprintf("1 to %d", len(items)), 0)
+		ele, err := items.ByIndex(index)
+		if err != nil {
+			logrus.Error("invalid input, try again")
+			return searchPrompt(reader, name, desc, items, showList)
+		}
+		return ele.Identifier
+	} else if strings.HasPrefix(input, "T") {
+		return input[1:]
+	} else if strings.HasPrefix(input, "L") {
+		index, err := strconv.Atoi(input[1:])
+		if err != nil {
+			fmt.Println(aurora.BrightCyan("invalid input, try again"))
+			return searchPrompt(reader, name, desc, items, showList)
+		}
+		ele, err := items.ByIndex(index)
+		if err != nil {
+			fmt.Println(aurora.BrightCyan("invalid input, try again"))
+			return searchPrompt(reader, name, desc, items, showList)
+		}
+		return ele.Identifier
 	}
 
-	value, err := strconv.Atoi(input)
-	if err != nil || value < 1 || value > len(items) {
-		logrus.Error("invalid input, try again")
-		return searchItemsPrompt(reader, items, false)
+	matches := items.Match(input)
+	if len(matches) == 0 {
+		fmt.Println(aurora.BrightCyan("No entry found, try again"))
+		return searchPrompt(reader, name, desc, items, showList)
 	}
-	return items[value-1].Identifier, false
+	for {
+		listItems(matches)
+		fmt.Printf("%s ", aurora.BrightCyan("Choose item, 'S' to search again:"))
+		input2, _ := reader.ReadString('\n')
+		input2 = strings.Replace(input2, "\n", "", -1)
+		if input2 == "S" {
+			return searchPrompt(reader, name, desc, items, showList)
+		}
+
+		value, err := strconv.Atoi(input)
+		if err != nil || value < 1 || value > len(items) {
+			logrus.Error("invalid input, try again")
+			continue
+		}
+		return items[value-1].Identifier
+	}
 }
 
+func listItems(items SearchItems) {
+	for i := range items {
+		fmt.Printf("%s %s %s\n",
+			aurora.Yellow(fmt.Sprintf("%d)", i+1)),
+			items[i].Name,
+			aurora.Green(fmt.Sprintf("(%s)", items[i].Identifier)))
+	}
+}

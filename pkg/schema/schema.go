@@ -13,13 +13,14 @@ import (
 // Identifiable describes types which are uniquely identifiable trough out the utils structure.
 type Identifiable interface {
 	GetId() string
+	GetIdentifier() string
 }
 
 func SuggestNextIdentifier(idt []Identifiable, prefix string) string {
 	r := regexp.MustCompile(`(\d+)$`)
 	max := 0
 	for i := range idt {
-		rsl := r.FindAllString(idt[i].GetId(), -1)
+		rsl := r.FindAllString(idt[i].GetIdentifier(), -1)
 		if len(rsl) != 1 {
 			continue
 		}

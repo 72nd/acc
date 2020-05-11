@@ -255,6 +255,10 @@ func (p Party) GetId() string {
 	return p.Id
 }
 
+func (p Party) GetIdentifier() string {
+	return p.Identifier
+}
+
 // SetId generates a unique id for the element if there isn't already one defined.
 func (p *Party) SetId() {
 	if p.Id != "" {

@@ -58,20 +58,24 @@ func (e Expenses) GetIdentifiables() []Identifiable {
 	return exp
 }
 
-func (e Expenses) GetExpenseCategories() []string {
-	var result []string
+func (e Expenses) GetExpenseCategories() util.SearchItems {
+	var result util.SearchItems
 	for i := range e {
 		if e[i].ExpenseCategory == "" {
 			continue
 		}
 		existing := false
 		for j := range result {
-			if e[i].ExpenseCategory == result[j] {
+			if e[i].ExpenseCategory == result[j].Identifier {
 				existing = true
 			}
 		}
 		if !existing {
-			result = append(result, e[i].ExpenseCategory)
+			result = append(result, util.SearchItem{
+				Name:       e[i].ExpenseCategory,
+				Identifier: e[i].ExpenseCategory,
+				Value:      e[i].ExpenseCategory,
+			})
 		}
 	}
 	return result
@@ -207,6 +211,10 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 // GetId returns the unique id of the element.
 func (e Expense) GetId() string {
 	return e.Id
+}
+
+func (e Expense) GetIdentifier() string {
+	return e.Identifier
 }
 
 // SetId generates a unique id for the element if there isn't already one defined.

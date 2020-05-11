@@ -167,6 +167,10 @@ func (i Invoice) GetId() string {
 	return i.Id
 }
 
+func (i Invoice) GetIdentifier() string {
+	return i.Identifier
+}
+
 // SetId generates a unique id for the element if there isn't already one defined.
 func (i *Invoice) SetId() {
 	if i.Id != "" {
