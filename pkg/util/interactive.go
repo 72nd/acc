@@ -69,6 +69,15 @@ func AskInt(name, desc string, defaultValue int) int {
 	return value
 }
 
+func AskIntFromListSearch(name, desc string, searchItems SearchItems) int {
+	input := searchPrompt(name, desc, searchItems, true)
+	value, err := strconv.Atoi(input)
+	if err != nil {
+		logrus.Fatal("internal error (result from SearchItems is not parsable as an int")
+	}
+	return value
+}
+
 func AskIntWithHelp(name string, defaultValue int, showList bool, possible map[int]string) int {
 	if showList {
 		fmt.Printf("%s%s %s", aurora.Bold(name), aurora.Bold(" (int)"), aurora.Italic("Possibilities:"))

@@ -12,6 +12,7 @@ import (
 )
 
 const DefaultBankStatementFile = "bank-statement.yaml"
+const DefaultTransactionPrefix = "t-"
 
 // BankStatement represents a bank statement.
 type BankStatement struct {
@@ -57,6 +58,14 @@ func (s BankStatement) SetId() {
 	}
 }
 
+func (s BankStatement) GetIdentifiables() []Identifiable {
+	trn := make([]Identifiable, len(s.Transactions))
+	for i := range s.Transactions {
+		trn[i] = s.Transactions[i]
+	}
+	return trn
+}
+
 // Type returns a string with the type name of the element.
 func (s BankStatement) Type() string {
 	return ""
@@ -87,12 +96,21 @@ func (s BankStatement) TransactionSearchItems() util.SearchItems {
 	return result
 }
 
+type TransactionType int
+
+const (
+	IncomingTransaction TransactionType = iota
+	OutgoingTransaction
+)
+
 // Transaction represents a single transaction of a bank statement.
 type Transaction struct {
-	Id          string    `yaml:"id" default:""`
-	Description string    `yaml:"description" default:""`
-	Date        time.Time `yaml:"date" default:""`
-	Amount      float64   `yaml:"amount" default:"10.00"`
+	Id              string          `yaml:"id" default:""`
+	Identifier      string          `yaml:"identifier" default:""`
+	Description     string          `yaml:"description" default:""`
+	TransactionType TransactionType `yaml:"transactionType" default:"0"`
+	Date            string          `yaml:"date" default:""`
+	Amount          float64         `yaml:"amount" default:"10.00"`
 }
 
 func NewTransaction() Transaction {
@@ -109,9 +127,53 @@ func NewTransactionWithUuid() Transaction {
 	return trn
 }
 
+func InteractiveNewTransaction(s BankStatement) Transaction {
+	trn := NewTransactionWithUuid()
+	trn.Identifier = util.AskString(
+		"Identifier",
+		"Unique human readable identifier",
+		SuggestNextIdentifier(s.GetIdentifiables(), DefaultTransactionPrefix),
+	)
+	trn.Description = util.AskString(
+		"Description",
+		"Some information about the transaction",
+		"",
+	)
+	trn.TransactionType = TransactionType(util.AskIntFromListSearch(
+		"Transaction Type",
+		"",
+		util.SearchItems{
+			util.SearchItem{
+				Name:       "Incoming transaction",
+				Identifier: "0",
+				Value:      "1 Incoming Transaction",
+			},
+			util.SearchItem{
+				Name:       "Outgoing transaction",
+				Identifier: "2",
+				Value:      "2 Outgoing Transaction",
+			},
+		}))
+	trn.Date = util.AskDate(
+		"Date",
+		"Transaction date",
+		time.Now(),
+	)
+	trn.Amount = util.AskFloat(
+		"Amount",
+		"",
+		23.42,
+	)
+	return trn
+}
+
 // GetId returns the unique id of the element.
 func (t Transaction) GetId() string {
 	return t.Id
+}
+
+func (t Transaction) GetIdentifier() string {
+	return t.Identifier
 }
 
 // SetId generates a unique id for the element if there isn't already one defined.

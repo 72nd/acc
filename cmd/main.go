@@ -115,6 +115,23 @@ func main() {
 						},
 						Flags: addFlags,
 					},
+					{
+						Name:    "transaction",
+						Aliases: []string{"trn"},
+						Usage:   "add a transaction",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							if c.Bool("default") {
+								acc.BankStatement.Transactions = append(acc.BankStatement.Transactions, schema.InteractiveNewTransaction(acc.BankStatement))
+							} else {
+								acc.BankStatement.Transactions = append(acc.BankStatement.Transactions, schema.InteractiveNewTransaction(acc.BankStatement))
+							}
+							acc.SaveProject()
+							return nil
+						},
+						Flags: addFlags,
+					},
 				},
 			},
 			{
