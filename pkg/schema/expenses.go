@@ -76,15 +76,15 @@ func (e Expenses) GetExpenseCategories() util.SearchItems {
 		}
 		existing := false
 		for j := range result {
-			if e[i].ExpenseCategory == result[j].Identifier {
+			if e[i].ExpenseCategory == result[j].Value {
 				existing = true
 			}
 		}
 		if !existing {
 			result = append(result, util.SearchItem{
-				Name:       e[i].ExpenseCategory,
-				Identifier: e[i].ExpenseCategory,
-				Value:      e[i].ExpenseCategory,
+				Name:        e[i].ExpenseCategory,
+				Value:       e[i].ExpenseCategory,
+				SearchValue: e[i].ExpenseCategory,
 			})
 		}
 	}
@@ -95,7 +95,7 @@ func (e Expenses) GetExpenseCategories() util.SearchItems {
 type Expense struct {
 	// Id is the internal unique identifier of the Expense.
 	Id string `yaml:"id" default:"1"`
-	// Identifier is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
+	// Value is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
 	Identifier string `yaml:"identifier" default:"e-19-1"`
 	// Name describes meaningful the kind of the Expense.
 	Name string `yaml:"name" default:"Expense Name"`
@@ -142,7 +142,7 @@ func NewExpenseWithUuid() Expense {
 func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp := NewExpenseWithUuid()
 	exp.Identifier = util.AskString(
-		"Identifier",
+		"Value",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Expenses.GetIdentifiables(), DefaultExpensePrefix),
 	)

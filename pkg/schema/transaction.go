@@ -57,7 +57,7 @@ func NewTransactionWithUuid() Transaction {
 func InteractiveNewTransaction(s BankStatement) Transaction {
 	trn := NewTransactionWithUuid()
 	trn.Identifier = util.AskString(
-		"Identifier",
+		"Value",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(s.GetIdentifiables(), DefaultTransactionPrefix),
 	)
@@ -71,14 +71,14 @@ func InteractiveNewTransaction(s BankStatement) Transaction {
 		"",
 		util.SearchItems{
 			util.SearchItem{
-				Name:       "Incoming transaction",
-				Identifier: "0",
-				Value:      "1 Incoming Transaction",
+				Name:        "Incoming transaction",
+				Value:       "0",
+				SearchValue: "1 Incoming Transaction",
 			},
 			util.SearchItem{
-				Name:       "Outgoing transaction",
-				Identifier: "2",
-				Value:      "2 Outgoing Transaction",
+				Name:        "Outgoing transaction",
+				Value:       "2",
+				SearchValue: "2 Outgoing Transaction",
 			},
 		}))
 	trn.Date = util.AskDate(
@@ -100,7 +100,7 @@ func (t *Transaction) AssistedCompletion(a Acc) {
 	identifier := SuggestNextIdentifier(a.BankStatement.GetIdentifiables(), DefaultTransactionPrefix)
 	if t.Identifier == "" && identifier != "" {
 		t.Identifier = util.AskString(
-			"Identifier",
+			"Value",
 			"Unique human readable identifier",
 			identifier)
 	}
@@ -220,8 +220,8 @@ func (t Transaction) Validate() util.ValidateResults {
 
 func (t Transaction) SearchItem() util.SearchItem {
 	return util.SearchItem{
-		Name:       t.Description,
-		Identifier: t.Id,
-		Value:      t.Description,
+		Name:        t.Description,
+		Value:       t.Id,
+		SearchValue: t.Description,
 	}
 }

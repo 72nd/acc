@@ -20,7 +20,7 @@ type SearchItems []SearchItem
 func (s SearchItems) Match(search string) SearchItems {
 	var result SearchItems
 	for i := range s {
-		if fuzzy.MatchFold(search, s[i].Value) {
+		if fuzzy.MatchFold(search, s[i].SearchValue) {
 			result = append(result, s[i])
 		}
 	}
@@ -35,9 +35,9 @@ func (s SearchItems) ByIndex(index int) (*SearchItem, error) {
 }
 
 type SearchItem struct {
-	Name       string
-	Identifier string
-	Value      string
+	Name        string
+	Value       interface{}
+	SearchValue string
 }
 
 func AskString(name, desc, defaultValue string) string {
@@ -49,11 +49,21 @@ func AskString(name, desc, defaultValue string) string {
 }
 
 func AskStringFromSearch(name, desc string, searchItems SearchItems) string {
-	return searchPrompt(name, desc, searchItems, false)
+	result := searchPrompt(name, desc, searchItems, false)
+	value, ok := result.(string)
+	if !ok {
+		logrus.Fatalf("could not convert %+v to string", result)
+	}
+	return value
 }
 
 func AskStringFromListSearch(name, desc string, searchItems SearchItems) string {
-	return searchPrompt(name, desc, searchItems, true)
+	result := searchPrompt(name, desc, searchItems, true)
+	value, ok := result.(string)
+	if !ok {
+		logrus.Fatalf("could not convert %+v to string", result)
+	}
+	return value
 }
 
 func AskInt(name, desc string, defaultValue int) int {
@@ -63,55 +73,29 @@ func AskInt(name, desc string, defaultValue int) int {
 	}
 	value, err := strconv.Atoi(input)
 	if err != nil {
-		logrus.Warn("Could not parse input as a number (int)")
+		logrus.Warn("could not parse input as a number (int)")
 		return AskInt(name, desc, defaultValue)
 	}
 	return value
 }
 
-func AskIntFromListSearch(name, desc string, searchItems SearchItems) int {
-	input := searchPrompt(name, desc, searchItems, true)
+func AskIntFromList(name, desc string, searchItems SearchItems) int {
+	header(name, "selection", desc, fmt.Sprintf("Select a item between 1 and %d", len(searchItems)))
+	listItems(searchItems)
+	fmt.Print("--> ")
+	input := getInput()
 	value, err := strconv.Atoi(input)
-	if err != nil {
-		logrus.Fatal("internal error (result from SearchItems is not parsable as an int")
+	if err != nil || value < 1 || value > len(searchItems) {
+		logrus.Warn("invali")
 	}
-	return value
 }
 
-func AskIntWithHelp(name string, defaultValue int, showList bool, possible map[int]string) int {
-	if showList {
-		fmt.Printf("%s%s %s", aurora.Bold(name), aurora.Bold(" (int)"), aurora.Italic("Possibilities:"))
-		for value, explanation := range possible {
-			fmt.Printf("\n%s %s", aurora.Bold(fmt.Sprintf("[%d]", value)), explanation)
-		}
-		fmt.Printf("\n--> ")
-	} else {
-		fmt.Printf("%s%s %s\n--> ", aurora.Bold(name), aurora.Bold(" (int)"), aurora.Italic(fmt.Sprintf("default: «%d» (choose default with enter) type «l» to list possibilietes", defaultValue)))
+func AskIntFromListSearch(name, desc string, searchItems SearchItems) int {
+	result := searchPrompt(name, desc, searchItems, true)
+	value, ok := result.(int)
+	if !ok {
+		logrus.Fatalf("could not convert %+v to int", result)
 	}
-	input := getInput()
-	if input == "" {
-		return defaultValue
-	} else if input == "l" {
-		return AskIntWithHelp(name, defaultValue, true, possible)
-	}
-
-	value, err := strconv.Atoi(input)
-	if err != nil {
-		logrus.Warn("Could not parse input as a number (int)")
-		return AskIntWithHelp(name, defaultValue, showList, possible)
-	}
-	var exists bool
-	for possibleValue := range possible {
-		if value == possibleValue {
-			exists = true
-			break
-		}
-	}
-	if !exists {
-		logrus.Warn("This value is not valid, please see the list:")
-		return AskIntWithHelp(name, defaultValue, true, possible)
-	}
-
 	return value
 }
 
@@ -159,11 +143,12 @@ func AskDate(name, desc string, defaultValue time.Time) string {
 		"01.02.2006",
 		"2006-01-02",
 	}
-	input, empty := simplePromptWithEmpty(name, "DD-MM-YYYY", desc, defaultValue.Format(GermanLayout))
-	if empty {
+	header(name, "DD-MM-YYYY", desc, fmt.Sprintf("Enter for %s, 'T' for today (%s)", aurora.Underline("empty"), defaultValue.Format(GermanLayout)))
+	input := getInput()
+	if input == "" {
 		return ""
 	}
-	if input == "" {
+	if input == "T" {
 		return defaultValue.Format(GermanLayout)
 	}
 	success := false
@@ -184,20 +169,12 @@ func AskDate(name, desc string, defaultValue time.Time) string {
 }
 
 func simplePrompt(name, typeName, desc, defaultValue string) string {
-	fmt.Printf("%s%s %s %s\n--> ",
-		aurora.BrightCyan(aurora.Bold(name)),
-		aurora.BrightCyan(fmt.Sprintf(" (%s)", typeName)),
-		aurora.Yellow(fmt.Sprintf("%s", desc)),
-		aurora.Green(fmt.Sprintf("Enter for default (%s)", defaultValue)))
+	header(name, typeName, desc, fmt.Sprintf("Enter for default (%s)", defaultValue))
 	return getInput()
 }
 
 func simplePromptWithEmpty(name, typeName, desc, defaultValue string) (value string, empty bool) {
-	fmt.Printf("%s%s %s %s\n--> ",
-		aurora.BrightCyan(aurora.Bold(name)),
-		aurora.BrightCyan(fmt.Sprintf(" (%s)", typeName)),
-		aurora.Yellow(fmt.Sprintf("%s", desc)),
-		aurora.Green(fmt.Sprintf("Enter for default (%s), 'E' for empty", defaultValue)))
+	header(name, typeName, desc, fmt.Sprintf("Enter for default (%s), 'E' for empty", defaultValue))
 	input := getInput()
 	if input == "E" {
 		return "", true
@@ -205,7 +182,7 @@ func simplePromptWithEmpty(name, typeName, desc, defaultValue string) (value str
 	return input, true
 }
 
-func searchPrompt(name, desc string, items SearchItems, showList bool) (result string) {
+func searchPrompt(name, desc string, items SearchItems, showList bool) (result interface{}) {
 	functions := "'T(text)' for free text form, 'E' for empty"
 	if showList {
 		functions = fmt.Sprintf("%s, 'L(number)' for selecting by number", functions)
@@ -231,7 +208,7 @@ func searchPrompt(name, desc string, items SearchItems, showList bool) (result s
 			logrus.Error("invalid input, try again")
 			return searchPrompt(name, desc, items, showList)
 		}
-		return ele.Identifier
+		return ele.Value
 	} else if strings.HasPrefix(input, "T") {
 		if strings.HasPrefix(input, "T ") {
 			return input[2:]
@@ -252,7 +229,7 @@ func searchPrompt(name, desc string, items SearchItems, showList bool) (result s
 			fmt.Println(aurora.BrightCyan("invalid input, try again"))
 			return searchPrompt(name, desc, items, showList)
 		}
-		return ele.Identifier
+		return ele.Value
 	}
 
 	matches := items.Match(input)
@@ -274,8 +251,16 @@ func searchPrompt(name, desc string, items SearchItems, showList bool) (result s
 			logrus.Error("invalid input, try again")
 			continue
 		}
-		return items[value-1].Identifier
+		return items[value-1].Value
 	}
+}
+
+func header(name, typeName, desc, options string) {
+	fmt.Printf("%s%s %s %s\n--> ",
+		aurora.BrightCyan(aurora.Bold(name)),
+		aurora.BrightCyan(fmt.Sprintf(" (%s)", typeName)),
+		aurora.Yellow(fmt.Sprintf("%s", desc)),
+		aurora.Green(options))
 }
 
 func listItems(items SearchItems) {
@@ -283,7 +268,7 @@ func listItems(items SearchItems) {
 		fmt.Printf("%s %s %s\n",
 			aurora.Yellow(fmt.Sprintf("%d)", i+1)),
 			items[i].Name,
-			aurora.Green(fmt.Sprintf("(%s)", items[i].Identifier)))
+			aurora.Green(fmt.Sprintf("(%s)", items[i].Value)))
 	}
 }
 

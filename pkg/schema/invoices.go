@@ -64,7 +64,7 @@ func (i Invoices) GetIdentifiables() []Identifiable {
 type Invoice struct {
 	// Id is the internal unique identifier of the Expense.
 	Id string `yaml:"id" default:"1"`
-	// Identifier is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
+	// Value is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
 	Identifier string `yaml:"identifier" default:"i-19-1"`
 	// Name describes meaningful the kind of the Expense.
 	Name string `yaml:"name" default:"Expense Name"`
@@ -102,7 +102,7 @@ func NewInvoiceWithUuid() Invoice {
 func InteractiveNewInvoice(a Acc, asset string) Invoice {
 	inv := NewInvoiceWithUuid()
 	inv.Identifier = util.AskString(
-		"Identifier",
+		"Value",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Invoices.GetIdentifiables(), DefaultInvoicesPrefix),
 	)

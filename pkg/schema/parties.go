@@ -183,7 +183,7 @@ func (p Parties) CustomersSearchItems() util.SearchItems {
 type Party struct {
 	// Id is the internal unique identifier of the Expense.
 	Id string `yaml:"id" default:""`
-	// Identifier is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
+	// Value is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
 	Identifier string `yaml:"identifier" default:"?-1"`
 	Name       string `yaml:"name" default:"Max Mustermann"`
 	Street     string `yaml:"street" default:"Main Street"`
@@ -240,7 +240,7 @@ func InteractiveNewParty(partyType string) Party {
 func InteractiveNewCustomer(a Acc) Party {
 	pty := InteractiveNewParty("Customer")
 	pty.Identifier = util.AskString(
-		"Identifier",
+		"Value",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Parties.GetCustomerIdentifiables(), DefaultCustomerPrefix),
 	)
@@ -250,7 +250,7 @@ func InteractiveNewCustomer(a Acc) Party {
 func InteractiveNewEmployee(a Acc) Party {
 	pty := InteractiveNewParty("Employee")
 	pty.Identifier = util.AskString(
-		"Identifier",
+		"Value",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Parties.GetEmployeeIdentifiables(), DefaultEmployeePrefix),
 	)
@@ -259,9 +259,9 @@ func InteractiveNewEmployee(a Acc) Party {
 
 func (p Party) SearchItem() util.SearchItem {
 	return util.SearchItem{
-		Name:       p.Name,
-		Identifier: p.Id,
-		Value:      fmt.Sprintf("%s %s %s", p.Name, p.Identifier, p.Place),
+		Name:        p.Name,
+		Value:       p.Id,
+		SearchValue: fmt.Sprintf("%s %s %s", p.Name, p.Identifier, p.Place),
 	}
 }
 
