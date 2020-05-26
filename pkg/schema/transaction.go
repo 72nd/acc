@@ -24,7 +24,6 @@ const (
 	UnknownJournalMode JournalMode = iota
 	ManualJournalMode
 	AutoJournalMode
-	k
 )
 
 // Transaction represents a single transaction of a bank statement.
@@ -131,6 +130,19 @@ func (t Transaction) AssistedCompletion(a Acc, doAll bool) Transaction {
 			"couldn't find associated document, manual search",
 			docs)
 	}
+	t.JournalMode = JournalMode(util.AskIntFromList(
+		"Journal Mode",
+		"choose how journal entry will be generated for this transaction",
+		util.SearchItems{
+			{
+				Name: "Manual Mode",
+				Value: ManualJournalMode,
+			},
+			{
+				Name: "Auto Mode",
+				Value: AutoJournalMode,
+			},
+		}))
 
 	ok := util.AskForConformation("Were your entries correct?")
 	if !ok {
