@@ -165,7 +165,7 @@ func (p Parties) CustomerStringById(id string) string {
 func (p Parties) EmployeesSearchItems() util.SearchItems {
 	result := make(util.SearchItems, len(p.Employees))
 	for i := range p.Employees {
-		result[i] = p.Employees[i].SearchItem()
+		result[i] = p.Employees[i].SearchItem("Employe")
 	}
 	return result
 }
@@ -173,7 +173,7 @@ func (p Parties) EmployeesSearchItems() util.SearchItems {
 func (p Parties) CustomersSearchItems() util.SearchItems {
 	result := make(util.SearchItems, len(p.Customers))
 	for i := range p.Customers {
-		result[i] = p.Customers[i].SearchItem()
+		result[i] = p.Customers[i].SearchItem("Customer")
 	}
 	return result
 }
@@ -256,9 +256,10 @@ func InteractiveNewEmployee(a Acc) Party {
 	return pty
 }
 
-func (p Party) SearchItem() util.SearchItem {
+func (p Party) SearchItem(typ string) util.SearchItem {
 	return util.SearchItem{
 		Name:        p.Name,
+		Type:        typ,
 		Value:       p.Id,
 		SearchValue: fmt.Sprintf("%s %s %s", p.Name, p.Identifier, p.Place),
 	}

@@ -68,6 +68,14 @@ func (e Expenses) GetIdentifiables() []Identifiable {
 	return exp
 }
 
+func (e Expenses) SearchItems() util.SearchItems {
+	result := make(util.SearchItems, len(e))
+	for i := range e {
+		result[i] = e[i].SearchItem()
+	}
+	return result
+}
+
 func (e Expenses) GetExpenseCategories() util.SearchItems {
 	var result util.SearchItems
 	for i := range e {
@@ -214,6 +222,15 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	return exp
 }
 
+func (e Expense) SearchItem() util.SearchItem {
+	return util.SearchItem{
+		Name:  e.Name,
+		Type:  e.Type(),
+		Value: e.Id,
+		SearchValue: fmt.Sprintf("%s %s %s", e.Name, e.Identifier, e.ProjectName),
+	}
+}
+
 // GetId returns the unique id of the element.
 func (e Expense) GetId() string {
 	return e.Id
@@ -254,48 +271,47 @@ func (e Expense) Conditions() util.Conditions {
 	return util.Conditions{
 		{
 			Condition: e.Id == "",
-			Message: "unique identifier not set (Id is empty)",
+			Message:   "unique identifier not set (Id is empty)",
 		},
 		{
 			Condition: e.Identifier == "",
-			Message: "human readable identifier not set (Identifier is empty)",
+			Message:   "human readable identifier not set (Identifier is empty)",
 		},
 		{
 			Condition: e.Amount == 0.0,
-			Message: "amount is not set (Amount is 0.0)",
+			Message:   "amount is not set (Amount is 0.0)",
 		},
 		{
 			Condition: !util.FileExist(e.Path),
-			Message: fmt.Sprintf("business record document at «%s» not found", e.Path),
+			Message:   fmt.Sprintf("business record document at «%s» not found", e.Path),
 		},
 		{
 			Condition: !util.ValidDate(DateFormat, e.DateOfAccrual),
-			Message: fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfAccrual),
+			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfAccrual),
 		},
 		{
 			Condition: e.Billable && e.ObligedCustomerId == "",
-			Message: "although billable, no obliged customer is set (ObligedCustomerId is empty)",
+			Message:   "although billable, no obliged customer is set (ObligedCustomerId is empty)",
 		},
 		{
 			Condition: e.AdvancedByThirdParty && e.AdvancedThirdPartyId == "",
-			Message: "although advanced by third party, no third party id is set (AdvancedThirdPartyId is empty)",
+			Message:   "although advanced by third party, no third party id is set (AdvancedThirdPartyId is empty)",
 		},
 		{
 			Condition: e.DateOfSettlement != "" && util.ValidDate(DateFormat, e.DateOfSettlement),
-			Message: fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfSettlement),
+			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfSettlement),
 		},
 		{
 			Condition: e.DateOfSettlement != "" && e.SettlementTransactionId == "",
-			Message: "although date of settlement is set, the corresponding transaction is empty (SettlementTransactionId is empty",
+			Message:   "although date of settlement is set, the corresponding transaction is empty (SettlementTransactionId is empty",
 		},
 		{
 			Condition: e.ExpenseCategory == "",
-			Message: "expense category is not set (ExpenseCategory is empty)",
+			Message:   "expense category is not set (ExpenseCategory is empty)",
 		},
 		{
 			Condition: e.ProjectName == "",
-			Message: "project name is not set (ProjectName is empty)",
+			Message:   "project name is not set (ProjectName is empty)",
 		},
 	}
 }
-

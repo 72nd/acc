@@ -37,6 +37,7 @@ func (s SearchItems) ByIndex(index int) (*SearchItem, error) {
 
 type SearchItem struct {
 	Name        string
+	Type        string
 	Value       interface{}
 	SearchValue string
 }
@@ -81,7 +82,7 @@ func AskInt(name, desc string, defaultValue int) int {
 }
 
 func AskIntFromList(name, desc string, searchItems SearchItems) int {
-	header(name, "selection", desc, fmt.Sprintf("Select a item between 1 and %d", len(searchItems)))
+	header(name, "selection", desc, fmt.Sprintf("Select a item between 1 and %d", len(searchItems)), false)
 	listItems(searchItems)
 	fmt.Print("--> ")
 	input := getInput()
@@ -90,7 +91,7 @@ func AskIntFromList(name, desc string, searchItems SearchItems) int {
 		logrus.Error("invalid input, try again")
 		return AskIntFromList(name, desc, searchItems)
 	}
-	value, ok := searchItems[index].Value.(int)
+	value, ok := searchItems[index-1].Value.(int)
 	if !ok {
 		logrus.Fatalf("value %+v in search item with index %d is not an int", searchItems[index], index)
 	}
@@ -150,7 +151,7 @@ func AskDate(name, desc string, defaultValue time.Time) string {
 		"01.02.2006",
 		"2006-01-02",
 	}
-	header(name, "DD-MM-YYYY", desc, fmt.Sprintf("Enter for %s, 'T' for today (%s)", aurora.Underline("empty"), defaultValue.Format(GermanLayout)))
+	header(name, "DD-MM-YYYY", desc, fmt.Sprintf("Enter for empty, 'T' for today (%s)", defaultValue.Format(GermanLayout)), true)
 	input := getInput()
 	if input == "" {
 		return ""
@@ -176,12 +177,12 @@ func AskDate(name, desc string, defaultValue time.Time) string {
 }
 
 func simplePrompt(name, typeName, desc, defaultValue string) string {
-	header(name, typeName, desc, fmt.Sprintf("Enter for default (%s)", defaultValue))
+	header(name, typeName, desc, fmt.Sprintf("Enter for default (%s)", defaultValue), true)
 	return getInput()
 }
 
 func simplePromptWithEmpty(name, typeName, desc, defaultValue string) (value string, empty bool) {
-	header(name, typeName, desc, fmt.Sprintf("Enter for default (%s), 'E' for empty", defaultValue))
+	header(name, typeName, desc, fmt.Sprintf("Enter for default (%s), 'E' for empty", defaultValue), true)
 	input := getInput()
 	if input == "E" {
 		return "", true
@@ -248,12 +249,11 @@ func searchPrompt(name, desc string, items SearchItems, showList bool) (result i
 		listItems(matches)
 		fmt.Printf("%s ", aurora.BrightCyan("Choose item, 'S' to search again:"))
 		input2 := getInput()
-		input2 = strings.Replace(input2, "\n", "", -1)
 		if input2 == "S" {
 			return searchPrompt(name, desc, items, showList)
 		}
 
-		value, err := strconv.Atoi(input)
+		value, err := strconv.Atoi(input2)
 		if err != nil || value < 1 || value > len(items) {
 			logrus.Error("invalid input, try again")
 			continue
@@ -262,20 +262,35 @@ func searchPrompt(name, desc string, items SearchItems, showList bool) (result i
 	}
 }
 
-func header(name, typeName, desc, options string) {
-	fmt.Printf("%s%s %s %s\n--> ",
+func header(name, typeName, desc, options string, prompt bool) {
+	var prm string
+	if prompt {
+		prm = "--> "
+	}
+	fmt.Printf("%s%s %s %s\n%s",
 		aurora.BrightCyan(aurora.Bold(name)),
 		aurora.BrightCyan(fmt.Sprintf(" (%s)", typeName)),
 		aurora.Yellow(fmt.Sprintf("%s", desc)),
-		aurora.Green(options))
+		aurora.Green(options),
+		prm)
 }
 
 func listItems(items SearchItems) {
 	for i := range items {
+		var info string
+		switch items[i].Value.(type) {
+		case int:
+			info = fmt.Sprintf("%d", items[i].Value)
+		default:
+			info = fmt.Sprintf("%s", items[i].Value)
+		}
+		if items[i].Type != "" {
+			info = fmt.Sprintf("%s, %s", items[i].Type, info)
+		}
 		fmt.Printf("%s %s %s\n",
 			aurora.Yellow(fmt.Sprintf("%d)", i+1)),
 			items[i].Name,
-			aurora.Green(fmt.Sprintf("(%s)", items[i].Value)))
+			aurora.Green(fmt.Sprintf("(%s)", info)))
 	}
 }
 
@@ -286,10 +301,10 @@ func getInput() string {
 }
 
 func parseBool(input string) (bool, error) {
-	if input == "y" || input == "1" || input == "true" || input == "t" {
+	if input == "y" || input == "Y" || input == "1" || input == "true" || input == "t" {
 		return true, nil
-	} else if input == "n" || input == "0" || input == "false" || input == "f" {
+	} else if input == "n" || input == "N" || input == "0" || input == "false" || input == "f" {
 		return false, nil
 	}
-	return false, errors.New("could not parse input as a boolean value (bool). Please use y/t/1/true or n/f/0/false")
+	return false, errors.New("could not parse input as a boolean value (bool). Please use y/Y/t/1/true or n/N/f/0/false")
 }

@@ -235,7 +235,6 @@ func main() {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
 					acc := schema.OpenProject(inputPath)
-					// fmt.Println(aurora.BrightMagenta("Use the --no-interactive flag to suppress user assisted check and completion"))
 					acc.BankStatement.AddTransaction(btcStatement.Transactions())
 					acc.SaveProject()
 					return nil
@@ -259,11 +258,21 @@ func main() {
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					acc := schema.OpenProject(inputPath)
-					acc.BankStatement.AssistedCompletion(acc)
+					acc.BankStatement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"))
 					acc.SaveProject()
 					return nil
 				},
 				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name: "auto-save",
+						Aliases: []string{"a"},
+						Usage: "save each transaction immediately after completion, this is useful when working with large bank statemens",
+					},
+					&cli.BoolFlag{
+						Name: "force",
+						Aliases: []string{"f"},
+						Usage: "redo all transaction which ID's and Identifier's are already set",
+					},
 					&cli.StringFlag{
 						Name:    "input",
 						Aliases: []string{"i"},

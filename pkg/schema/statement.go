@@ -110,8 +110,17 @@ func (s BankStatement) TransactionSearchItems() util.SearchItems {
 	return result
 }
 
-func (s *BankStatement) AssistedCompletion(a Acc) {
+func (s *BankStatement) AssistedCompletion(a Acc, doAll, autoSave bool) {
+	first := true
 	for i := range s.Transactions {
-		s.Transactions[i].AssistedCompletion(a)
+		if !first {
+			fmt.Println()
+		} else {
+			first = false
+		}
+		s.Transactions[i] = s.Transactions[i].AssistedCompletion(a, doAll)
+		if autoSave {
+			a.SaveProject()
+		}
 	}
 }

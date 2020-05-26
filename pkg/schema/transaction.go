@@ -94,13 +94,20 @@ func InteractiveNewTransaction(s BankStatement) Transaction {
 	return trn
 }
 
-func (t *Transaction) AssistedCompletion(a Acc) {
-	t.SetId()
+func (t Transaction) AssistedCompletion(a Acc, doAll bool) Transaction {
+	tmp := t
+	if !doAll && t.Id != "" && t.Identifier != "" {
+		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip transaction:")), aurora.BrightMagenta(t.Description))
+		return t
+	}
 	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize transaction:")), aurora.BrightMagenta(t.Description))
 	identifier := SuggestNextIdentifier(a.BankStatement.GetIdentifiables(), DefaultTransactionPrefix)
-	if t.Identifier == "" && identifier != "" {
+	if t.Id == "" {
+		t.SetId()
+	}
+	if t.Identifier == "" {
 		t.Identifier = util.AskString(
-			"Value",
+			"Identifier",
 			"Unique human readable identifier",
 			identifier)
 	}
@@ -113,10 +120,45 @@ func (t *Transaction) AssistedCompletion(a Acc) {
 		"Associated Party",
 		"customer/employee which is originator/recipient of the transaction",
 		parties)
+
 	document, err := t.parseAssociatedDocument(a.Expenses, a.Invoices)
 	if err == nil && util.AskForConformation(fmt.Sprintf("Use «%s» as associated document?", document.String())) {
 		t.AssociatedDocumentId = document.GetId()
+	} else {
+		docs := append(a.Expenses.SearchItems(), a.Invoices.SearchItems()...)
+		t.AssociatedDocumentId = util.AskStringFromSearch(
+			"Associated Document",
+			"couldn't find associated document, manual search",
+			docs)
 	}
+
+	ok := util.AskForConformation("Were your entries correct?")
+	if !ok {
+		for {
+			strategy := util.AskIntFromList(
+				"Strategy",
+				"how do you want to resolve this situation?",
+				util.SearchItems{
+					{
+						Name:  "Redo",
+						Value: 1,
+					},
+					{
+						Name:  "Skip",
+						Value: 2,
+					},
+				})
+			switch strategy {
+			case 1:
+				t.AssistedCompletion(a, doAll)
+			case 2:
+				return tmp
+			default:
+				logrus.Error("invalid input, try again")
+			}
+		}
+	}
+	return t
 }
 
 func (t Transaction) parseAssociatedDocument(expenses Expenses, invoices Invoices) (Identifiable, error) {
@@ -172,12 +214,12 @@ func (t Transaction) Conditions() util.Conditions {
 	return util.Conditions{
 		{
 			Condition: t.Id == "",
-			Message: "unique identifier not set (Id is empty)",
+			Message:   "unique identifier not set (Id is empty)",
 			Level:     util.BeforeExportFlaw,
 		},
 		{
 			Condition: t.Identifier == "",
-			Message: "human readable identifier not set (Identifier is empty)",
+			Message:   "human readable identifier not set (Identifier is empty)",
 			Level:     util.BeforeExportFlaw,
 		},
 		{

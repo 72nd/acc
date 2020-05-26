@@ -60,6 +60,15 @@ func (i Invoices) GetIdentifiables() []Identifiable {
 	return ivs
 }
 
+func (i Invoices) SearchItems() util.SearchItems {
+	result := make(util.SearchItems, len(i))
+	for j := range i {
+		result[j] = i[j].SearchItem()
+	}
+	return result
+}
+
+
 // Invoice represents an invoice sent to a customer for some services.
 type Invoice struct {
 	// Id is the internal unique identifier of the Expense.
@@ -151,6 +160,15 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 		"",
 	)
 	return inv
+}
+
+func (i Invoice) SearchItem() util.SearchItem {
+	return util.SearchItem{
+		Name:  i.Name,
+		Type:  i.Type(),
+		Value: i.Id,
+		SearchValue: fmt.Sprintf("%s %s %s", i.Name, i.Identifier, i.ProjectName),
+	}
 }
 
 // GetId returns the unique id of the element.
