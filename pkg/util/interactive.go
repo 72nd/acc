@@ -4,13 +4,14 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/lithammer/fuzzysearch/fuzzy"
-	"github.com/logrusorgru/aurora"
-	"github.com/sirupsen/logrus"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/lithammer/fuzzysearch/fuzzy"
+	"github.com/logrusorgru/aurora"
+	"github.com/sirupsen/logrus"
 )
 
 const GermanLayout = "02-01-2006"
@@ -84,10 +85,16 @@ func AskIntFromList(name, desc string, searchItems SearchItems) int {
 	listItems(searchItems)
 	fmt.Print("--> ")
 	input := getInput()
-	value, err := strconv.Atoi(input)
-	if err != nil || value < 1 || value > len(searchItems) {
-		logrus.Warn("invali")
+	index, err := strconv.Atoi(input)
+	if err != nil || index < 1 || index > len(searchItems) {
+		logrus.Error("invalid input, try again")
+		return AskIntFromList(name, desc, searchItems)
 	}
+	value, ok := searchItems[index].Value.(int)
+	if !ok {
+		logrus.Fatalf("value %+v in search item with index %d is not an int", searchItems[index], index)
+	}
+	return value
 }
 
 func AskIntFromListSearch(name, desc string, searchItems SearchItems) int {

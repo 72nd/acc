@@ -2,8 +2,12 @@ package util
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
+	"os"
+	"time"
+
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 // FlawLevel states the importance of a validation error.
@@ -91,7 +95,7 @@ func (v ValidateResult) String() string {
 	if len(v.Conditions) == 0 {
 		return ""
 	}
-	result := fmt.Sprintf("%s %s: %s", strings.ToUpper(v.Element.Type()), v.Element.String(), v.Conditions[0])
+	result := fmt.Sprintf("%s %s: %+v", strings.ToUpper(v.Element.Type()), v.Element.String(), v.Conditions[0])
 	for i := 1; i < len(v.Conditions); i++ {
 		result = fmt.Sprintf("%s\n%s %s: %s (%s)", result, strings.ToUpper(v.Element.Type()), v.Element.String(), v.Conditions[0].Message, v.Conditions[0].Level)
 	}
@@ -134,4 +138,19 @@ type Conditions []struct {
 	Condition bool
 	Message   string
 	Level     FlawLevel
+}
+
+// FileExist returns whether a file at a given path exists or not.
+func FileExist(path string) bool {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
+
+func ValidDate(format, date string) bool {
+	_, err := time.Parse(format, date); if err != nil {
+		return false
+	}
+	return true
 }

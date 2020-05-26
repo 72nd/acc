@@ -125,26 +125,7 @@ func (a Acc) String() string {
 // Conditions returns the validation conditions.
 func (a Acc) Conditions() util.Conditions {
 	return util.Conditions{
-		{
-			Condition: a.Company.Name == "",
-			Message:   "company name is not set (Company.Name is empty)",
-		},
-		{
-			Condition: a.Company.Street == "",
-			Message:   "company street name is not set (Company.Street is empty)",
-		},
-		{
-			Condition: a.Company.StreetNr == 0,
-			Message:   "company street number is not set (Company.StreetNr is 0)",
-		},
-		{
-			Condition: a.Company.Place == "",
-			Message:   "company place is not set (Company.Place is empty)",
-		},
-		{
-			Condition: a.Company.PostalCode == 0,
-			Message:   "company postal code is not set (Company.PostalCode is 0)",
-		},
+
 		{
 			Condition: a.ExpensesFilePath == "",
 			Message:   "path to expenses file is not set (ExpensesFilePath is empty)",
@@ -171,6 +152,7 @@ func (a Acc) Validate() util.ValidateResults {
 
 func (a Acc) ValidateProject() util.ValidateResults {
 	results := a.Validate()
+	results = append(results, util.Check(a.Company))
 	for i := range a.Expenses {
 		results = append(results, util.Check(a.Expenses[i]))
 	}
@@ -180,7 +162,7 @@ func (a Acc) ValidateProject() util.ValidateResults {
 // ValidateAndReportProject validates the acc project files and saves the report to the given path.
 func (a Acc) ValidateAndReportProject(path string) {
 	rpt := util.Report{
-		Title:           "Acc Project Validation Report",
+		Title:           "Acc Validation Report",
 		ColumnTitles:    []string{"type", "element", "reason"},
 		ValidateResults: a.ValidateProject(),
 	}

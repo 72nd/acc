@@ -101,8 +101,8 @@ type Expense struct {
 	Name string `yaml:"name" default:"Expense Name"`
 	// Amount states the amount of the Expense.
 	Amount float64 `yaml:"amount" default:"10.00"`
-	// Path is the full path to the voucher utils.
-	Path string `yaml:"path" default:"/path/to/file.utils"`
+	// Path is the full path to the business record document.
+	Path string `yaml:"path" default:"/path/to/expense.pdf"`
 	// DateOfAccrual represents the day the obligation emerged.
 	DateOfAccrual string `yaml:"dateOfAccrual" default:"2019-12-20"`
 	// Billable states if the costs for the Expense will be forwarded to the customer.
@@ -233,7 +233,7 @@ func (e *Expense) SetId() {
 
 // Type returns a string with the type name of the element.
 func (e Expense) Type() string {
-	return ""
+	return "Expense"
 }
 
 // String returns a human readable representation of the element.
@@ -252,11 +252,50 @@ func (e Expense) FileString() string {
 // Conditions returns the validation conditions.
 func (e Expense) Conditions() util.Conditions {
 	return util.Conditions{
-
+		{
+			Condition: e.Id == "",
+			Message: "unique identifier not set (Id is empty)",
+		},
+		{
+			Condition: e.Identifier == "",
+			Message: "human readable identifier not set (Identifier is empty)",
+		},
+		{
+			Condition: e.Amount == 0.0,
+			Message: "amount is not set (Amount is 0.0)",
+		},
+		{
+			Condition: !util.FileExist(e.Path),
+			Message: fmt.Sprintf("business record document at «%s» not found", e.Path),
+		},
+		{
+			Condition: !util.ValidDate(DateFormat, e.DateOfAccrual),
+			Message: fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfAccrual),
+		},
+		{
+			Condition: e.Billable && e.ObligedCustomerId == "",
+			Message: "although billable, no obliged customer is set (ObligedCustomerId is empty)",
+		},
+		{
+			Condition: e.AdvancedByThirdParty && e.AdvancedThirdPartyId == "",
+			Message: "although advanced by third party, no third party id is set (AdvancedThirdPartyId is empty)",
+		},
+		{
+			Condition: e.DateOfSettlement != "" && util.ValidDate(DateFormat, e.DateOfSettlement),
+			Message: fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfSettlement),
+		},
+		{
+			Condition: e.DateOfSettlement != "" && e.SettlementTransactionId == "",
+			Message: "although date of settlement is set, the corresponding transaction is empty (SettlementTransactionId is empty",
+		},
+		{
+			Condition: e.ExpenseCategory == "",
+			Message: "expense category is not set (ExpenseCategory is empty)",
+		},
+		{
+			Condition: e.ProjectName == "",
+			Message: "project name is not set (ProjectName is empty)",
+		}
 	}
 }
 
-// Validate the element and return the result.
-func (e Expense) Validate() util.ValidateResults {
-	return []util.ValidateResult{util.Check(e)}
-}

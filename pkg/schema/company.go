@@ -1,6 +1,9 @@
 package schema
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
@@ -78,4 +81,53 @@ func InteractiveNewCompany(logo string) Company {
 		)
 	}
 	return cmp
+}
+
+func (c Company) Type() string {
+	return "Company"
+}
+
+func (c Company) String() string {
+	return fmt.Sprintf("%s at %s %d", c.Name, c.Street, c.StreetNr)
+}
+
+func (c Company) Conditions() util.Conditions {
+	return util.Conditions{
+		{
+			Condition: c.Name == "",
+			Message:   "company name is not set (Name is empty)",
+		},
+		{
+			Condition: c.Street == "",
+			Message:   "company street name is not set (Street is empty)",
+		},
+		{
+			Condition: c.StreetNr == 0,
+			Message:   "company street number is not set (StreetNr is 0)",
+		},
+		{
+			Condition: c.Place == "",
+			Message:   "company place is not set (Place is empty)",
+		},
+		{
+			Condition: c.PostalCode == 0,
+			Message:   "company postal code is not set (PostalCode is 0)",
+		},
+		{
+			Condition: c.Phone == "",
+			Message: "company phone is not set (Phone is empty)",
+		},
+		{
+			Condition: c.Mail == "",
+			Message: "company mail is not set (Mail is empty)",
+		},
+		{
+			Condition: c.Url == "",
+			Message: "company url is not set (Url is empty)",
+		},
+		{
+			Condition: !util.FileExist(c.Logo),
+			Message: fmt.Sprintf("logo at «%s» not found", c.Logo),
+		},
+	}
 }
