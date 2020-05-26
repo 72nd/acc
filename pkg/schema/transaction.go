@@ -136,11 +136,11 @@ func (t Transaction) AssistedCompletion(a Acc, doAll bool) Transaction {
 		util.SearchItems{
 			{
 				Name: "Manual Mode",
-				Value: ManualJournalMode,
+				Value: int(ManualJournalMode),
 			},
 			{
 				Name: "Auto Mode",
-				Value: AutoJournalMode,
+				Value: int(AutoJournalMode),
 			},
 		}))
 
