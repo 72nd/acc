@@ -105,7 +105,6 @@ func (p Parties) CustomerByIdentifier(ident string) (*Party, error) {
 	return nil, fmt.Errorf("no customer for identifier «%s» found", ident)
 }
 
-
 func (p Parties) EmployeeById(id string) (*Party, error) {
 	for i := range p.Employees {
 		if p.Employees[i].Id == id {
@@ -284,7 +283,7 @@ func (p *Party) SetId() {
 
 // Type returns a string with the type name of the element.
 func (p Party) Type() string {
-	return ""
+	return "Party"
 }
 
 // String returns a human readable representation of the element.
@@ -306,11 +305,33 @@ func (p Party) AddressLines() string {
 // Conditions returns the validation conditions.
 func (p Party) Conditions() util.Conditions {
 	return util.Conditions{
-
+		{
+			Condition: p.Id == "",
+			Message:   "unique identifier not set (Id is empty)",
+		},
+		{
+			Condition: p.Identifier == "",
+			Message:   "human readable identifier not set (Identifier is empty)",
+		},
+		{
+			Condition: p.Name == "",
+			Message:   "name is not set (Name is empty)",
+		},
+		{
+			Condition: p.Street == "",
+			Message:   "street name is not set (Street is empty)",
+		},
+		{
+			Condition: p.StreetNr == 0,
+			Message:   "street number is not set (StreetNr is 0)",
+		},
+		{
+			Condition: p.Place == "",
+			Message:   "place is not set (Place is empty)",
+		},
+		{
+			Condition: p.PostalCode == 0,
+			Message:   "postal code is not set (PostalCode is 0)",
+		},
 	}
-}
-
-// Validate the element and return the result.
-func (p Party) Validate() util.ValidateResults {
-	return []util.ValidateResult{util.Check(p)}
 }

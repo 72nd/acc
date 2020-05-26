@@ -157,6 +157,9 @@ func (a Acc) ValidateProject() util.ValidateResults {
 	for i := range a.Expenses {
 		results = append(results, util.Check(a.Expenses[i]))
 	}
+	for i := range a.Invoices {
+		results = append(results, util.Check(a.Invoices[i]))
+	}
 	return results
 }
 

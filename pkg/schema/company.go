@@ -95,35 +95,35 @@ func (c Company) Conditions() util.Conditions {
 	return util.Conditions{
 		{
 			Condition: c.Name == "",
-			Message:   "company name is not set (Name is empty)",
+			Message:   "name is not set (Name is empty)",
 		},
 		{
 			Condition: c.Street == "",
-			Message:   "company street name is not set (Street is empty)",
+			Message:   "street name is not set (Street is empty)",
 		},
 		{
 			Condition: c.StreetNr == 0,
-			Message:   "company street number is not set (StreetNr is 0)",
+			Message:   "street number is not set (StreetNr is 0)",
 		},
 		{
 			Condition: c.Place == "",
-			Message:   "company place is not set (Place is empty)",
+			Message:   "place is not set (Place is empty)",
 		},
 		{
 			Condition: c.PostalCode == 0,
-			Message:   "company postal code is not set (PostalCode is 0)",
+			Message:   "postal code is not set (PostalCode is 0)",
 		},
 		{
 			Condition: c.Phone == "",
-			Message: "company phone is not set (Phone is empty)",
+			Message: "phone is not set (Phone is empty)",
 		},
 		{
 			Condition: c.Mail == "",
-			Message: "company mail is not set (Mail is empty)",
+			Message: "mail is not set (Mail is empty)",
 		},
 		{
 			Condition: c.Url == "",
-			Message: "company url is not set (Url is empty)",
+			Message: "url is not set (Url is empty)",
 		},
 		{
 			Condition: !util.FileExist(c.Logo),

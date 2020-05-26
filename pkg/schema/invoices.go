@@ -181,7 +181,7 @@ func (i Invoices) InvoiceByIdent(ident string) (*Invoice, error) {
 
 // Type returns a string with the type name of the element.
 func (i Invoice) Type() string {
-	return ""
+	return "Invoice"
 }
 
 // String returns a human readable representation of the element.
