@@ -295,7 +295,7 @@ func (e Expense) Conditions() util.Conditions {
 		{
 			Condition: e.ProjectName == "",
 			Message: "project name is not set (ProjectName is empty)",
-		}
+		},
 	}
 }
 
