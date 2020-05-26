@@ -263,6 +263,13 @@ func main() {
 					acc.SaveProject()
 					return nil
 				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "input",
+						Aliases: []string{"i"},
+						Usage:   "acc project file",
+					},
+				},
 			},
 			{
 				Name:  "invoices",

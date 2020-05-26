@@ -239,7 +239,7 @@ func InteractiveNewParty(partyType string) Party {
 func InteractiveNewCustomer(a Acc) Party {
 	pty := InteractiveNewParty("Customer")
 	pty.Identifier = util.AskString(
-		"Value",
+		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Parties.GetCustomerIdentifiables(), DefaultCustomerPrefix),
 	)
@@ -249,7 +249,7 @@ func InteractiveNewCustomer(a Acc) Party {
 func InteractiveNewEmployee(a Acc) Party {
 	pty := InteractiveNewParty("Employee")
 	pty.Identifier = util.AskString(
-		"Value",
+		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(a.Parties.GetEmployeeIdentifiables(), DefaultEmployeePrefix),
 	)

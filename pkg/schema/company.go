@@ -2,7 +2,6 @@ package schema
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"

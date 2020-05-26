@@ -14,8 +14,7 @@ const DefaultTransactionPrefix = "t-"
 
 // BankStatement represents a bank statement.
 type BankStatement struct {
-	Id           string        `yaml:"id" default:"-"`
-	Identifier   string        `yaml:"identifier" default:"e-19-01"`
+	Name         string        `yaml:"name" default:"e-19-01"`
 	Period       string        `yaml:"period" default:"2019"`
 	Transactions []Transaction `yaml:"transactions" default:"[]"`
 }
@@ -72,24 +71,35 @@ func (s BankStatement) GetIdentifiables() []Identifiable {
 
 // Type returns a string with the type name of the element.
 func (s BankStatement) Type() string {
-	return ""
+	return "Bank-Statement"
 }
 
 // String returns a human readable representation of the element.
 func (s BankStatement) String() string {
-	return fmt.Sprintf("")
+	return fmt.Sprintf("%s, for %s", s.Name, s.Period)
 }
 
 // Conditions returns the validation conditions.
 func (s BankStatement) Conditions() util.Conditions {
 	return util.Conditions{
-
+		{
+			Condition: s.Name == "",
+			Message:   "name is not set (Name is empty)",
+		},
+		{
+			Condition: s.Period == "",
+			Message:   "period is not set (Period is empty)",
+		},
 	}
 }
 
 // Validate the element and return the result.
 func (s BankStatement) Validate() util.ValidateResults {
-	return []util.ValidateResult{util.Check(s)}
+	results := util.ValidateResults{util.Check(s)}
+	for i := range s.Transactions {
+		results = append(results, util.Check(s.Transactions[i]))
+	}
+	return results
 }
 
 func (s BankStatement) TransactionSearchItems() util.SearchItems {

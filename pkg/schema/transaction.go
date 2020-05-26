@@ -156,7 +156,7 @@ func (t *Transaction) SetId() {
 
 // Type returns a string with the type name of the element.
 func (Transaction) Type() string {
-	return ""
+	return "Transaction"
 }
 
 // String returns a human readable representation of the element.
@@ -172,12 +172,12 @@ func (t Transaction) Conditions() util.Conditions {
 	return util.Conditions{
 		{
 			Condition: t.Id == "",
-			Message:   "unique identifier not set",
+			Message: "unique identifier not set (Id is empty)",
 			Level:     util.BeforeExportFlaw,
 		},
 		{
 			Condition: t.Identifier == "",
-			Message:   "human readable identifier not set",
+			Message: "human readable identifier not set (Identifier is empty)",
 			Level:     util.BeforeExportFlaw,
 		},
 		{
@@ -206,7 +206,7 @@ func (t Transaction) Conditions() util.Conditions {
 			Level:     util.BeforeMergeFlaw,
 		},
 		{
-			Condition: t.Amount >= 0,
+			Condition: t.Amount <= 0,
 			Message:   "amount is not set",
 			Level:     util.BeforeMergeFlaw,
 		},
