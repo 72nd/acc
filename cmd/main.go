@@ -7,6 +7,7 @@ import (
 	"github.com/urfave/cli/v2"
 	"gitlab.com/72th/acc/pkg/bimpf"
 	"gitlab.com/72th/acc/pkg/camt"
+	"gitlab.com/72th/acc/pkg/ledger"
 	"gitlab.com/72th/acc/pkg/document/invoices"
 	"gitlab.com/72th/acc/pkg/document/records"
 	"gitlab.com/72th/acc/pkg/schema"
@@ -264,14 +265,14 @@ func main() {
 				},
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
-						Name: "auto-save",
+						Name:    "auto-save",
 						Aliases: []string{"a"},
-						Usage: "save each transaction immediately after completion, this is useful when working with large bank statemens",
+						Usage:   "save each transaction immediately after completion, this is useful when working with large bank statemens",
 					},
 					&cli.BoolFlag{
-						Name: "force",
+						Name:    "force",
 						Aliases: []string{"f"},
-						Usage: "redo all transaction which ID's and Identifier's are already set",
+						Usage:   "redo all transaction which ID's and Identifier's are already set",
 					},
 					&cli.StringFlag{
 						Name:    "input",
@@ -326,6 +327,24 @@ func main() {
 						Name:  "place",
 						Value: "PLACE-UNSET",
 						Usage: "place where the invoice originates from",
+					},
+				},
+			},
+			{
+				Name:    "ledger",
+				Aliases: []string{"ldg"},
+				Usage:   "generate hledger csv",
+				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					acc := schema.OpenProject(inputPath)
+					_ = ledger.JournalFromStatement(acc)
+					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "input",
+						Aliases: []string{"i"},
+						Usage:   "acc project file",
 					},
 				},
 			},
