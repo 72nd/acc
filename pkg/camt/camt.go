@@ -3,7 +3,9 @@ package camt
 import (
 	"encoding/xml"
 	"fmt"
+
 	"gitlab.com/72th/acc/pkg/schema"
+	"gitlab.com/72th/acc/pkg/util"
 )
 
 const DateLayout = "2006-01-02"
@@ -57,9 +59,9 @@ type Transaction struct {
 }
 
 func (t Transaction) AccTransaction(date string) schema.Transaction {
-	trnType := schema.CreditTransaction
+	trnType := util.CreditTransaction
 	if t.CreditDebitIndicator == "DBIT" {
-		trnType = schema.DebitTransaction
+		trnType = util.DebitTransaction
 	}
 	trn := schema.Transaction{
 		Description:       t.String(),

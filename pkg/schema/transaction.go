@@ -11,13 +11,6 @@ import (
 	"time"
 )
 
-type TransactionType int
-
-const (
-	CreditTransaction TransactionType = iota // Incoming transaction
-	DebitTransaction                         // Outgoing transaction
-)
-
 type JournalMode int
 
 const (
@@ -28,15 +21,15 @@ const (
 
 // Transaction represents a single transaction of a bank statement.
 type Transaction struct {
-	Id                   string          `yaml:"id" default:""`
-	Identifier           string          `yaml:"identifier" default:""`
-	Description          string          `yaml:"description" default:""`
-	TransactionType      TransactionType `yaml:"transactionType" default:"0"`
-	AssociatedPartyId    string          `yaml:"associatedPartyId" default:""`
-	AssociatedDocumentId string          `yaml:"associatedDocumentId" default:""`
-	Date                 string          `yaml:"date" default:""`
-	Amount               float64         `yaml:"amount" default:"10.00"`
-	JournalMode          JournalMode     `yaml:"journalMode" default:"0"`
+	Id                   string               `yaml:"id" default:""`
+	Identifier           string               `yaml:"identifier" default:""`
+	Description          string               `yaml:"description" default:""`
+	TransactionType      util.TransactionType `yaml:"transactionType" default:"0"`
+	AssociatedPartyId    string               `yaml:"associatedPartyId" default:""`
+	AssociatedDocumentId string               `yaml:"associatedDocumentId" default:""`
+	Date                 string               `yaml:"date" default:""`
+	Amount               float64              `yaml:"amount" default:"10.00"`
+	JournalMode          JournalMode          `yaml:"journalMode" default:"0"`
 }
 
 func NewTransaction() Transaction {
@@ -65,7 +58,7 @@ func InteractiveNewTransaction(s BankStatement) Transaction {
 		"Some information about the transaction",
 		"",
 	)
-	trn.TransactionType = TransactionType(util.AskIntFromListSearch(
+	trn.TransactionType = util.TransactionType(util.AskIntFromListSearch(
 		"Transaction Type",
 		"",
 		util.SearchItems{
@@ -135,11 +128,11 @@ func (t Transaction) AssistedCompletion(a Acc, doAll bool) Transaction {
 		"choose how journal entry will be generated for this transaction",
 		util.SearchItems{
 			{
-				Name: "Manual Mode",
+				Name:  "Manual Mode",
 				Value: int(ManualJournalMode),
 			},
 			{
-				Name: "Auto Mode",
+				Name:  "Auto Mode",
 				Value: int(AutoJournalMode),
 			},
 		}))
@@ -223,14 +216,14 @@ func (Transaction) Type() string {
 
 // String returns a human readable representation of the element.
 func (t Transaction) String() string {
-	if t.TransactionType == CreditTransaction {
+	if t.TransactionType == util.CreditTransaction {
 		return fmt.Sprintf("%s: received %.2f at %s", t.Identifier, t.Amount, t.Date)
 	}
 	return fmt.Sprintf("%s: payed %.2f at %s", t.Identifier, t.Amount, t.Date)
 }
 
 func (t Transaction) JournalDescription(a Acc) string {
-	return t.Description
+	return fmt.Sprintf("TODO %s", t.Description)
 }
 
 // Conditions returns the validation conditions.

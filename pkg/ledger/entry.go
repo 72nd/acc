@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/util"
 )
 
 type EntryStatus int
@@ -32,13 +33,14 @@ func (s EntryStatus) TrnEle() string {
 }
 
 type Entry struct {
-	Date        time.Time
-	Status      EntryStatus
-	Description string
-	Comment     string
-	Account1    string
-	Account2    string
-	Amount      float64
+	TransactionType util.TransactionType
+	Date            time.Time
+	Status          EntryStatus
+	Description     string
+	Comment         string
+	Account1        string
+	Account2        string
+	Amount          float64
 }
 
 const trnTpl = `

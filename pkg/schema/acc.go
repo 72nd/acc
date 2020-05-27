@@ -25,18 +25,21 @@ var DefaultProjectFiles = []string{
 // Acc represents an entry point into the utils and also provides general information.
 type Acc struct {
 	// Company contains the information about the organisation which uses acc.
-	Company               Company       `yaml:"company" default:""`
-	ExpensesFilePath      string        `yaml:"expensesFilePath" default:"expenses.yaml"`
-	InvoicesFilePath      string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
-	PartiesFilePath       string        `yaml:"partiesFilePath" default:"parties.yaml"`
-	BankStatementFilePath string        `yaml:"bankStatementFilePath" default:"bank.yaml"`
-	BankAccount           string        `yaml:"bankAccount" default:"assets:Umlaufvermögen:Flüssige Mittel:Raiffeisenbank Bern"`
-	Expenses              Expenses      `yaml:"-"`
-	Invoices              Invoices      `yaml:"-"`
-	Parties               Parties       `yaml:"-"`
-	BankStatement         BankStatement `yaml:"-"`
-	fileName              string        `yaml:"-"`
-	projectFolder         string        `yaml:"-"`
+	Company                    Company       `yaml:"company" default:""`
+	ExpensesFilePath           string        `yaml:"expensesFilePath" default:"expenses.yaml"`
+	InvoicesFilePath           string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
+	PartiesFilePath            string        `yaml:"partiesFilePath" default:"parties.yaml"`
+	BankStatementFilePath      string        `yaml:"bankStatementFilePath" default:"bank.yaml"`
+	BankAccount                string        `yaml:"bankAccount" default:"assets:Umlaufvermögen:Flüssige Mittel:Raiffeisenbank Bern"`
+	ReceivableAccount          string        `yaml:"receivableAccount" default:"assets:Umlaufvermögen:Debitoren"`
+	RevenueAccount             string        `yaml:"revenueAccount" default:"revenues:Betrieblicher Ertrag:Dienstleistungserlös"`
+	EmployeeLiabilitiesAccount string        `yaml:"employeeLiabilitiesAccount"liabilities:Kurzfristiges Fremdkapital:Verbindlichkeiten gegenüber Genossenschaftler"`
+	Expenses                   Expenses      `yaml:"-"`
+	Invoices                   Invoices      `yaml:"-"`
+	Parties                    Parties       `yaml:"-"`
+	BankStatement              BankStatement `yaml:"-"`
+	fileName                   string        `yaml:"-"`
+	projectFolder              string        `yaml:"-"`
 }
 
 // NewProject creates a new acc project in the given folder path.

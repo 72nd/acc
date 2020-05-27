@@ -6,6 +6,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/schema"
+	"gitlab.com/72th/acc/pkg/util"
 )
 
 const HLedgerDateFormat = "2006-01-02"
@@ -39,7 +40,7 @@ func journalFromTransaction(acc schema.Acc, trn schema.Transaction) Journal {
 	if trn.AssociatedDocumentId != "" {
 		exp, err := acc.Expenses.ExpenseById(trn.AssociatedDocumentId)
 		if err == nil {
-			return journalFromExpense(*exp, trn)
+			return journalFromExpense(acc, *exp, trn)
 		}
 		inv, err := acc.Invoices.InvoiceById(trn.AssociatedDocumentId)
 		if err == nil {
@@ -50,20 +51,36 @@ func journalFromTransaction(acc schema.Acc, trn schema.Transaction) Journal {
 }
 
 func defaultJournal(acc schema.Acc, trn schema.Transaction) Journal {
+	var account1, account2 string
+	// Incoming transaction
+	if trn.TransactionType == util.CreditTransaction {
+		account1 = acc.BankAccount
+		account2 = "other:unknow"
+	} else {
+		account1 = "other:unknow"
+		account2 = acc.BankAccount
+	}
 	return Journal{
 		{
 			Date:        trn.DateTime(),
 			Status:      UnmarkedStatus,
 			Description: trn.JournalDescription(acc),
 			Comment:     "TODO: manual correction needed",
-			Account1:    acc.BankAccount,
-			Account2:    "other:unknow",
+			Account1:    account1,
+			Account2:    account2,
 			Amount:      trn.Amount,
 		}}
 }
 
-func journalFromExpense(exp schema.Expense, trn schema.Transaction) Journal {
-	return Journal{}
+func journalFromExpense(acc schema.Acc, exp schema.Expense, trn schema.Transaction) Journal {
+	return Journal{
+		{
+			Date:        trn.DateTime(),
+			Status:      UnmarkedStatus,
+			Description: "TODO expense employee booking",
+			Comment:     "",
+
+		}}
 }
 
 func journalFromInvoice(inv schema.Invoice, trn schema.Transaction) Journal {
