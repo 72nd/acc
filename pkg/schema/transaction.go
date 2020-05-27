@@ -208,6 +208,14 @@ func (t *Transaction) SetId() {
 	t.Id = uuid.Must(uuid.NewRandom()).String()
 }
 
+func (t Transaction) DateTime() time.Time {
+	result, err := time.Parse(DateFormat, t.Date)
+	if err != nil {
+		logrus.Fatalf("could not parse «%s» as date with YYYY-MM-DD: %s", t.Date, err)
+	}
+	return result
+}
+
 // Type returns a string with the type name of the element.
 func (Transaction) Type() string {
 	return "Transaction"
@@ -219,6 +227,10 @@ func (t Transaction) String() string {
 		return fmt.Sprintf("%s: received %.2f at %s", t.Identifier, t.Amount, t.Date)
 	}
 	return fmt.Sprintf("%s: payed %.2f at %s", t.Identifier, t.Amount, t.Date)
+}
+
+func (t Transaction) JournalDescription(a Acc) string {
+	return t.Description
 }
 
 // Conditions returns the validation conditions.

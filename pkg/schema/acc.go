@@ -19,7 +19,8 @@ var DefaultProjectFiles = []string{
 	DefaultExpensesFile,
 	DefaultInvoicesFile,
 	DefaultPartiesFile,
-	DefaultBankStatementFile}
+	DefaultBankStatementFile,
+}
 
 // Acc represents an entry point into the utils and also provides general information.
 type Acc struct {
@@ -29,6 +30,7 @@ type Acc struct {
 	InvoicesFilePath      string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
 	PartiesFilePath       string        `yaml:"partiesFilePath" default:"parties.yaml"`
 	BankStatementFilePath string        `yaml:"bankStatementFilePath" default:"bank.yaml"`
+	BankAccount           string        `yaml:"bankAccount" default:"assets:Umlaufvermögen:Flüssige Mittel:Raiffeisenbank Bern"`
 	Expenses              Expenses      `yaml:"-"`
 	Invoices              Invoices      `yaml:"-"`
 	Parties               Parties       `yaml:"-"`

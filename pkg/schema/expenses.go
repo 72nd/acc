@@ -51,6 +51,15 @@ func (e Expenses) SetId() {
 	}
 }
 
+func (e Expenses) ExpenseById(id string) (*Expense, error) {
+	for i := range e {
+		if e[i].Id == id {
+			return &e[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no expense for id «%s» found", id)
+}
+
 func (e Expenses) ExpenseByIdent(ident string) (*Expense, error) {
 	for i := range e {
 		if e[i].Identifier == ident {

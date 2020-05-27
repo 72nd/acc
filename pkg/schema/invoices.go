@@ -52,6 +52,15 @@ func (i Invoices) SetId() {
 	}
 }
 
+func (i Invoices) InvoiceById(id string) (*Invoice, error) {
+	for j := range i {
+		if i[j].Id == id {
+			return &i[j], nil
+		}
+	}
+	return nil, fmt.Errorf("no invoice for id «%s» found", id)
+}
+
 func (i Invoices) GetIdentifiables() []Identifiable {
 	ivs := make([]Identifiable, len(i))
 	for j := range i {
@@ -67,7 +76,6 @@ func (i Invoices) SearchItems() util.SearchItems {
 	}
 	return result
 }
-
 
 // Invoice represents an invoice sent to a customer for some services.
 type Invoice struct {
@@ -164,9 +172,9 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 
 func (i Invoice) SearchItem() util.SearchItem {
 	return util.SearchItem{
-		Name:  i.Name,
-		Type:  i.Type(),
-		Value: i.Id,
+		Name:        i.Name,
+		Type:        i.Type(),
+		Value:       i.Id,
 		SearchValue: fmt.Sprintf("%s %s %s", i.Name, i.Identifier, i.ProjectName),
 	}
 }
@@ -219,39 +227,39 @@ func (i Invoice) Conditions() util.Conditions {
 	return util.Conditions{
 		{
 			Condition: i.Id == "",
-			Message: "unique identifier not set (Id is empty)",
+			Message:   "unique identifier not set (Id is empty)",
 		},
 		{
 			Condition: i.Identifier == "",
-			Message: "human readable identifier not set (Identifier is empty)",
+			Message:   "human readable identifier not set (Identifier is empty)",
 		},
 		{
 			Condition: i.Amount == 0.0,
-			Message: "amount is not set (Amount is 0.0)",
+			Message:   "amount is not set (Amount is 0.0)",
 		},
 		{
 			Condition: !util.FileExist(i.Path),
-			Message: fmt.Sprintf("business record document at «%s» not found", i.Path),
+			Message:   fmt.Sprintf("business record document at «%s» not found", i.Path),
 		},
 		{
 			Condition: i.CustomerId == "",
-			Message: "customer id is not set (CustomerId empty)",
+			Message:   "customer id is not set (CustomerId empty)",
 		},
 		{
 			Condition: util.ValidDate(DateFormat, i.SendDate),
-			Message: fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", i.SendDate),
+			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", i.SendDate),
 		},
 		{
 			Condition: i.DateOfSettlement != "" && util.ValidDate(DateFormat, i.DateOfSettlement),
-			Message: fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", i.DateOfSettlement),
+			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", i.DateOfSettlement),
 		},
 		{
 			Condition: i.DateOfSettlement != "" && i.SettlementTransactionId == "",
-			Message: "although date of settlement is set, the corresponding transaction is empty (SettlementTransactionId is empty",
+			Message:   "although date of settlement is set, the corresponding transaction is empty (SettlementTransactionId is empty",
 		},
 		{
 			Condition: i.ProjectName == "",
-			Message: "project name is not set (ProjectName is empty)",
+			Message:   "project name is not set (ProjectName is empty)",
 		},
 	}
 }

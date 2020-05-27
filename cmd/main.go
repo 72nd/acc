@@ -7,9 +7,9 @@ import (
 	"github.com/urfave/cli/v2"
 	"gitlab.com/72th/acc/pkg/bimpf"
 	"gitlab.com/72th/acc/pkg/camt"
-	"gitlab.com/72th/acc/pkg/ledger"
 	"gitlab.com/72th/acc/pkg/document/invoices"
 	"gitlab.com/72th/acc/pkg/document/records"
+	"gitlab.com/72th/acc/pkg/ledger"
 	"gitlab.com/72th/acc/pkg/schema"
 	"os"
 	"path"
@@ -334,18 +334,31 @@ func main() {
 				Name:    "ledger",
 				Aliases: []string{"ldg"},
 				Usage:   "generate hledger csv",
-				Action: func(c *cli.Context) error {
-					inputPath := getReadPathOrExit(c, "input", "acc project file")
-					acc := schema.OpenProject(inputPath)
-					_ = ledger.JournalFromStatement(acc)
-					return nil
-				},
 				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:    "force",
+						Aliases: []string{"f"},
+						Usage:   "force overwrite of existing report",
+					},
 					&cli.StringFlag{
 						Name:    "input",
 						Aliases: []string{"i"},
 						Usage:   "acc project file",
 					},
+					&cli.StringFlag{
+						Name:    "output",
+						Aliases: []string{"o"},
+						Usage:   "path for the journal file",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					outputPath := getPathOrExit(c, c.Bool("force"), "transactions.journal", "output", "the journal file")
+					acc := schema.OpenProject(inputPath)
+					journal := ledger.JournalFromStatement(acc)
+					journal.SaveHLedgerFile(outputPath)
+					logrus.Info("journal saved as ", outputPath)
+					return nil
 				},
 			},
 			{
