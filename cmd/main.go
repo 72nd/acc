@@ -9,7 +9,6 @@ import (
 	"gitlab.com/72th/acc/pkg/camt"
 	"gitlab.com/72th/acc/pkg/document/invoices"
 	"gitlab.com/72th/acc/pkg/document/records"
-	"gitlab.com/72th/acc/pkg/ledger"
 	"gitlab.com/72th/acc/pkg/schema"
 	"os"
 	"path"
@@ -372,12 +371,17 @@ func main() {
 						Aliases: []string{"o"},
 						Usage:   "path for the journal file",
 					},
+					&cli.BoolFlag{
+						Name:    "update",
+						Aliases: []string{"u"},
+						Usage:   "update transaction id's in expenses and invoices",
+					},
 				},
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					outputPath := getPathOrExit(c, c.Bool("force"), "transactions.journal", "output", "the journal file")
 					acc := schema.OpenProject(inputPath)
-					journal := ledger.JournalFromStatement(acc)
+					journal := schema.JournalFromStatement(acc, c.Bool("update"))
 					journal.SaveHLedgerFile(outputPath)
 					logrus.Info("journal saved as ", outputPath)
 					return nil

@@ -2,13 +2,14 @@ package schema
 
 import (
 	"fmt"
+	"io/ioutil"
+	"strings"
+	"time"
+
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
-	"strings"
-	"time"
 )
 
 const DefaultExpensesFile = "expenses.yaml"
@@ -81,29 +82,6 @@ func (e Expenses) SearchItems() util.SearchItems {
 	result := make(util.SearchItems, len(e))
 	for i := range e {
 		result[i] = e[i].SearchItem()
-	}
-	return result
-}
-
-func (e Expenses) GetExpenseCategories() util.SearchItems {
-	var result util.SearchItems
-	for i := range e {
-		if e[i].ExpenseCategory == "" {
-			continue
-		}
-		existing := false
-		for j := range result {
-			if e[i].ExpenseCategory == result[j].Value {
-				existing = true
-			}
-		}
-		if !existing {
-			result = append(result, util.SearchItem{
-				Name:        e[i].ExpenseCategory,
-				Value:       e[i].ExpenseCategory,
-				SearchValue: e[i].ExpenseCategory,
-			})
-		}
 	}
 	return result
 }
@@ -221,7 +199,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp.ExpenseCategory = util.AskStringFromListSearch(
 		"Expense Category",
 		"Used for journal generation",
-		a.Expenses.GetExpenseCategories(),
+		a.JournalConfig.ExpenseCategories.SearchItems(),
 	)
 	exp.ProjectName = util.AskString(
 		"Project Name",
@@ -233,9 +211,9 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 
 func (e Expense) SearchItem() util.SearchItem {
 	return util.SearchItem{
-		Name:  e.Name,
-		Type:  e.Type(),
-		Value: e.Id,
+		Name:        e.Name,
+		Type:        e.Type(),
+		Value:       e.Id,
 		SearchValue: fmt.Sprintf("%s %s %s", e.Name, e.Identifier, e.ProjectName),
 	}
 }
@@ -323,4 +301,84 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   "project name is not set (ProjectName is empty)",
 		},
 	}
+}
+
+func (e Expense) AccrualDateTime() time.Time {
+	result, err := time.Parse(DateFormat, e.DateOfAccrual)
+	if err != nil {
+		logrus.Fatalf("could not parse «%s» as date with YYYY-MM-DD: %s", e.DateOfAccrual, err)
+	}
+	return result
+}
+
+func (e Expense) Journal(a Acc) Journal {
+	ele := "default expense"
+	if e.AdvancedByThirdParty {
+		ele = "employee advanced expense"
+	}
+
+	cmt := NewComment(ele, e.String())
+	acc1, err := e.expenseAccount(a)
+	cmt.add(err)
+
+	acc2 := a.JournalConfig.PayableAccount
+	if e.AdvancedByThirdParty {
+		acc2, err = e.employeeLiabilityAccount(a)
+		cmt.add(err)
+	}
+
+	return Journal{
+		{
+			Date:        e.AccrualDateTime(),
+			Status:      UnmarkedStatus,
+			Description: "TODO expense employee booking description",
+			Comment:     cmt,
+			Account1:    acc1,
+			Account2:    acc2,
+			Amount:      e.Amount,
+		}}
+}
+
+func (e *Expense) SettlementJournal(a Acc, trn Transaction, update bool) Journal {
+	cmt := NewComment("advanced expense settlement", trn.String())
+	acc1, err := e.expenseAccount(a)
+	cmt.add(err)
+	acc2, err := e.employeeLiabilityAccount(a)
+	cmt.add(err)
+	if trn.Amount != e.Amount {
+		cmt.add(fmt.Errorf("amount of transaction (%.2f) doesn't match amount of colligated expense %s", trn.Amount, e.String()))
+	}
+
+	if update {
+		e.DateOfSettlement = trn.Date
+		e.SettlementTransactionId = trn.Id
+	}
+
+	return Journal{
+		{
+			Date:        trn.DateTime(),
+			Status:      UnmarkedStatus,
+			Description: "TODO expense employee booking description",
+			Comment:     cmt,
+			Account1:    acc1,
+			Account2:    acc2,
+			Amount:      trn.Amount,
+		}}
+
+}
+
+func (e Expense) expenseAccount(a Acc) (string, error) {
+	cat, err := a.JournalConfig.ExpenseCategories.CategoryByName(e.ExpenseCategory)
+	if err != nil {
+		return defaultAccount, err
+	}
+	return cat.Account, nil
+}
+
+func (e Expense) employeeLiabilityAccount(a Acc) (string, error) {
+	emp, err := a.Parties.EmployeeById(e.AdvancedThirdPartyId)
+	if err != nil {
+		return defaultAccount, err
+	}
+	return fmt.Sprintf("%s:%s", a.JournalConfig.EmployeeLiabilitiesAccount, emp.Name), nil
 }

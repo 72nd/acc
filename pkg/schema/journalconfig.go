@@ -12,6 +12,7 @@ type JournalConfig struct {
 	BankAccount                string            `yaml:"bankAccount" default:"assets:Umlaufvermögen:Flüssige Mittel:Raiffeisenbank Bern"`
 	ReceivableAccount          string            `yaml:"receivableAccount" default:"assets:Umlaufvermögen:Debitoren"`
 	RevenueAccount             string            `yaml:"revenueAccount" default:"revenues:Betrieblicher Ertrag:Dienstleistungserlös"`
+	PayableAccount             string            `yaml:"payableAccount" default:"liabilities:Kurzfristiges Fremdkapital:Kreditoren"`
 	EmployeeLiabilitiesAccount string            `yaml:"employeeLiabilitiesAccount" default:"liabilities:Kurzfristiges Fremdkapital:Verbindlichkeiten gegenüber Genossenschaftler"`
 	ExpenseCategories          ExpenseCategories `yaml:"expenseCategories" default:"[]"`
 }
@@ -39,6 +40,10 @@ func InteractiveNewJournalConfig() JournalConfig {
 		"Revenue Account",
 		"Default ledger account for earnings",
 		jrc.RevenueAccount)
+	jrc.PayableAccount = util.AskString(
+		"Payable Account",
+		"Ledger account for payables",
+		jrc.PayableAccount)
 	jrc.EmployeeLiabilitiesAccount = util.AskString(
 		"Emloyee Liabilities Account",
 		"Ledger Account for unpaid liabilities against employees",
@@ -70,6 +75,10 @@ func (c JournalConfig) Conditions() util.Conditions {
 			Message:   "revenue account is not set (ReceivableAccount is empty)",
 		},
 		{
+			Condition: c.PayableAccount == "",
+			Message:   "payable account is not set (PayableAccount is empty)",
+		},
+		{
 			Condition: c.EmployeeLiabilitiesAccount == "",
 			Message:   "employee liabilities account is not set (EmployeeLiabilitiesAccount is empty",
 		},
@@ -88,6 +97,23 @@ func InteractiveNewExpenseCategories(multiple bool) ExpenseCategories {
 		return append(cat, InteractiveNewExpenseCategories(multiple)...)
 	}
 	return cat
+}
+
+func (e ExpenseCategories) CategoryByName(name string) (*ExpenseCategory, error) {
+	for i := range e {
+		if e[i].Name == name {
+			return &e[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no epense category for name «%s» found", name)
+}
+
+func (e ExpenseCategories) SearchItems() util.SearchItems {
+	result := make(util.SearchItems, len(e))
+	for i := range e {
+		result[i] = e[i].SearchItem()
+	}
+	return result
 }
 
 func (e ExpenseCategories) Type() string {
@@ -161,6 +187,13 @@ func InteractiveNewExpenseCategory() ExpenseCategory {
 		"Ledger account for expense category",
 		cat.Account)
 	return cat
+}
+
+func (e ExpenseCategory) SearchItem() util.SearchItem {
+	return util.SearchItem{
+		Name:        e.Name,
+		Value:       e.Name,
+		SearchValue: fmt.Sprintf("%s %s", e.Name, e.Account)}
 }
 
 func (e ExpenseCategory) Type() string {

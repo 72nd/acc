@@ -284,3 +284,39 @@ func (t Transaction) SearchItem() util.SearchItem {
 		SearchValue: t.Description,
 	}
 }
+
+func (t Transaction) Journal(a Acc, update bool) Journal {
+	if t.AssociatedDocumentId != "" {
+		exp, err := a.Expenses.ExpenseById(t.AssociatedDocumentId)
+		if err == nil {
+			return exp.SettlementJournal(a, t, update)
+		}
+		inv, err := a.Invoices.InvoiceById(t.AssociatedDocumentId)
+		if err == nil {
+			return inv.SettlementJournal(a, t, update)
+		}
+	}
+	return t.defaultJournal(a)
+}
+
+func (t Transaction) defaultJournal(a Acc) Journal {
+	var account1, account2 string
+	// Incoming transaction
+	if t.TransactionType == util.CreditTransaction {
+		account1 = a.JournalConfig.BankAccount
+		account2 = defaultAccount
+	} else {
+		account1 = defaultAccount
+		account2 = a.JournalConfig.BankAccount
+	}
+	return Journal{
+		{
+			Date:        t.DateTime(),
+			Status:      UnmarkedStatus,
+			Description: t.JournalDescription(a),
+			Comment:     NewManualComment("default", t.String()),
+			Account1:    account1,
+			Account2:    account2,
+			Amount:      t.Amount,
+		}}
+}

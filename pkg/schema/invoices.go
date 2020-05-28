@@ -263,3 +263,47 @@ func (i Invoice) Conditions() util.Conditions {
 		},
 	}
 }
+
+func (i Invoice) SendDateTime() time.Time {
+	result, err := time.Parse(DateFormat, i.SendDate)
+	if err != nil {
+		logrus.Fatalf("could not parse «%s» as date with YYYY-MM-DD: %s", i.SendDate, err)
+	}
+	return result
+}
+
+func (i Invoice) Journal(a Acc) Journal {
+	cmt := NewComment("invoice sent", i.String())
+	return Journal{
+		{
+			Date:        i.SendDateTime(),
+			Status:      UnmarkedStatus,
+			Description: "TODO invoicing description",
+			Comment:     cmt,
+			Account1:    a.JournalConfig.ReceivableAccount,
+			Account2:    a.JournalConfig.RevenueAccount,
+			Amount:      i.Amount,
+		}}
+}
+
+func (i Invoice) SettlementJournal(a Acc, trn Transaction, update bool) Journal {
+	cmt := NewComment("invoice settlement", trn.String())
+	if trn.Amount != i.Amount {
+		cmt.add(fmt.Errorf("amount of transaction (%.2f) doesn't match amount of colligated invoice %s", trn.Amount, i.String()))
+	}
+	if update {
+		i.DateOfSettlement = trn.Date
+		i.SettlementTransactionId = trn.Id
+	}
+
+	return Journal{
+		{
+			Date:        trn.DateTime(),
+			Status:      UnmarkedStatus,
+			Description: "TODO invoice settlement description",
+			Comment:     cmt,
+			Account1:    a.JournalConfig.BankAccount,
+			Account2:    a.JournalConfig.ReceivableAccount,
+			Amount:      trn.Amount,
+		}}
+}
