@@ -79,7 +79,7 @@ func journalFromExpense(acc schema.Acc, exp schema.Expense, trn schema.Transacti
 			Status:      UnmarkedStatus,
 			Description: "TODO expense employee booking",
 			Comment:     "",
-
+			Account1:    "TODO", // der ist schwierig, muss bei jedem anders sein
 		}}
 }
 

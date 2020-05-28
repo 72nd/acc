@@ -183,13 +183,12 @@ type Party struct {
 	// Id is the internal unique identifier of the Expense.
 	Id string `yaml:"id" default:""`
 	// Value is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
-	Identifier         string `yaml:"identifier" default:"?-1"`
-	Name               string `yaml:"name" default:"Max Mustermann"`
-	Street             string `yaml:"street" default:"Main Street"`
-	StreetNr           int    `yaml:"streetNr" default:"1"`
-	PostalCode         int    `yaml:"postalCode" default:"8000"`
-	Place              string `yaml:"place" default:"Zurich"`
-	LiabilitiesAccount string `yaml:"liabilitiesAccount"liabilities:Kurzfristiges Fremdkapital:Verbindlichkeiten gegenüber Genossenschaftler:Hans Müller"`
+	Identifier string `yaml:"identifier" default:"?-1"`
+	Name       string `yaml:"name" default:"Max Mustermann"`
+	Street     string `yaml:"street" default:"Main Street"`
+	StreetNr   int    `yaml:"streetNr" default:"1"`
+	PostalCode int    `yaml:"postalCode" default:"8000"`
+	Place      string `yaml:"place" default:"Zurich"`
 }
 
 // NewParty returns a new Party with the default values.
