@@ -54,11 +54,11 @@ func defaultJournal(acc schema.Acc, trn schema.Transaction) Journal {
 	var account1, account2 string
 	// Incoming transaction
 	if trn.TransactionType == util.CreditTransaction {
-		account1 = acc.BankAccount
+		account1 = acc.JournalConfig.BankAccount
 		account2 = "other:unknow"
 	} else {
 		account1 = "other:unknow"
-		account2 = acc.BankAccount
+		account2 = acc.JournalConfig.BankAccount
 	}
 	return Journal{
 		{

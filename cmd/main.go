@@ -106,6 +106,28 @@ func main() {
 						Flags: addFlags,
 					},
 					{
+						Name:    "expense-category",
+						Aliases: []string{"exp"},
+						Usage:   "add one or multiple expense category",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							if c.Bool("default") {
+								acc.JournalConfig.ExpenseCategories = append(acc.JournalConfig.ExpenseCategories, schema.NewExpenseCategory())
+							} else {
+								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
+								acc.JournalConfig.ExpenseCategories = append(acc.JournalConfig.ExpenseCategories, schema.InteractiveNewExpenseCategories(c.Bool("multiple"))...)
+							}
+							acc.SaveProject()
+							return nil
+						},
+						Flags: append(addFlags, &cli.BoolFlag{
+							Name:    "mulitple",
+							Aliases: []string{"m"},
+							Usage:   "add multiple expende categories in one go",
+						}),
+					},
+					{
 						Name:    "invoice",
 						Aliases: []string{"inv"},
 						Usage:   "add a invoice",
