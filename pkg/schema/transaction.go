@@ -136,32 +136,12 @@ func (t Transaction) AssistedCompletion(a Acc, doAll bool) Transaction {
 				Value: int(AutoJournalMode),
 			},
 		}))
-
-	ok := util.AskForConformation("Were your entries correct?")
-	if !ok {
-		for {
-			strategy := util.AskIntFromList(
-				"Strategy",
-				"how do you want to resolve this situation?",
-				util.SearchItems{
-					{
-						Name:  "Redo",
-						Value: 1,
-					},
-					{
-						Name:  "Skip",
-						Value: 2,
-					},
-				})
-			switch strategy {
-			case 1:
-				t.AssistedCompletion(a, doAll)
-			case 2:
-				return tmp
-			default:
-				logrus.Error("invalid input, try again")
-			}
-		}
+	strategy := util.AskForStategy()
+	switch strategy {
+	case util.RedoStrategy:
+		t.AssistedCompletion(a, doAll)
+	case util.SkipStrategy:
+		return tmp
 	}
 	return t
 }

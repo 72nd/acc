@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/creasty/defaults"
+	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
@@ -103,6 +104,21 @@ func (e Expenses) Filter(from *time.Time, to *time.Time) (Expenses, error) {
 	return result, nil
 }
 
+func (e Expenses) AssistedCompletion(a *Acc, doAll, autoSave bool) {
+	first := true
+	for i := range e {
+		if !first {
+			fmt.Println()
+		} else {
+			first = false
+		}
+		e[i] = e[i].AssistedCompletion(a, doAll)
+		if autoSave {
+			a.SaveProject()
+		}
+	}
+}
+
 // Expense represents a payment done by the company or a third party to assure the ongoing of the business.
 type Expense struct {
 	// Id is the internal unique identifier of the Expense.
@@ -191,8 +207,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		exp.ObligedCustomerId = util.AskStringFromSearch(
 			"Obliged Customer",
 			"Customer which has to pay this expense",
-			a.Parties.CustomersSearchItems(),
-		)
+			a.Parties.CustomersSearchItems())
 	} else {
 		exp.ObligedCustomerId = ""
 	}
@@ -205,8 +220,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		exp.AdvancedThirdPartyId = util.AskStringFromSearch(
 			"Advanced party",
 			"Employee which advanced the expense",
-			a.Parties.EmployeesSearchItems(),
-		)
+			a.Parties.EmployeesSearchItems())
 	}
 	exp.DateOfSettlement = util.AskDate(
 		"Date of settlement",
@@ -216,14 +230,52 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp.ExpenseCategory = util.AskStringFromListSearch(
 		"Expense Category",
 		"Used for journal generation",
-		a.JournalConfig.ExpenseCategories.SearchItems(),
-	)
+		a.JournalConfig.ExpenseCategories.SearchItems())
 	exp.ProjectName = util.AskString(
 		"Project Name",
 		"Name of the associated project",
 		"",
 	)
 	return exp
+}
+
+func (e Expense) AssistedCompletion(a *Acc, doAll bool) Expense {
+	tmp := e
+	if !doAll && util.Check(e).Valid() {
+		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip expense:")), aurora.BrightMagenta(e.String()))
+		return e
+	}
+	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize expense:")), aurora.BrightMagenta(e.String()))
+	if e.AdvancedByThirdParty && e.AdvancedThirdPartyId == "" {
+		e.AdvancedThirdPartyId = util.AskStringFromListSearch(
+			"Advanced party",
+			"Employee which advanced the expense",
+			a.Parties.EmployeesSearchItems())
+	}
+	if e.ExpenseCategory == "" {
+		var cat interface{}
+		e.ExpenseCategory, cat = util.AskStringFromSearchWithNew(
+			"Expense Category",
+			"Used for journal genertaion",
+			a.JournalConfig.ExpenseCategories.SearchItems(),
+			InteractiveNewGenericExpenseCategory)
+		if cat != nil {
+			value, ok := cat.(ExpenseCategory)
+			if !ok {
+				logrus.Fatal("returned new expense category has different type")
+			}
+			a.JournalConfig.ExpenseCategories = append(a.JournalConfig.ExpenseCategories, value)
+			e.ExpenseCategory = value.Name
+		}
+	}
+	strategy := util.AskForStategy()
+	switch strategy {
+	case util.RedoStrategy:
+		e.AssistedCompletion(a, doAll)
+	case util.SkipStrategy:
+		return tmp
+	}
+	return e
 }
 
 func (e Expense) SearchItem() util.SearchItem {

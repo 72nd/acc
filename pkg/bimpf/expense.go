@@ -55,8 +55,7 @@ func (e Expense) Conditions() util.Conditions {
 		},
 		{
 			Condition: e.Path == "",
-			Message:   "attachment path not specified",
-			Level:     util.BeforeImportFlaw,
+			Message:   "attachment path not specified", Level:     util.BeforeImportFlaw,
 		},
 		{
 			Condition: func() bool {
@@ -124,7 +123,6 @@ func (e Expense) getAdvancedPartyId(parties schema.Parties, bimpfEmployees Emplo
 		if err != nil {
 			logrus.Warn(err)
 		}
-		fmt.Println(employee.Name)
 		return employee.Id
 	}
 	return ""

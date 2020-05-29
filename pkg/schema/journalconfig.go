@@ -189,6 +189,10 @@ func InteractiveNewExpenseCategory() ExpenseCategory {
 	return cat
 }
 
+func InteractiveNewGenericExpenseCategory() interface{} {
+	return InteractiveNewExpenseCategory()
+}
+
 func (e ExpenseCategory) SearchItem() util.SearchItem {
 	return util.SearchItem{
 		Name:        e.Name,

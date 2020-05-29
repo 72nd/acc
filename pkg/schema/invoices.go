@@ -162,8 +162,7 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 	inv.CustomerId = util.AskStringFromSearch(
 		"Obliged Customer",
 		"Customer which has to pay the invoice",
-		a.Parties.CustomersSearchItems(),
-	)
+		a.Parties.CustomersSearchItems())
 	inv.SendDate = util.AskDate(
 		"Send Date",
 		"Date the invoice was sent",
@@ -177,8 +176,7 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 	inv.SettlementTransactionId = util.AskStringFromSearch(
 		"Settlement Transaction",
 		"Transaction which settled the invoice",
-		a.BankStatement.TransactionSearchItems(),
-	)
+		a.BankStatement.TransactionSearchItems())
 	inv.ProjectName = util.AskString(
 		"Project Name",
 		"Name of the associated project",

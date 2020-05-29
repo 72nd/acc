@@ -42,6 +42,14 @@ type SearchItem struct {
 	SearchValue string
 }
 
+type Strategy int
+
+const (
+	AcceptStrategy Strategy = iota
+	RedoStrategy
+	SkipStrategy
+)
+
 func AskString(name, desc, defaultValue string) string {
 	input := simplePrompt(name, "string", desc, defaultValue)
 	if input == "" {
@@ -51,7 +59,7 @@ func AskString(name, desc, defaultValue string) string {
 }
 
 func AskStringFromSearch(name, desc string, searchItems SearchItems) string {
-	result := searchPrompt(name, desc, searchItems, false)
+	result, _ := searchPrompt(name, desc, searchItems, false, nil)
 	value, ok := result.(string)
 	if !ok {
 		logrus.Fatalf("could not convert %+v to string", result)
@@ -59,8 +67,17 @@ func AskStringFromSearch(name, desc string, searchItems SearchItems) string {
 	return value
 }
 
+func AskStringFromSearchWithNew(name, desc string, searchItems SearchItems, newFunction func() interface{}) (value string, newElement interface{}) {
+	result, newElement := searchPrompt(name, desc, searchItems, false, newFunction)
+	value, ok := result.(string)
+	if !ok {
+		logrus.Fatalf("could not convert %+v to string", result)
+	}
+	return value, newElement
+}
+
 func AskStringFromListSearch(name, desc string, searchItems SearchItems) string {
-	result := searchPrompt(name, desc, searchItems, true)
+	result, _ := searchPrompt(name, desc, searchItems, true, nil)
 	value, ok := result.(string)
 	if !ok {
 		logrus.Fatalf("could not convert %+v to string", result)
@@ -99,7 +116,7 @@ func AskIntFromList(name, desc string, searchItems SearchItems) int {
 }
 
 func AskIntFromListSearch(name, desc string, searchItems SearchItems) int {
-	result := searchPrompt(name, desc, searchItems, true)
+	result, _ := searchPrompt(name, desc, searchItems, true, nil)
 	value, ok := result.(int)
 	if !ok {
 		logrus.Fatalf("could not convert %+v to int", result)
@@ -176,6 +193,36 @@ func AskDate(name, desc string, defaultValue time.Time) string {
 	return value.Format(DateFormat)
 }
 
+func AskForStategy() Strategy {
+	ok := AskForConformation("Were your entries correct?")
+	if !ok {
+		for {
+			strategy := AskIntFromList(
+				"Strategy",
+				"how do you want to resolve this situation?",
+				SearchItems{
+					{
+						Name:  "Redo",
+						Value: 1,
+					},
+					{
+						Name:  "Skip",
+						Value: 2,
+					},
+				})
+			switch strategy {
+			case 1:
+				return RedoStrategy
+			case 2:
+				return SkipStrategy
+			default:
+				logrus.Error("invalid input, try again")
+			}
+		}
+	}
+	return AcceptStrategy
+}
+
 func simplePrompt(name, typeName, desc, defaultValue string) string {
 	header(name, typeName, desc, fmt.Sprintf("Enter for default (%s)", defaultValue), true)
 	return getInput()
@@ -190,10 +237,13 @@ func simplePromptWithEmpty(name, typeName, desc, defaultValue string) (value str
 	return input, true
 }
 
-func searchPrompt(name, desc string, items SearchItems, showList bool) (result interface{}) {
+func searchPrompt(name, desc string, items SearchItems, showList bool, newFunction func() interface{}) (result interface{}, newElement interface{}) {
 	functions := "'T(text)' for free text form, 'E' for empty"
 	if showList {
 		functions = fmt.Sprintf("%s, 'L(number)' for selecting by number", functions)
+	}
+	if newFunction != nil {
+		functions = fmt.Sprintf("%s 'N' for new element", functions)
 	}
 	fmt.Printf("%s %s %s\n",
 		aurora.BrightCyan(fmt.Sprintf("Search for a %s", aurora.Bold(name))),
@@ -206,22 +256,22 @@ func searchPrompt(name, desc string, items SearchItems, showList bool) (result i
 	fmt.Print("--> ")
 	input := getInput()
 	if input == "T" {
-		return AskString(name, desc, "")
+		return AskString(name, desc, ""), false
 	} else if input == "E" {
-		return ""
+		return "", false
 	} else if input == "L" && showList {
 		index := AskInt("index", fmt.Sprintf("1 to %d", len(items)), 0)
 		ele, err := items.ByIndex(index)
 		if err != nil {
 			logrus.Error("invalid input, try again")
-			return searchPrompt(name, desc, items, showList)
+			return searchPrompt(name, desc, items, showList, newFunction)
 		}
-		return ele.Value
+		return ele.Value, false
 	} else if strings.HasPrefix(input, "T") {
 		if strings.HasPrefix(input, "T ") {
-			return input[2:]
+			return input[2:], false
 		}
-		return input[1:]
+		return input[1:], false
 	} else if strings.HasPrefix(input, "L") {
 		input2 := input[1:]
 		if strings.HasPrefix(input, "L ") {
@@ -230,27 +280,30 @@ func searchPrompt(name, desc string, items SearchItems, showList bool) (result i
 		index, err := strconv.Atoi(input2)
 		if err != nil {
 			fmt.Println(aurora.BrightCyan("invalid input, try again"))
-			return searchPrompt(name, desc, items, showList)
+			return searchPrompt(name, desc, items, showList, newFunction)
 		}
 		ele, err := items.ByIndex(index - 1)
 		if err != nil {
 			fmt.Println(aurora.BrightCyan("invalid input, try again"))
-			return searchPrompt(name, desc, items, showList)
+			return searchPrompt(name, desc, items, showList, newFunction)
 		}
-		return ele.Value
+		return ele.Value, false
+	} else if input == "N" {
+		fmt.Print(aurora.BrightCyan(fmt.Sprintf("New %s: ", name)))
+		return "", newFunction()
 	}
 
 	matches := items.Match(input)
 	if len(matches) == 0 {
 		fmt.Println(aurora.BrightCyan("No entry found, try again"))
-		return searchPrompt(name, desc, items, showList)
+		return searchPrompt(name, desc, items, showList, newFunction)
 	}
 	for {
 		listItems(matches)
 		fmt.Printf("%s ", aurora.BrightCyan("Choose item, 'S' to search again:"))
 		input2 := getInput()
 		if input2 == "S" {
-			return searchPrompt(name, desc, items, showList)
+			return searchPrompt(name, desc, items, showList, newFunction)
 		}
 
 		value, err := strconv.Atoi(input2)
@@ -258,7 +311,7 @@ func searchPrompt(name, desc string, items SearchItems, showList bool) (result i
 			logrus.Error("invalid input, try again")
 			continue
 		}
-		return items[value-1].Value
+		return items[value-1].Value, false
 	}
 }
 

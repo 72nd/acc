@@ -307,7 +307,7 @@ func main() {
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							acc := schema.OpenProject(inputPath)
-							acc.Expenses.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"))
+							acc.Expenses.AssistedCompletion(&acc, c.Bool("force"), c.Bool("auto-save"))
 							acc.SaveProject()
 							return nil
 						},
