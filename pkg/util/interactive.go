@@ -157,23 +157,23 @@ func AskDate(name, desc string, defaultValue time.Time) string {
 		return ""
 	}
 	if input == "T" {
-		return defaultValue.Format(GermanLayout)
+		return defaultValue.Format(DateFormat)
 	}
 	success := false
 	var value time.Time
 	for i := range possibleLayouts {
 		var err error
-		value, err = time.Parse(GermanLayout, possibleLayouts[i])
+		value, err = time.Parse(possibleLayouts[i], input)
 		if err == nil {
 			success = true
 			break
 		}
 	}
 	if !success {
-		logrus.Warnf("Could not parse input as date with format: %s", GermanLayout)
+		logrus.Warnf("Could not parse input as date with format: %s", DateFormat)
 		return AskDate(name, desc, defaultValue)
 	}
-	return value.Format(GermanLayout)
+	return value.Format(DateFormat)
 }
 
 func simplePrompt(name, typeName, desc, defaultValue string) string {

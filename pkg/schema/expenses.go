@@ -86,6 +86,23 @@ func (e Expenses) SearchItems() util.SearchItems {
 	return result
 }
 
+func (e Expenses) Filter(from *time.Time, to *time.Time) (Expenses, error) {
+	var result Expenses
+	for i := range e {
+		date, err := time.Parse(util.DateFormat, e[i].DateOfAccrual)
+		if err != nil {
+			return nil, fmt.Errorf("expense \"%s\": %s", e[i].String(), err)
+		}
+		if from != nil && (date.After(*from) || date.Equal(*from)) {
+			result = append(result, e[i])
+		}
+		if to != nil && (date.After(*to) || date.Equal(*to)) {
+			result = append(result, e[i])
+		}
+	}
+	return result, nil
+}
+
 // Expense represents a payment done by the company or a third party to assure the ongoing of the business.
 type Expense struct {
 	// Id is the internal unique identifier of the Expense.
@@ -273,7 +290,7 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   fmt.Sprintf("business record document at «%s» not found", e.Path),
 		},
 		{
-			Condition: !util.ValidDate(DateFormat, e.DateOfAccrual),
+			Condition: !util.ValidDate(util.DateFormat, e.DateOfAccrual),
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfAccrual),
 		},
 		{
@@ -285,7 +302,7 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   "although advanced by third party, no third party id is set (AdvancedThirdPartyId is empty)",
 		},
 		{
-			Condition: e.DateOfSettlement != "" && util.ValidDate(DateFormat, e.DateOfSettlement),
+			Condition: e.DateOfSettlement != "" && util.ValidDate(util.DateFormat, e.DateOfSettlement),
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfSettlement),
 		},
 		{
@@ -304,7 +321,7 @@ func (e Expense) Conditions() util.Conditions {
 }
 
 func (e Expense) AccrualDateTime() time.Time {
-	result, err := time.Parse(DateFormat, e.DateOfAccrual)
+	result, err := time.Parse(util.DateFormat, e.DateOfAccrual)
 	if err != nil {
 		logrus.Fatalf("could not parse «%s» as date with YYYY-MM-DD: %s", e.DateOfAccrual, err)
 	}
@@ -320,7 +337,6 @@ func (e Expense) Journal(a Acc) Journal {
 	cmt := NewComment(ele, e.String())
 	acc1, err := e.expenseAccount(a)
 	cmt.add(err)
-
 	acc2 := a.JournalConfig.PayableAccount
 	if e.AdvancedByThirdParty {
 		acc2, err = e.employeeLiabilityAccount(a)

@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path"
+	"time"
+
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
@@ -10,8 +14,6 @@ import (
 	"gitlab.com/72th/acc/pkg/document/invoices"
 	"gitlab.com/72th/acc/pkg/document/records"
 	"gitlab.com/72th/acc/pkg/schema"
-	"os"
-	"path"
 )
 
 func main() {
@@ -25,6 +27,23 @@ func main() {
 			Name:    "default",
 			Aliases: []string{"d", "default-values"},
 			Usage:   "use default values and do not use interactive input",
+		},
+		&cli.StringFlag{
+			Name:    "input",
+			Aliases: []string{"i"},
+			Usage:   "acc project file",
+		},
+	}
+	completeFlags := []cli.Flag{
+		&cli.BoolFlag{
+			Name:    "auto-save",
+			Aliases: []string{"a"},
+			Usage:   "save each transaction immediately after completion, this is useful when working with large bank statemens",
+		},
+		&cli.BoolFlag{
+			Name:    "force",
+			Aliases: []string{"f"},
+			Usage:   "redo all transaction which ID's and Identifier's are already set",
 		},
 		&cli.StringFlag{
 			Name:    "input",
@@ -278,27 +297,74 @@ func main() {
 				Name:  "complete",
 				Usage: "complete incorrect validated entries",
 				Action: func(c *cli.Context) error {
+					_ = cli.ShowCommandHelp(c, c.Command.Name)
+					return nil
+				},
+				Subcommands: []*cli.Command{
+					{
+						Name:  "expenses",
+						Usage: "complete incorrect expenses",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							acc.Expenses.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"))
+							acc.SaveProject()
+							return nil
+						},
+						Flags: completeFlags,
+					},
+					{
+						Name:  "transactions",
+						Usage: "complete incorrect transactions",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							acc.BankStatement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"))
+							acc.SaveProject()
+							return nil
+						},
+						Flags: completeFlags,
+					},
+				},
+			},
+			{
+				Name:  "filter",
+				Usage: "filter elements by date",
+				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					from := getDateOrExit(c, "from")
+					to := getDateOrExit(c, "to")
 					acc := schema.OpenProject(inputPath)
-					acc.BankStatement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"))
+					acc.Filter(&from, &to, c.String("output"), c.Bool("force"))
 					acc.SaveProject()
 					return nil
 				},
 				Flags: []cli.Flag{
-					&cli.BoolFlag{
-						Name:    "auto-save",
-						Aliases: []string{"a"},
-						Usage:   "save each transaction immediately after completion, this is useful when working with large bank statemens",
+					&cli.StringFlag{
+						Name:    "from",
+						Aliases: []string{"f"},
+						Usage:   "older elements are ignored, format YYYY-MM-DD",
 					},
 					&cli.BoolFlag{
 						Name:    "force",
-						Aliases: []string{"f"},
-						Usage:   "redo all transaction which ID's and Identifier's are already set",
+						Aliases: []string{"r"},
+						Usage:   "overwrite filtered output files",
 					},
 					&cli.StringFlag{
 						Name:    "input",
 						Aliases: []string{"i"},
 						Usage:   "acc project file",
+					},
+					&cli.StringFlag{
+						Name:    "output",
+						Aliases: []string{"o"},
+						Usage:   "suffix for filtered output",
+						Value:   "filtered",
+					},
+					&cli.StringFlag{
+						Name:    "to",
+						Aliases: []string{"t"},
+						Usage:   "newer elements are ignored, format YYYY-MM-DD",
 					},
 				},
 			},
@@ -418,6 +484,11 @@ func main() {
 						Name:    "output-folder",
 						Aliases: []string{"output", "o"},
 						Usage:   "path to the folder where the Acc project files should be written",
+					},
+					&cli.BoolFlag{
+						Name:    "project-mode",
+						Aliases: []string{"p"},
+						Usage:   "enable project mode",
 					},
 				},
 			},
@@ -595,6 +666,14 @@ func getFolderPath(c *cli.Context, flag string, doOverwrite, mkDir bool) string 
 		logrus.Fatalf("folder (%s) already exists, use -f to overwrite files", pth)
 	}
 	return pth
+}
+
+func getDateOrExit(c *cli.Context, flag string) time.Time {
+	value, err := time.Parse("2006-01-02", c.String(flag))
+	if err != nil {
+		logrus.Fatalf("value «%s» from flag --%s could not be parsed with layout YYYY-MM-DD", flag, c.String(flag))
+	}
+	return value
 }
 
 // projectFilesExist checks if there are no default project files existent.

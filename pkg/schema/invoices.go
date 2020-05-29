@@ -77,6 +77,23 @@ func (i Invoices) SearchItems() util.SearchItems {
 	return result
 }
 
+func (i Invoices) Filter(from *time.Time, to *time.Time) (Invoices, error) {
+	var result Invoices
+	for j := range i {
+		date, err := time.Parse(util.DateFormat, i[j].SendDate)
+		if err != nil {
+			return nil, fmt.Errorf("invoice \"%s\": %s", i[j].String(), err)
+		}
+		if from != nil && (date.After(*from) || date.Equal(*from)) {
+			result = append(result, i[j])
+		}
+		if to != nil && (date.Before(*to) || date.Equal(*to)) {
+			result = append(result, i[j])
+		}
+	}
+	return result, nil
+}
+
 // Invoice represents an invoice sent to a customer for some services.
 type Invoice struct {
 	// Id is the internal unique identifier of the Expense.
@@ -246,11 +263,11 @@ func (i Invoice) Conditions() util.Conditions {
 			Message:   "customer id is not set (CustomerId empty)",
 		},
 		{
-			Condition: util.ValidDate(DateFormat, i.SendDate),
+			Condition: util.ValidDate(util.DateFormat, i.SendDate),
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", i.SendDate),
 		},
 		{
-			Condition: i.DateOfSettlement != "" && util.ValidDate(DateFormat, i.DateOfSettlement),
+			Condition: i.DateOfSettlement != "" && util.ValidDate(util.DateFormat, i.DateOfSettlement),
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", i.DateOfSettlement),
 		},
 		{
@@ -265,7 +282,7 @@ func (i Invoice) Conditions() util.Conditions {
 }
 
 func (i Invoice) SendDateTime() time.Time {
-	result, err := time.Parse(DateFormat, i.SendDate)
+	result, err := time.Parse(util.DateFormat, i.SendDate)
 	if err != nil {
 		logrus.Fatalf("could not parse «%s» as date with YYYY-MM-DD: %s", i.SendDate, err)
 	}
@@ -307,3 +324,5 @@ func (i Invoice) SettlementJournal(a Acc, trn Transaction, update bool) Journal 
 			Amount:      trn.Amount,
 		}}
 }
+
+

@@ -124,6 +124,7 @@ func (e Expense) getAdvancedPartyId(parties schema.Parties, bimpfEmployees Emplo
 		if err != nil {
 			logrus.Warn(err)
 		}
+		fmt.Println(employee.Name)
 		return employee.Id
 	}
 	return ""

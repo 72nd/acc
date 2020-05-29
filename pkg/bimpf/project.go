@@ -153,7 +153,10 @@ func (d Document) Conditions() util.Conditions {
 			Message:   "send date not specified",
 			Level:     util.BeforeImportFlaw,
 		},
-	}
+		{
+			Condition: d.SendDate == "none",
+			Message:   "send date not specified",
+		}}
 }
 
 // Validate the element and return the result.

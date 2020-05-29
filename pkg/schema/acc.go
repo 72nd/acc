@@ -3,16 +3,18 @@ package schema
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"path"
 	"path/filepath"
+	"strings"
+	"time"
+
+	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/util"
+	"gopkg.in/yaml.v2"
 )
 
 const DefaultAccFile = "acc.yaml"
-const DateFormat = "2006-01-02"
 
 var DefaultProjectFiles = []string{
 	DefaultAccFile,
@@ -27,6 +29,7 @@ type Acc struct {
 	// Company contains the information about the organisation which uses acc.
 	Company               Company       `yaml:"company" default:""`
 	JournalConfig         JournalConfig `yaml:"journalConfig" default:""`
+	ProjectMode           bool          `yaml:"projectMode" default:"false"`
 	ExpensesFilePath      string        `yaml:"expensesFilePath" default:"expenses.yaml"`
 	InvoicesFilePath      string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
 	PartiesFilePath       string        `yaml:"partiesFilePath" default:"parties.yaml"`
@@ -184,4 +187,32 @@ func (a Acc) ValidateAndReportProject(path string) {
 		ValidateResults: a.ValidateProject(),
 	}
 	rpt.Write(path)
+}
+
+func (a *Acc) Filter(from *time.Time, to *time.Time, suffix string, overwrite bool) {
+	expPath := appendSuffix(a.ExpensesFilePath, suffix)
+	invPath := appendSuffix(a.InvoicesFilePath, suffix)
+	if util.FileExist(expPath) || util.FileExist(invPath) && !overwrite {
+		logrus.Warn("files already exist, use --force to overwrite")
+		return
+	}
+	if from == nil && to == nil {
+		return
+	}
+	var err error
+	a.Expenses, err = a.Expenses.Filter(from, to)
+	if err != nil {
+		logrus.Fatal("error while filtering ", err)
+	}
+	a.ExpensesFilePath = expPath
+	a.Invoices, err = a.Invoices.Filter(from, to)
+	if err != nil {
+		logrus.Fatal("error while filtering ", err)
+	}
+	a.InvoicesFilePath = invPath
+}
+
+func appendSuffix(file, suffix string) string {
+	ext := path.Ext(file)
+	return fmt.Sprintf("%s-%s%s", strings.TrimSuffix(file, ext), suffix, ext)
 }

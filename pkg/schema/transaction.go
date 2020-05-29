@@ -202,7 +202,7 @@ func (t *Transaction) SetId() {
 }
 
 func (t Transaction) DateTime() time.Time {
-	result, err := time.Parse(DateFormat, t.Date)
+	result, err := time.Parse(util.DateFormat, t.Date)
 	if err != nil {
 		logrus.Fatalf("could not parse «%s» as date with YYYY-MM-DD: %s", t.Date, err)
 	}
