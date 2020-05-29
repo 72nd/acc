@@ -104,7 +104,7 @@ func (e Expenses) Filter(from *time.Time, to *time.Time) (Expenses, error) {
 	return result, nil
 }
 
-func (e Expenses) AssistedCompletion(a *Acc, doAll, autoSave bool) {
+func (e Expenses) AssistedCompletion(a *Acc, doAll, autoSave, openAttachment, retainFocus bool) {
 	first := true
 	for i := range e {
 		if !first {
@@ -112,7 +112,7 @@ func (e Expenses) AssistedCompletion(a *Acc, doAll, autoSave bool) {
 		} else {
 			first = false
 		}
-		e[i] = e[i].AssistedCompletion(a, doAll)
+		e[i] = e[i].AssistedCompletion(a, doAll, openAttachment, retainFocus)
 		if autoSave {
 			a.SaveProject()
 		}
@@ -239,8 +239,13 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	return exp
 }
 
-func (e Expense) AssistedCompletion(a *Acc, doAll bool) Expense {
+func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus bool) Expense {
 	tmp := e
+	var ext util.External
+	if e.Path != "" && openAttachment {
+		ext = util.NewExternal(e.Path, retainFocus)
+		ext.Open()
+	}
 	if !doAll && util.Check(e).Valid() {
 		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip expense:")), aurora.BrightMagenta(e.String()))
 		return e
@@ -271,10 +276,13 @@ func (e Expense) AssistedCompletion(a *Acc, doAll bool) Expense {
 	strategy := util.AskForStategy()
 	switch strategy {
 	case util.RedoStrategy:
-		e.AssistedCompletion(a, doAll)
+		exp := e.AssistedCompletion(a, doAll, openAttachment, retainFocus)
+		ext.Close()
+		return exp
 	case util.SkipStrategy:
 		return tmp
 	}
+	ext.Close()
 	return e
 }
 
@@ -311,7 +319,7 @@ func (e Expense) Type() string {
 
 // String returns a human readable representation of the element.
 func (e Expense) String() string {
-	return fmt.Sprintf("%s (%s): %.2f", e.Name, e.Identifier, e.Amount)
+	return fmt.Sprintf("%s (%s): %.2f for %s", e.Name, e.Identifier, e.Amount, e.ProjectName)
 }
 
 // FileString returns the file name for exporting the expense as a document.

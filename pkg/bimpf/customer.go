@@ -47,7 +47,7 @@ func (c Customers) ConvertInvoices(folderPrefix string, parties schema.Parties) 
 		}
 		for j := range c[i].Projects {
 			for k := range c[i].Projects[j].Invoices {
-				folder := path.Join(folderPrefix, c[i].Projects[j].NcFolderName)
+				folder := path.Join(folderPrefix, c[i].NcFolderName, c[i].Projects[j].NcFolderName)
 				prjDesc := c[i].Projects[j].ShortDescription()
 				inv = append(inv, c[i].Projects[j].Invoices[k].ConvertAsInvoice(folder, cst.Id, prjDesc, parties))
 			}

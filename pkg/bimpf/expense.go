@@ -22,7 +22,7 @@ type Expense struct {
 	PaidByCustomer     bool    `json:"paid_by_customer"`
 	IsPaid             bool    `json:"is_paid"`
 	Billable           bool    `json:"billable"`
-	EmployeeId         int     `json:"employee"`
+	EmployeeId         int     `json:"advanced_employee"`
 }
 
 // Type returns a string with the type name of the element.
@@ -55,7 +55,7 @@ func (e Expense) Conditions() util.Conditions {
 		},
 		{
 			Condition: e.Path == "",
-			Message:   "attachment path not specified", Level:     util.BeforeImportFlaw,
+			Message:   "attachment path not specified", Level: util.BeforeImportFlaw,
 		},
 		{
 			Condition: func() bool {

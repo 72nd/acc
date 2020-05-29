@@ -149,7 +149,7 @@ func AskForConformation(question string) bool {
 }
 
 func AskFloat(name, desc string, defaultValue float64) float64 {
-	input := simplePrompt(name, "int", desc, fmt.Sprintf("%.2f", defaultValue))
+	input := simplePrompt(name, "float", desc, fmt.Sprintf("%.2f", defaultValue))
 	if input == "" {
 		return defaultValue
 	}
@@ -256,9 +256,9 @@ func searchPrompt(name, desc string, items SearchItems, showList bool, newFuncti
 	fmt.Print("--> ")
 	input := getInput()
 	if input == "T" {
-		return AskString(name, desc, ""), false
+		return AskString(name, desc, ""), nil
 	} else if input == "E" {
-		return "", false
+		return "", nil
 	} else if input == "L" && showList {
 		index := AskInt("index", fmt.Sprintf("1 to %d", len(items)), 0)
 		ele, err := items.ByIndex(index)
@@ -266,12 +266,12 @@ func searchPrompt(name, desc string, items SearchItems, showList bool, newFuncti
 			logrus.Error("invalid input, try again")
 			return searchPrompt(name, desc, items, showList, newFunction)
 		}
-		return ele.Value, false
+		return ele.Value, nil
 	} else if strings.HasPrefix(input, "T") {
 		if strings.HasPrefix(input, "T ") {
-			return input[2:], false
+			return input[2:], nil
 		}
-		return input[1:], false
+		return input[1:], nil
 	} else if strings.HasPrefix(input, "L") {
 		input2 := input[1:]
 		if strings.HasPrefix(input, "L ") {
@@ -287,7 +287,7 @@ func searchPrompt(name, desc string, items SearchItems, showList bool, newFuncti
 			fmt.Println(aurora.BrightCyan("invalid input, try again"))
 			return searchPrompt(name, desc, items, showList, newFunction)
 		}
-		return ele.Value, false
+		return ele.Value, nil
 	} else if input == "N" {
 		fmt.Print(aurora.BrightCyan(fmt.Sprintf("New %s: ", name)))
 		return "", newFunction()
@@ -311,7 +311,7 @@ func searchPrompt(name, desc string, items SearchItems, showList bool, newFuncti
 			logrus.Error("invalid input, try again")
 			continue
 		}
-		return items[value-1].Value, false
+		return items[value-1].Value, nil
 	}
 }
 

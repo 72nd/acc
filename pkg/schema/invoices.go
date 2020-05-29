@@ -2,14 +2,16 @@ package schema
 
 import (
 	"fmt"
-	"github.com/creasty/defaults"
-	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"strings"
 	"time"
+
+	"github.com/creasty/defaults"
+	"github.com/google/uuid"
+	"github.com/logrusorgru/aurora"
+	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/util"
+	"gopkg.in/yaml.v2"
 )
 
 const DefaultInvoicesFile = "invoices.yaml"
@@ -92,6 +94,21 @@ func (i Invoices) Filter(from *time.Time, to *time.Time) (Invoices, error) {
 		}
 	}
 	return result, nil
+}
+
+func (i Invoices) AssistedCompletion(a Acc, doAll, autoSave, openAttachment, retainFocus bool) {
+	first := true
+	for j := range i {
+		if !first {
+			fmt.Println()
+		} else {
+			first = false
+		}
+		i[j] = i[j].AssistedCompletion(a, doAll, openAttachment, retainFocus)
+		if autoSave {
+			a.SaveProject()
+		}
+	}
 }
 
 // Invoice represents an invoice sent to a customer for some services.
@@ -185,6 +202,38 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 	return inv
 }
 
+func (i Invoice) AssistedCompletion(a Acc, doAll, openAttachment, retainFocus bool) Invoice {
+	tmp := i
+	var ext util.External
+	if i.Path != "" && openAttachment {
+		ext = util.NewExternal(i.Path, retainFocus)
+		ext.Open()
+	}
+	if !doAll && util.Check(i).Valid() {
+		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip invoice:")), aurora.BrightMagenta(i.String()))
+		return i
+	}
+	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize invoice:")), aurora.BrightMagenta(i.String()))
+	if i.Amount <= 0.0 {
+		i.Amount = util.AskFloat(
+		"Amount",
+		"How much is the outstanding balance",
+		0.0)
+	}
+
+	strategy := util.AskForStategy()
+	switch strategy {
+	case util.RedoStrategy:
+		inv := i.AssistedCompletion(a, doAll, openAttachment, retainFocus)
+		ext.Close()
+		return inv
+	case util.SkipStrategy:
+		return tmp
+	}
+	ext.Close()
+	return i
+}
+
 func (i Invoice) SearchItem() util.SearchItem {
 	return util.SearchItem{
 		Name:        i.Name,
@@ -249,7 +298,7 @@ func (i Invoice) Conditions() util.Conditions {
 			Message:   "human readable identifier not set (Identifier is empty)",
 		},
 		{
-			Condition: i.Amount == 0.0,
+			Condition: i.Amount <= 0.0,
 			Message:   "amount is not set (Amount is 0.0)",
 		},
 		{
@@ -261,11 +310,11 @@ func (i Invoice) Conditions() util.Conditions {
 			Message:   "customer id is not set (CustomerId empty)",
 		},
 		{
-			Condition: util.ValidDate(util.DateFormat, i.SendDate),
+			Condition: !util.ValidDate(util.DateFormat, i.SendDate),
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", i.SendDate),
 		},
 		{
-			Condition: i.DateOfSettlement != "" && util.ValidDate(util.DateFormat, i.DateOfSettlement),
+			Condition: i.DateOfSettlement != "" && !util.ValidDate(util.DateFormat, i.DateOfSettlement),
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", i.DateOfSettlement),
 		},
 		{
@@ -322,5 +371,3 @@ func (i Invoice) SettlementJournal(a Acc, trn Transaction, update bool) Journal 
 			Amount:      trn.Amount,
 		}}
 }
-
-

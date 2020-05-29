@@ -50,6 +50,15 @@ func main() {
 			Aliases: []string{"i"},
 			Usage:   "acc project file",
 		},
+		&cli.BoolFlag{
+			Name:    "open-attachment",
+			Aliases: []string{"o"},
+			Usage:   "open attachment",
+		},
+		&cli.BoolFlag{
+			Name:    "retain-focus",
+			Usage:   "try to retain focus when open attachment",
+		},
 	}
 
 	app := &cli.App{
@@ -307,7 +316,19 @@ func main() {
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							acc := schema.OpenProject(inputPath)
-							acc.Expenses.AssistedCompletion(&acc, c.Bool("force"), c.Bool("auto-save"))
+							acc.Expenses.AssistedCompletion(&acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("open-attachment"), c.Bool("retain-focus"))
+							acc.SaveProject()
+							return nil
+						},
+						Flags: completeFlags,
+					},
+					{
+						Name:  "invoices",
+						Usage: "complete incorrect invoices",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							acc.Invoices.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("open-attachment"), c.Bool("retain-focus"))
 							acc.SaveProject()
 							return nil
 						},
@@ -420,7 +441,7 @@ func main() {
 			{
 				Name:    "ledger",
 				Aliases: []string{"ldg"},
-				Usage:   "generate hledger csv",
+				Usage:   "generate hledger journal",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:    "force",
