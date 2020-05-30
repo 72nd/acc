@@ -203,15 +203,15 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 }
 
 func (i Invoice) AssistedCompletion(a Acc, doAll, openAttachment, retainFocus bool) Invoice {
+	if !doAll && util.Check(i).Valid() {
+		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip invoice:")), aurora.BrightMagenta(i.String()))
+		return i
+	}
 	tmp := i
 	var ext util.External
 	if i.Path != "" && openAttachment {
 		ext = util.NewExternal(i.Path, retainFocus)
 		ext.Open()
-	}
-	if !doAll && util.Check(i).Valid() {
-		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip invoice:")), aurora.BrightMagenta(i.String()))
-		return i
 	}
 	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize invoice:")), aurora.BrightMagenta(i.String()))
 	if i.Amount <= 0.0 {

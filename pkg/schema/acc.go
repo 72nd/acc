@@ -189,27 +189,39 @@ func (a Acc) ValidateAndReportProject(path string) {
 	rpt.Write(path)
 }
 
-func (a *Acc) Filter(from *time.Time, to *time.Time, suffix string, overwrite bool) {
+func (a *Acc) Filter(types []string, from *time.Time, to *time.Time, suffix string, overwrite bool, identifier string) {
 	expPath := appendSuffix(a.ExpensesFilePath, suffix)
 	invPath := appendSuffix(a.InvoicesFilePath, suffix)
 	if util.FileExist(expPath) || util.FileExist(invPath) && !overwrite {
 		logrus.Warn("files already exist, use --force to overwrite")
 		return
 	}
-	if from == nil && to == nil {
-		return
+	if util.Contains(types, "expenses") {
+		var err error
+		a.Expenses, err = a.Expenses.Filter(from, to, identifier)
+		if err != nil {
+			logrus.Fatal("error while filtering: ", err)
+		}
+		a.ExpensesFilePath = expPath
 	}
 	var err error
-	a.Expenses, err = a.Expenses.Filter(from, to)
-	if err != nil {
-		logrus.Fatal("error while filtering ", err)
-	}
-	a.ExpensesFilePath = expPath
 	a.Invoices, err = a.Invoices.Filter(from, to)
 	if err != nil {
-		logrus.Fatal("error while filtering ", err)
+		logrus.Fatal("error while filtering: ", err)
 	}
 	a.InvoicesFilePath = invPath
+}
+
+func (a Acc) Query(types []string, from *time.Time, to *time.Time, identifier string) {
+	if util.Contains(types, "expenses") {
+		exp, err := a.Expenses.Filter(from, to, identifier)
+		if err != nil {
+			logrus.Fatal("error while query: ", err)
+		}
+		for i := range exp {
+			fmt.Print(util.PrettyFormat(util.TableMode, exp[i]))
+		}
+	}
 }
 
 func appendSuffix(file, suffix string) string {

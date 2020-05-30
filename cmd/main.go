@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/logrusorgru/aurora"
@@ -56,8 +57,8 @@ func main() {
 			Usage:   "open attachment",
 		},
 		&cli.BoolFlag{
-			Name:    "retain-focus",
-			Usage:   "try to retain focus when open attachment",
+			Name:  "retain-focus",
+			Usage: "try to retain focus when open attachment",
 		},
 	}
 
@@ -352,11 +353,15 @@ func main() {
 				Name:  "filter",
 				Usage: "filter elements by date",
 				Action: func(c *cli.Context) error {
+					types := []string{"customers", "employee", "expenses", "invoices"}
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					if c.String("types") != "" {
+						types = getSlice("types", c.String("types"), types)
+					}
 					from := getDateOrExit(c, "from")
 					to := getDateOrExit(c, "to")
 					acc := schema.OpenProject(inputPath)
-					acc.Filter(&from, &to, c.String("output"), c.Bool("force"))
+					acc.Filter(types, from, to, c.String("output"), c.Bool("force"), c.String("identifier"))
 					acc.SaveProject()
 					return nil
 				},
@@ -370,6 +375,10 @@ func main() {
 						Name:    "force",
 						Aliases: []string{"r"},
 						Usage:   "overwrite filtered output files",
+					},
+					&cli.StringFlag{
+						Name:  "identifier",
+						Usage: "filter identifiers by `REGEX`",
 					},
 					&cli.StringFlag{
 						Name:    "input",
@@ -386,6 +395,10 @@ func main() {
 						Name:    "to",
 						Aliases: []string{"t"},
 						Usage:   "newer elements are ignored, format YYYY-MM-DD",
+					},
+					&cli.StringFlag{
+						Name:  "types",
+						Usage: "types to be filtered seperated by comma (customers,employee,expenses,invoices)",
 					},
 				},
 			},
@@ -510,6 +523,53 @@ func main() {
 						Name:    "project-mode",
 						Aliases: []string{"p"},
 						Usage:   "enable project mode",
+					},
+				},
+			},
+			{
+				Name:  "query",
+				Usage: "find and display elements",
+				Action: func(c *cli.Context) error {
+					types := []string{"customers", "employee", "expenses", "invoices"}
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					if c.String("types") != "" {
+						types = getSlice("types", c.String("types"), types)
+					}
+					from := getDateOrExit(c, "from")
+					to := getDateOrExit(c, "to")
+					acc := schema.OpenProject(inputPath)
+					acc.Query(types, from, to, c.String("identifier"))
+					return nil
+				},
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "from",
+						Aliases: []string{"f"},
+						Usage:   "older elements are ignored, format YYYY-MM-DD",
+					},
+					&cli.StringFlag{
+						Name:  "identifier",
+						Usage: "filter identifiers by `REGEX`",
+					},
+					&cli.StringFlag{
+						Name:    "input",
+						Aliases: []string{"i"},
+						Usage:   "acc project file",
+					},
+					&cli.StringFlag{
+						Name:    "output",
+						Aliases: []string{"o"},
+						Usage:   "suffix for filtered output",
+						Value:   "filtered",
+					},
+					&cli.StringFlag{
+						Name:    "to",
+						Aliases: []string{"t"},
+						Usage:   "newer elements are ignored, format YYYY-MM-DD",
+					},
+					&cli.StringFlag{
+						Name:  "types",
+						Usage: "types to be filtered seperated by comma (customers,employee,expenses,invoices)",
 					},
 				},
 			},
@@ -689,12 +749,15 @@ func getFolderPath(c *cli.Context, flag string, doOverwrite, mkDir bool) string 
 	return pth
 }
 
-func getDateOrExit(c *cli.Context, flag string) time.Time {
+func getDateOrExit(c *cli.Context, flag string) *time.Time {
+	if c.String(flag) == "" {
+		return nil
+	}
 	value, err := time.Parse("2006-01-02", c.String(flag))
 	if err != nil {
 		logrus.Fatalf("value «%s» from flag --%s could not be parsed with layout YYYY-MM-DD", flag, c.String(flag))
 	}
-	return value
+	return &value
 }
 
 // projectFilesExist checks if there are no default project files existent.
@@ -714,4 +777,25 @@ func projectFilesExist(folderPath string) bool {
 func fileExist(pth string) bool {
 	_, err := os.Stat(pth)
 	return !os.IsNotExist(err)
+}
+
+func getSlice(name, input string, valid []string) []string {
+	ele := strings.Split(input, ",")
+	result := make([]string, len(ele))
+	for i := range ele {
+		e := strings.TrimPrefix(ele[i], " ")
+		e = strings.TrimSuffix(e, " ")
+		contained := false
+		for j := range valid {
+			if e == valid[j] {
+				contained = true
+				break
+			}
+		}
+		if !contained {
+			logrus.Fatalf("%s is not alloweed for --%s, use \"%s\"", e, name, valid)
+		}
+		result[i] = e
+	}
+	return result
 }

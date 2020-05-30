@@ -3,6 +3,7 @@ package schema
 import (
 	"fmt"
 	"io/ioutil"
+	"regexp"
 	"strings"
 	"time"
 
@@ -87,17 +88,14 @@ func (e Expenses) SearchItems() util.SearchItems {
 	return result
 }
 
-func (e Expenses) Filter(from *time.Time, to *time.Time) (Expenses, error) {
+func (e Expenses) Filter(from *time.Time, to *time.Time, identifier string) (Expenses, error) {
 	var result Expenses
 	for i := range e {
-		date, err := time.Parse(util.DateFormat, e[i].DateOfAccrual)
+		ok, err := e[i].Match(from, to, identifier)
 		if err != nil {
-			return nil, fmt.Errorf("expense \"%s\": %s", e[i].String(), err)
+			logrus.Errorf("error while matching \"%s\": %s", e[i].String(), err)
 		}
-		if from != nil && (date.After(*from) || date.Equal(*from)) {
-			result = append(result, e[i])
-		}
-		if to != nil && (date.After(*to) || date.Equal(*to)) {
+		if ok {
 			result = append(result, e[i])
 		}
 	}
@@ -240,15 +238,15 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 }
 
 func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus bool) Expense {
+	if !doAll && util.Check(e).Valid() {
+		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip expense:")), aurora.BrightMagenta(e.String()))
+		return e
+	}
 	tmp := e
 	var ext util.External
 	if e.Path != "" && openAttachment {
 		ext = util.NewExternal(e.Path, retainFocus)
 		ext.Open()
-	}
-	if !doAll && util.Check(e).Valid() {
-		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip expense:")), aurora.BrightMagenta(e.String()))
-		return e
 	}
 	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize expense:")), aurora.BrightMagenta(e.String()))
 	if e.AdvancedByThirdParty && e.AdvancedThirdPartyId == "" {
@@ -457,4 +455,25 @@ func (e Expense) employeeLiabilityAccount(a Acc) (string, error) {
 		return defaultAccount, err
 	}
 	return fmt.Sprintf("%s:%s", a.JournalConfig.EmployeeLiabilitiesAccount, emp.Name), nil
+}
+
+func (e Expense) Match(from *time.Time, to *time.Time, identifier string) (bool, error) {
+	date, err := time.Parse(util.DateFormat, e.DateOfAccrual)
+	if err != nil {
+		return false, fmt.Errorf("expense \"%s\": %s", e.String(), err)
+	}
+	if from != nil && date.Before(*from) {
+		return false, nil
+	}
+	if to != nil && date.After(*to) {
+		return false, nil
+	}
+	re, err := regexp.Compile(identifier)
+	if err != nil {
+		return false, fmt.Errorf("error while parsing \"%s\" as regex for identifier", identifier)
+	}
+	if !re.MatchString(e.Identifier) {
+		return false, nil
+	}
+	return true, nil
 }
