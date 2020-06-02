@@ -46,18 +46,22 @@ func accElementsFromQueryable(a schema.Acc, q Queryable) []Element {
 	return []Element{}
 }
 
-func (q Queryables) QueryAcc(a schema.Acc, termsInput, dateInput string, mode OutputMode) {
+func (q Queryables) QueryAcc(a schema.Acc, termsInput, dateInput, selectInput string, mode OutputMode, caseSensitive bool) {
 	var ele ElementGroup
 	for i := range q {
 		ele = append(ele, accElementsFromQueryable(a, q[i])...)
 	}
 	if termsInput != "" {
-		terms := searchTermsFromUserInput(termsInput)
-		ele = ele.Match(terms)
+		terms := searchTermsFromUserInput(termsInput, caseSensitive)
+		ele = ele.MatchTerm(terms, caseSensitive)
 	}
 	if dateInput != "" {
 		ranges := dateTermsFromUserInput(dateInput)
 		ele = ele.DateMatch(ranges)
+	}
+	if selectInput != "" {
+		sel := separate(selectInput, ",")
+		ele = ele.Select(sel, caseSensitive)
 	}
 	OutputsFromElements(ele).PPKeyValue(mode)
 }

@@ -578,7 +578,7 @@ func main() {
 					if c.Bool("yaml") {
 						mode = query.YamlMode
 					}
-					qry.QueryAcc(acc, c.String("match"), c.String("date"), mode)
+					qry.QueryAcc(acc, c.String("match"), c.String("date"), c.String("select"), mode, c.Bool("strict"))
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -596,6 +596,15 @@ func main() {
 						Name:    "match",
 						Aliases: []string{"r"},
 						Usage:   "match key:value compbinations with `REGEX:REGEX` multiple can be seperated by comma",
+					},
+					&cli.StringFlag{
+						Name: "select",
+						Aliases: []string{"s"},
+						Usage: "select displayed keys, multiple can be sperated by comma `KEY[,KEY]`",
+					},
+					&cli.BoolFlag {
+						Name: "strict",
+						Usage: "case sensitive matching",
 					},
 					&cli.StringFlag{
 						Name:    "types",

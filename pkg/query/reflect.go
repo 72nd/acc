@@ -3,6 +3,7 @@ package query
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )
@@ -21,10 +22,10 @@ func NewElements(ele interface{}) ElementGroup {
 	return rsl
 }
 
-func (g ElementGroup) Match(terms SearchTerms) ElementGroup {
+func (g ElementGroup) MatchTerm(terms SearchTerms, caseSensitive bool) ElementGroup {
 	var rsl ElementGroup
 	for i := range g {
-		if g[i].Match(terms) {
+		if g[i].Match(terms, caseSensitive) {
 			rsl = append(rsl, g[i])
 		}
 	}
@@ -37,6 +38,19 @@ func (g ElementGroup) DateMatch(ranges DateTerms) ElementGroup {
 		if g[i].DateMatch(ranges) {
 			rsl = append(rsl, g[i])
 		}
+	}
+	return rsl
+}
+
+func (g ElementGroup) Select(sel []string, caseSensitive bool) ElementGroup {
+	rsl := make(ElementGroup, len(g))
+	if !caseSensitive {
+		for i := range sel {
+			sel[i] = strings.ToLower(sel[i])
+		}
+	}
+	for i := range g {
+		rsl[i] = g[i].Select(sel, caseSensitive)
 	}
 	return rsl
 }
@@ -55,11 +69,11 @@ func NewElement(v reflect.Value) Element {
 	return rsl
 }
 
-func (e Element) Match(terms SearchTerms) bool {
+func (e Element) Match(terms SearchTerms, caseSensitive bool) bool {
 	for i := range terms {
 		for j := range e {
-			if terms[i].matchKey(e[j].Key) {
-				if !terms[i].matchValue(e[j].Value) {
+			if terms[i].matchKey(e[j].Key, caseSensitive) {
+				if !terms[i].matchValue(e[j].Value, caseSensitive) {
 					return false
 				}
 			}
@@ -79,6 +93,26 @@ func (e Element) DateMatch(ranges DateTerms) bool {
 		}
 	}
 	return true
+}
+
+func (g Element) Select(sel []string, caseSensitive bool) Element {
+	var rsl Element
+	for i := range g {
+		key := g[i].Key
+		if !caseSensitive {
+			key = strings.ToLower(key)
+		}
+		contains := false
+		for j := range sel {
+			if key == sel[j] {
+				contains = true
+			}
+		}
+		if contains {
+			rsl = append(rsl, g[i])
+		}
+	}
+	return rsl
 }
 
 type KeyValue struct {

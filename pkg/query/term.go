@@ -12,11 +12,11 @@ import (
 
 type SearchTerms []SearchTerm
 
-func searchTermsFromUserInput(input string) SearchTerms {
+func searchTermsFromUserInput(input string, caseSensitive bool) SearchTerms {
 	var rsl SearchTerms
 	ele := separate(input, ",")
 	for i := range ele {
-		rsl = append(rsl, searchTermFromUserInput(ele[i]))
+		rsl = append(rsl, searchTermFromUserInput(ele[i], caseSensitive))
 	}
 	return rsl
 }
@@ -26,7 +26,11 @@ type SearchTerm struct {
 	Value *regexp.Regexp
 }
 
-func newSearchTerm(key, value string) SearchTerm {
+func newSearchTerm(key, value string, caseSensitive bool) SearchTerm {
+	if !caseSensitive {
+		key = strings.ToLower(key)
+		value = strings.ToLower(value)
+	}
 	keyRe, err := regexp.Compile(key)
 	if err != nil {
 		logrus.Fatalf("error while parsing \"%s\" as key-regex from term \"%s:%s\"", key, key, value)
@@ -41,19 +45,25 @@ func newSearchTerm(key, value string) SearchTerm {
 	}
 }
 
-func searchTermFromUserInput(input string) SearchTerm {
+func searchTermFromUserInput(input string, caseSensitive bool) SearchTerm {
 	ele := separate(input, ":")
 	if len(ele) != 2 {
 		logrus.Fatalf("input \"%s\" couldn't be parsed as KEY:VALUE, use \\: to escape colons inside your pattern", input)
 	}
-	return newSearchTerm(ele[0], ele[1])
+	return newSearchTerm(ele[0], ele[1], caseSensitive)
 }
 
-func (s SearchTerm) matchKey(input string) bool {
+func (s SearchTerm) matchKey(input string, caseSensitive bool) bool {
+	if !caseSensitive {
+		input = strings.ToLower(input)
+	}
 	return s.Key.MatchString(input)
 }
 
-func (s SearchTerm) matchValue(input string) bool {
+func (s SearchTerm) matchValue(input string, caseSensitive bool) bool {
+	if !caseSensitive {
+		input = strings.ToLower(input)
+	}
 	return s.Value.MatchString(input)
 }
 
@@ -93,9 +103,9 @@ func dateTermFromUserInput(input string) DateTerm {
 		logrus.Fatalf("error while parsing \"%s\" as to-date from term \"%s:%s:%s\"", ele[2], ele[0], ele[1], ele[2])
 	}
 	return DateTerm{
-		Key: key,
+		Key:  key,
 		From: from,
-		To: to,
+		To:   to,
 	}
 }
 
@@ -110,7 +120,6 @@ func (d DateTerm) matchRange(input string) bool {
 	}
 	return !date.Before(d.From) && !date.After(d.To)
 }
-
 
 func separate(input, sep string) []string {
 	const esc = "ESCAPE"
