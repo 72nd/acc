@@ -71,14 +71,14 @@ func NewComment(mode, element string) Comment {
 	return Comment{
 		Mode:    mode,
 		Element: element,
-		DoManual: true,
+		DoManual: false,
 		Errors:  []error{},
 	}
 }
 
 func NewManualComment(mode, element string) Comment {
 	cmt := NewComment(mode, element)
-	cmt.DoManual = false
+	cmt.DoManual = true
 	logrus.Warnf("journal entry of «%s» needs manual correction", element)
 	return cmt
 }

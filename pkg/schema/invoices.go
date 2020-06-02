@@ -216,9 +216,9 @@ func (i Invoice) AssistedCompletion(a Acc, doAll, openAttachment, retainFocus bo
 	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize invoice:")), aurora.BrightMagenta(i.String()))
 	if i.Amount <= 0.0 {
 		i.Amount = util.AskFloat(
-		"Amount",
-		"How much is the outstanding balance",
-		0.0)
+			"Amount",
+			"How much is the outstanding balance",
+			0.0)
 	}
 
 	strategy := util.AskForStategy()
@@ -342,12 +342,24 @@ func (i Invoice) Journal(a Acc) Journal {
 		{
 			Date:        i.SendDateTime(),
 			Status:      UnmarkedStatus,
-			Description: "TODO invoicing description",
+			Description: i.sendTransactionDescription(a),
 			Comment:     cmt,
 			Account1:    a.JournalConfig.ReceivableAccount,
 			Account2:    a.JournalConfig.RevenueAccount,
 			Amount:      i.Amount,
 		}}
+}
+
+func (i Invoice) sendTransactionDescription(a Acc) string {
+	cmp, err := a.Parties.CustomerById(i.CustomerId)
+	if err != nil {
+		logrus.Error("no customer found: ", err)
+	}
+	data := map[string]string{
+		"Identifier": i.Identifier,
+		"Party":      fmt.Sprintf("%s (%s)", cmp.Name, cmp.Identifier),
+	}
+	return util.ApplyTemplate("invoice transaction description", a.JournalConfig.InvoicingTransactionDescription, data)
 }
 
 func (i Invoice) SettlementJournal(a Acc, trn Transaction, update bool) Journal {
@@ -364,10 +376,22 @@ func (i Invoice) SettlementJournal(a Acc, trn Transaction, update bool) Journal 
 		{
 			Date:        trn.DateTime(),
 			Status:      UnmarkedStatus,
-			Description: "TODO invoice settlement description",
+			Description: i.settlementTransactionDescription(a),
 			Comment:     cmt,
 			Account1:    a.JournalConfig.BankAccount,
 			Account2:    a.JournalConfig.ReceivableAccount,
 			Amount:      trn.Amount,
 		}}
+}
+
+func (i Invoice) settlementTransactionDescription(a Acc) string {
+	cmp, err := a.Parties.CustomerById(i.CustomerId)
+	if err != nil {
+		logrus.Error("no customer found: ", err)
+	}
+	data := map[string]string{
+		"Identifier": i.Identifier,
+		"Party":      fmt.Sprintf("%s (%s)", cmp.Name, cmp.Identifier),
+	}
+	return util.ApplyTemplate("invoice settlement transaction description", a.JournalConfig.InvoiceSettlementTransactionDescription, data)
 }
