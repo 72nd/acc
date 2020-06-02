@@ -556,9 +556,9 @@ func main() {
 						},
 						Flags: []cli.Flag{
 							&cli.StringFlag{
-								Name:  "types",
+								Name:    "types",
 								Aliases: []string{"t"},
-								Usage: "types to be filtered seperated by comma, use 'acc query types' to get possibilities",
+								Usage:   "types to be filtered seperated by comma, use 'acc query types' to get possibilities",
 							},
 							&cli.BoolFlag{
 								Name:  "yaml",
@@ -568,28 +568,24 @@ func main() {
 					},
 				},
 				Action: func(c *cli.Context) error {
-					/*
-						types := []string{"customers", "employee", "expenses", "invoices"}
-						inputPath := getReadPathOrExit(c, "input", "acc project file")
-						if c.String("types") != "" {
-							types = getSlice("types", c.String("types"), types)
-						}
-						from := getDateOrExit(c, "from")
-						to := getDateOrExit(c, "to")
-						acc := schema.OpenProject(inputPath)
-						acc.Query(types, from, to, c.String("identifier"))
-					*/
+					qry, err := query.AccQueryables.QueryablesFromUserInput(c.String("types"))
+					if err != nil {
+						logrus.Fatal(err)
+					}
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					acc := schema.OpenProject(inputPath)
+					mode := query.TableMode
+					if c.Bool("yaml") {
+						mode = query.YamlMode
+					}
+					qry.QueryAcc(acc, c.String("match"), c.String("date"), mode)
 					return nil
 				},
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name:    "from",
-						Aliases: []string{"f"},
-						Usage:   "older elements are ignored, format YYYY-MM-DD",
-					},
-					&cli.StringFlag{
-						Name:  "identifier",
-						Usage: "filter identifiers by `REGEX`",
+						Name: "date",
+						Aliases: []string{"d"}, 
+						Usage: "filter keys by date ranges key:from:to as `REGEX:YYYY-MM-DD:YYYY-MM-DD` multiple can be seperated by comma",
 					},
 					&cli.StringFlag{
 						Name:    "input",
@@ -597,19 +593,18 @@ func main() {
 						Usage:   "acc project file",
 					},
 					&cli.StringFlag{
-						Name:    "output",
-						Aliases: []string{"o"},
-						Usage:   "suffix for filtered output",
-						Value:   "filtered",
+						Name:    "match",
+						Aliases: []string{"r"},
+						Usage:   "match key:value compbinations with `REGEX:REGEX` multiple can be seperated by comma",
 					},
 					&cli.StringFlag{
-						Name:    "to",
+						Name:    "types",
 						Aliases: []string{"t"},
-						Usage:   "newer elements are ignored, format YYYY-MM-DD",
+						Usage:   "types to be filtered seperated by comma, use 'acc query types' to get possibilities",
 					},
-					&cli.StringFlag{
-						Name:  "types",
-						Usage: "types to be filtered seperated by comma (customers,employee,expenses,invoices)",
+					&cli.BoolFlag{
+						Name:  "yaml",
+						Usage: "output as YAML",
 					},
 				},
 			},

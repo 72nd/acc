@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/logrusorgru/aurora"
-	"gitlab.com/72th/acc/pkg/schema"
 )
 
 type Queryables []Queryable
@@ -81,29 +80,6 @@ func (q Queryables) String() string {
 	return rsl
 }
 
-var AccQueryables = Queryables{
-	{
-		Name: "customer",
-		Type: schema.Party{},
-	},
-	{
-		Name: "employee",
-		Type: schema.Party{},
-	},
-	{
-		Name: "expense",
-		Type: schema.Expense{},
-	},
-	{
-		Name: "invoice",
-		Type: schema.Invoice{},
-	},
-	{
-		Name: "transaction",
-		Type: schema.Transaction{},
-	},
-}
-
 type Keys []Key
 
 func (k Keys) Add(key Key) Keys {
@@ -147,7 +123,6 @@ func (q Queryable) matchTypeFromUserInput(input string) bool {
 
 func (q Queryable) keys() Keys {
 	var rsl Keys
-	// t := reflect.TypeOf(q.Type)
 	v := reflect.ValueOf(q.Type)
 	for i := 0; i < v.NumField(); i++ {
 		rsl = rsl.Add(Key{

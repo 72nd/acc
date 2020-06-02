@@ -3,7 +3,6 @@ package query
 import (
 	"bytes"
 	"fmt"
-	"reflect"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/sirupsen/logrus"
@@ -17,9 +16,36 @@ const (
 	TableMode
 )
 
+type Outputs []Output
+
+func OutputsFromElements(ele []Element) Outputs {
+	var rsl []Output
+	for i := range ele {
+		rsl = append(rsl, OutputFromElement(ele[i]))
+	}
+	return rsl
+}
+
+func (o Outputs) PPKeyValue(mode OutputMode) {
+	for i := range o {
+		o[i].PPKeyValue(mode)
+	}
+}
+
 type Output struct {
 	Header []string
 	Data   [][]string
+}
+
+func OutputFromElement(ele Element) Output {
+	var data [][]string
+	for i := range ele {
+		data = append(data, []string{ele[i].Key, ele[i].Value})
+	}
+	return Output{
+		Header: []string{"Key", "Value"},
+		Data:   data,
+	}
 }
 
 func (o Output) PPKeyValue(mode OutputMode) {
@@ -69,24 +95,6 @@ func (o Output) validateForKeyValue() bool {
 		return false
 	}
 	return true
-}
-
-func tableFormat(ele interface{}) string {
-	tblStr := &bytes.Buffer{}
-	tbl := tablewriter.NewWriter(tblStr)
-	tbl.SetHeader([]string{"Key", "Value"})
-	tbl.SetHeaderColor(tablewriter.Colors{tablewriter.Bold},
-		tablewriter.Colors{tablewriter.Bold})
-	tbl.SetColumnColor(tablewriter.Colors{tablewriter.FgHiCyanColor},
-		tablewriter.Colors{tablewriter.FgHiGreenColor})
-
-	v := reflect.ValueOf(ele)
-	t := reflect.TypeOf(ele)
-	for i := 0; i < t.NumField(); i++ {
-		tbl.Append([]string{t.Field(i).Name, multiline(fmt.Sprint(v.Field(i)), 60)})
-	}
-	tbl.Render()
-	return tblStr.String()
 }
 
 func multiline(text string, width int) string {
