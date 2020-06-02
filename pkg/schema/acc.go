@@ -212,18 +212,6 @@ func (a *Acc) Filter(types []string, from *time.Time, to *time.Time, suffix stri
 	a.InvoicesFilePath = invPath
 }
 
-func (a Acc) Query(types []string, from *time.Time, to *time.Time, identifier string) {
-	if util.Contains(types, "expenses") {
-		exp, err := a.Expenses.Filter(from, to, identifier)
-		if err != nil {
-			logrus.Fatal("error while query: ", err)
-		}
-		for i := range exp {
-			fmt.Print(util.PrettyFormat(util.TableMode, exp[i]))
-		}
-	}
-}
-
 func appendSuffix(file, suffix string) string {
 	ext := path.Ext(file)
 	return fmt.Sprintf("%s-%s%s", strings.TrimSuffix(file, ext), suffix, ext)

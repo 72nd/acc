@@ -14,6 +14,7 @@ import (
 	"gitlab.com/72th/acc/pkg/camt"
 	"gitlab.com/72th/acc/pkg/document/invoices"
 	"gitlab.com/72th/acc/pkg/document/records"
+	"gitlab.com/72th/acc/pkg/query"
 	"gitlab.com/72th/acc/pkg/schema"
 )
 
@@ -529,16 +530,55 @@ func main() {
 			{
 				Name:  "query",
 				Usage: "find and display elements",
+				Subcommands: []*cli.Command{
+					{
+						Name:  "types",
+						Usage: "list all available element types",
+						Action: func(c *cli.Context) error {
+							query.AccQueryables.PPTypes()
+							return nil
+						},
+					},
+					{
+						Name:  "keys",
+						Usage: "list keys for given elemt type",
+						Action: func(c *cli.Context) error {
+							qry, err := query.AccQueryables.QueryablesFromUserInput(c.String("types"))
+							if err != nil {
+								logrus.Fatal(err)
+							}
+							mode := query.TableMode
+							if c.Bool("yaml") {
+								mode = query.YamlMode
+							}
+							qry.PPKeys(mode)
+							return nil
+						},
+						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:  "types",
+								Aliases: []string{"t"},
+								Usage: "types to be filtered seperated by comma, use 'acc query types' to get possibilities",
+							},
+							&cli.BoolFlag{
+								Name:  "yaml",
+								Usage: "output as YAML",
+							},
+						},
+					},
+				},
 				Action: func(c *cli.Context) error {
-					types := []string{"customers", "employee", "expenses", "invoices"}
-					inputPath := getReadPathOrExit(c, "input", "acc project file")
-					if c.String("types") != "" {
-						types = getSlice("types", c.String("types"), types)
-					}
-					from := getDateOrExit(c, "from")
-					to := getDateOrExit(c, "to")
-					acc := schema.OpenProject(inputPath)
-					acc.Query(types, from, to, c.String("identifier"))
+					/*
+						types := []string{"customers", "employee", "expenses", "invoices"}
+						inputPath := getReadPathOrExit(c, "input", "acc project file")
+						if c.String("types") != "" {
+							types = getSlice("types", c.String("types"), types)
+						}
+						from := getDateOrExit(c, "from")
+						to := getDateOrExit(c, "to")
+						acc := schema.OpenProject(inputPath)
+						acc.Query(types, from, to, c.String("identifier"))
+					*/
 					return nil
 				},
 				Flags: []cli.Flag{
