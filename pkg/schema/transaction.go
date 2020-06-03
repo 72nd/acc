@@ -86,13 +86,16 @@ func InteractiveNewTransaction(s BankStatement) Transaction {
 	return trn
 }
 
-func (t Transaction) AssistedCompletion(a Acc, doAll bool) Transaction {
+func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode bool) Transaction {
 	tmp := t
-	if !doAll && t.Id != "" && t.Identifier != "" {
-		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip transaction:")), aurora.BrightMagenta(t.Description))
+	if autoMode {
+		t.JournalMode = AutoJournalMode
+	}
+	if util.Check(t).Valid() {
+		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip transaction:")), aurora.BrightMagenta(t.String()))
 		return t
 	}
-	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize transaction:")), aurora.BrightMagenta(t.Description))
+	fmt.Printf("%s %s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize transaction:")), aurora.BrightMagenta(t.String()), aurora.BrightMagenta(t.Description))
 	identifier := SuggestNextIdentifier(a.BankStatement.GetIdentifiables(), DefaultTransactionPrefix)
 	if t.Id == "" {
 		t.SetId()
@@ -107,22 +110,6 @@ func (t Transaction) AssistedCompletion(a Acc, doAll bool) Transaction {
 		"Description",
 		"Description of the transaction",
 		t.Description)
-	parties := append(a.Parties.CustomersSearchItems(), a.Parties.EmployeesSearchItems()...)
-	t.AssociatedPartyId = util.AskStringFromSearch(
-		"Associated Party",
-		"customer/employee which is originator/recipient of the transaction",
-		parties)
-
-	document, err := t.parseAssociatedDocument(a.Expenses, a.Invoices)
-	if err == nil && util.AskForConformation(fmt.Sprintf("Use «%s» as associated document?", document.String())) {
-		t.AssociatedDocumentId = document.GetId()
-	} else {
-		docs := append(a.Expenses.SearchItems(), a.Invoices.SearchItems()...)
-		t.AssociatedDocumentId = util.AskStringFromSearch(
-			"Associated Document",
-			"couldn't find associated document, manual search",
-			docs)
-	}
 	t.JournalMode = JournalMode(util.AskIntFromList(
 		"Journal Mode",
 		"choose how journal entry will be generated for this transaction",
@@ -136,10 +123,44 @@ func (t Transaction) AssistedCompletion(a Acc, doAll bool) Transaction {
 				Value: int(AutoJournalMode),
 			},
 		}))
+	if t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode {
+		parties := append(a.Parties.CustomersSearchItems(), a.Parties.EmployeesSearchItems()...)
+		var pty interface{}
+		t.AssociatedPartyId, pty = util.AskStringFromSearchWithNew(
+			"Associated Party",
+			"customer/employee which is originator/recipient of the transaction",
+			parties,
+			InteractiveNewGenericParty,
+			a)
+		if pty != nil {
+			value, ok := pty.(Party)
+			if !ok {
+				logrus.Fatal("returned party has invalid type")
+			}
+			if value.PartyType == CustomerType {
+				a.Parties.Customers = append(a.Parties.Customers, value)
+			} else if value.PartyType == EmployeeType {
+				a.Parties.Employees = append(a.Parties.Employees, value)
+			}
+			t.AssociatedPartyId = value.Id
+		}
+	}
+
+	document, err := t.parseAssociatedDocument(a.Expenses, a.Invoices)
+	if err == nil && util.AskForConformation(fmt.Sprintf("Use «%s» as associated document?", document.String())) {
+		t.AssociatedDocumentId = document.GetId()
+	} else {
+		docs := append(a.Expenses.SearchItems(), a.Invoices.SearchItems(a)...)
+		t.AssociatedDocumentId = util.AskStringFromSearch(
+			"Associated Document",
+			"couldn't find associated document, manual search",
+			docs)
+	}
+
 	strategy := util.AskForStategy()
 	switch strategy {
 	case util.RedoStrategy:
-		t.AssistedCompletion(a, doAll)
+		t.AssistedCompletion(a, doAll, autoMode)
 	case util.SkipStrategy:
 		return tmp
 	}

@@ -73,13 +73,13 @@ func (e Element) Match(terms SearchTerms, caseSensitive bool) bool {
 	for i := range terms {
 		for j := range e {
 			if terms[i].matchKey(e[j].Key, caseSensitive) {
-				if !terms[i].matchValue(e[j].Value, caseSensitive) {
-					return false
+				if terms[i].matchValue(e[j].Value, caseSensitive) {
+					return true
 				}
 			}
 		}
 	}
-	return true
+	return false
 }
 
 func (e Element) DateMatch(ranges DateTerms) bool {

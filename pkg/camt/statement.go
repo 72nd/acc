@@ -2,10 +2,11 @@ package camt
 
 import (
 	"encoding/xml"
-	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/schema"
 	"io/ioutil"
 	"os"
+
+	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/schema"
 )
 
 type BankToCustomerStatement struct {

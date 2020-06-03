@@ -59,7 +59,7 @@ func AskString(name, desc, defaultValue string) string {
 }
 
 func AskStringFromSearch(name, desc string, searchItems SearchItems) string {
-	result, _ := searchPrompt(name, desc, searchItems, false, nil)
+	result, _ := searchPrompt(name, desc, searchItems, false, nil, nil)
 	value, ok := result.(string)
 	if !ok {
 		logrus.Fatalf("could not convert %+v to string", result)
@@ -67,8 +67,8 @@ func AskStringFromSearch(name, desc string, searchItems SearchItems) string {
 	return value
 }
 
-func AskStringFromSearchWithNew(name, desc string, searchItems SearchItems, newFunction func() interface{}) (value string, newElement interface{}) {
-	result, newElement := searchPrompt(name, desc, searchItems, false, newFunction)
+func AskStringFromSearchWithNew(name, desc string, searchItems SearchItems, newFunction func(arg interface{}) interface{}, arg interface{}) (value string, newElement interface{}) {
+	result, newElement := searchPrompt(name, desc, searchItems, false, newFunction, arg)
 	value, ok := result.(string)
 	if !ok {
 		logrus.Fatalf("could not convert %+v to string", result)
@@ -77,7 +77,7 @@ func AskStringFromSearchWithNew(name, desc string, searchItems SearchItems, newF
 }
 
 func AskStringFromListSearch(name, desc string, searchItems SearchItems) string {
-	result, _ := searchPrompt(name, desc, searchItems, true, nil)
+	result, _ := searchPrompt(name, desc, searchItems, true, nil, nil)
 	value, ok := result.(string)
 	if !ok {
 		logrus.Fatalf("could not convert %+v to string", result)
@@ -116,7 +116,7 @@ func AskIntFromList(name, desc string, searchItems SearchItems) int {
 }
 
 func AskIntFromListSearch(name, desc string, searchItems SearchItems) int {
-	result, _ := searchPrompt(name, desc, searchItems, true, nil)
+	result, _ := searchPrompt(name, desc, searchItems, true, nil, nil)
 	value, ok := result.(int)
 	if !ok {
 		logrus.Fatalf("could not convert %+v to int", result)
@@ -237,7 +237,7 @@ func simplePromptWithEmpty(name, typeName, desc, defaultValue string) (value str
 	return input, true
 }
 
-func searchPrompt(name, desc string, items SearchItems, showList bool, newFunction func() interface{}) (result interface{}, newElement interface{}) {
+func searchPrompt(name, desc string, items SearchItems, showList bool, newFunction func(arg interface{}) interface{}, arg interface{}) (result interface{}, newElement interface{}) {
 	functions := "'T(text)' for free text form, 'E' for empty"
 	if showList {
 		functions = fmt.Sprintf("%s, 'L(number)' for selecting by number", functions)
@@ -264,7 +264,7 @@ func searchPrompt(name, desc string, items SearchItems, showList bool, newFuncti
 		ele, err := items.ByIndex(index)
 		if err != nil {
 			logrus.Error("invalid input, try again")
-			return searchPrompt(name, desc, items, showList, newFunction)
+			return searchPrompt(name, desc, items, showList, newFunction, arg)
 		}
 		return ele.Value, nil
 	} else if strings.HasPrefix(input, "T") {
@@ -280,30 +280,30 @@ func searchPrompt(name, desc string, items SearchItems, showList bool, newFuncti
 		index, err := strconv.Atoi(input2)
 		if err != nil {
 			fmt.Println(aurora.BrightCyan("invalid input, try again"))
-			return searchPrompt(name, desc, items, showList, newFunction)
+			return searchPrompt(name, desc, items, showList, newFunction, arg)
 		}
 		ele, err := items.ByIndex(index - 1)
 		if err != nil {
 			fmt.Println(aurora.BrightCyan("invalid input, try again"))
-			return searchPrompt(name, desc, items, showList, newFunction)
+			return searchPrompt(name, desc, items, showList, newFunction, arg)
 		}
 		return ele.Value, nil
 	} else if input == "N" {
 		fmt.Print(aurora.BrightCyan(fmt.Sprintf("New %s: ", name)))
-		return "", newFunction()
+		return "", newFunction(arg)
 	}
 
 	matches := items.Match(input)
 	if len(matches) == 0 {
 		fmt.Println(aurora.BrightCyan("No entry found, try again"))
-		return searchPrompt(name, desc, items, showList, newFunction)
+		return searchPrompt(name, desc, items, showList, newFunction, arg)
 	}
 	for {
 		listItems(matches)
 		fmt.Printf("%s ", aurora.BrightCyan("Choose item, 'S' to search again:"))
 		input2 := getInput()
 		if input2 == "S" {
-			return searchPrompt(name, desc, items, showList, newFunction)
+			return searchPrompt(name, desc, items, showList, newFunction, arg)
 		}
 
 		value, err := strconv.Atoi(input2)
@@ -311,7 +311,7 @@ func searchPrompt(name, desc string, items SearchItems, showList bool, newFuncti
 			logrus.Error("invalid input, try again")
 			continue
 		}
-		return items[value-1].Value, nil
+		return matches[value-1].Value, nil
 	}
 }
 

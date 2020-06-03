@@ -191,7 +191,7 @@ func InteractiveNewExpenseCategory() ExpenseCategory {
 	return cat
 }
 
-func InteractiveNewGenericExpenseCategory() interface{} {
+func InteractiveNewGenericExpenseCategory(arg interface{}) interface{} {
 	return InteractiveNewExpenseCategory()
 }
 

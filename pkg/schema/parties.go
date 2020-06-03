@@ -183,12 +183,13 @@ type Party struct {
 	// Id is the internal unique identifier of the Expense.
 	Id string `yaml:"id" default:""`
 	// Value is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
-	Identifier string `yaml:"identifier" default:"?-1"`
-	Name       string `yaml:"name" default:"Max Mustermann"`
-	Street     string `yaml:"street" default:"Main Street"`
-	StreetNr   int    `yaml:"streetNr" default:"1"`
-	PostalCode int    `yaml:"postalCode" default:"8000"`
-	Place      string `yaml:"place" default:"Zurich"`
+	Identifier string    `yaml:"identifier" default:"?-1"`
+	Name       string    `yaml:"name" default:"Max Mustermann"`
+	Street     string    `yaml:"street" default:"Main Street"`
+	StreetNr   int       `yaml:"streetNr" default:"1"`
+	PostalCode int       `yaml:"postalCode" default:"8000"`
+	Place      string    `yaml:"place" default:"Zurich"`
+	PartyType  PartyType `yaml:"partyType" default:"0"`
 }
 
 // NewParty returns a new Party with the default values.
@@ -241,8 +242,8 @@ func InteractiveNewCustomer(a Acc) Party {
 	pty.Identifier = util.AskString(
 		"Identifier",
 		"Unique human readable identifier",
-		SuggestNextIdentifier(a.Parties.GetCustomerIdentifiables(), DefaultCustomerPrefix),
-	)
+		SuggestNextIdentifier(a.Parties.GetCustomerIdentifiables(), DefaultCustomerPrefix))
+	pty.PartyType = CustomerType
 	return pty
 }
 
@@ -251,9 +252,38 @@ func InteractiveNewEmployee(a Acc) Party {
 	pty.Identifier = util.AskString(
 		"Identifier",
 		"Unique human readable identifier",
-		SuggestNextIdentifier(a.Parties.GetEmployeeIdentifiables(), DefaultEmployeePrefix),
-	)
+		SuggestNextIdentifier(a.Parties.GetEmployeeIdentifiables(), DefaultEmployeePrefix))
+	pty.PartyType = EmployeeType
 	return pty
+}
+
+func InteractiveNewGenericParty(arg interface{}) interface{} {
+	sel := util.AskIntFromList(
+		"Type",
+		"Choose type of party",
+		util.SearchItems{
+			{
+				Name:  "Customer",
+				Value: 1,
+			},
+			{
+				Name:  "Employee",
+				Value: 2,
+			},
+		})
+	a, ok := arg.(Acc)
+	if !ok {
+		logrus.Fatalf("arg \"%s\" couldn't be parsed as Acc", arg)
+	}
+	switch sel {
+	case 1:
+		return InteractiveNewCustomer(a)
+	case 2:
+		return InteractiveNewEmployee(a)
+	default:
+		logrus.Fatal("invalid result form AskIntFromList")
+	}
+	return nil
 }
 
 func (p Party) SearchItem(typ string) util.SearchItem {

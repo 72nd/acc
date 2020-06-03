@@ -261,7 +261,8 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 			"Expense Category",
 			"Used for journal genertaion",
 			a.JournalConfig.ExpenseCategories.SearchItems(),
-			InteractiveNewGenericExpenseCategory)
+			InteractiveNewGenericExpenseCategory,
+			nil)
 		if cat != nil {
 			value, ok := cat.(ExpenseCategory)
 			if !ok {

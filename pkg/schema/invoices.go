@@ -71,10 +71,10 @@ func (i Invoices) GetIdentifiables() []Identifiable {
 	return ivs
 }
 
-func (i Invoices) SearchItems() util.SearchItems {
+func (i Invoices) SearchItems(a Acc) util.SearchItems {
 	result := make(util.SearchItems, len(i))
 	for j := range i {
-		result[j] = i[j].SearchItem()
+		result[j] = i[j].SearchItem(a)
 	}
 	return result
 }
@@ -234,12 +234,21 @@ func (i Invoice) AssistedCompletion(a Acc, doAll, openAttachment, retainFocus bo
 	return i
 }
 
-func (i Invoice) SearchItem() util.SearchItem {
+func (i Invoice) SearchItem(a Acc) util.SearchItem {
+	party := ""
+	if i.CustomerId != "" {
+		pty, err := a.Parties.CustomerById(i.CustomerId)
+		if err != nil {
+			logrus.Warn("while creating search items: ", err)
+		} else {
+			party = pty.Name
+		}
+	}
 	return util.SearchItem{
-		Name:        i.Name,
+		Name:        fmt.Sprintf("%s for customer %s, amount: %.2f", i.Name, party, i.Amount),
 		Type:        i.Type(),
 		Value:       i.Id,
-		SearchValue: fmt.Sprintf("%s %s %s", i.Name, i.Identifier, i.ProjectName),
+		SearchValue: fmt.Sprintf("%s %s %s %s", i.Name, i.Identifier, i.ProjectName, party),
 	}
 }
 

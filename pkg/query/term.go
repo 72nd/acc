@@ -64,7 +64,8 @@ func (s SearchTerm) matchValue(input string, caseSensitive bool) bool {
 	if !caseSensitive {
 		input = strings.ToLower(input)
 	}
-	return s.Value.MatchString(input)
+	rsl := s.Value.MatchString(input)
+	return rsl
 }
 
 type DateTerms []DateTerm

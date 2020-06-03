@@ -342,11 +342,14 @@ func main() {
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							acc := schema.OpenProject(inputPath)
-							acc.BankStatement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"))
+							acc.BankStatement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("auto-mode"))
 							acc.SaveProject()
 							return nil
 						},
-						Flags: completeFlags,
+						Flags: append(completeFlags, &cli.BoolFlag{
+							Name: "auto-mode",
+							Usage: "set all transactions to auto mode, so third party has to be reviewed",
+						}),
 					},
 				},
 			},
