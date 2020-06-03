@@ -2,13 +2,15 @@ package schema
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
-	"regexp"
-	"time"
 )
 
 type JournalMode int
@@ -125,29 +127,34 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode bool) Transaction
 		}))
 	if t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode {
 		parties := append(a.Parties.CustomersSearchItems(), a.Parties.EmployeesSearchItems()...)
-		var pty interface{}
-		t.AssociatedPartyId, pty = util.AskStringFromSearchWithNew(
-			"Associated Party",
-			"customer/employee which is originator/recipient of the transaction",
-			parties,
-			InteractiveNewGenericParty,
-			a)
-		if pty != nil {
-			value, ok := pty.(Party)
-			if !ok {
-				logrus.Fatal("returned party has invalid type")
+		suggestion, err := t.parseAssociatedParty(t.Description, a.Parties)
+		if err == nil && util.AskForConformation(fmt.Sprintf("Use \"%s\" as associeted third party?", suggestion.String())) {
+			t.AssociatedPartyId = suggestion.GetId()
+		} else {
+			var pty interface{}
+			t.AssociatedPartyId, pty = util.AskStringFromSearchWithNew(
+				"Associated Party",
+				"customer/employee which is originator/recipient of the transaction",
+				parties,
+				InteractiveNewGenericParty,
+				a)
+			if pty != nil {
+				value, ok := pty.(Party)
+				if !ok {
+					logrus.Fatal("returned party has invalid type")
+				}
+				if value.PartyType == CustomerType {
+					a.Parties.Customers = append(a.Parties.Customers, value)
+				} else if value.PartyType == EmployeeType {
+					a.Parties.Employees = append(a.Parties.Employees, value)
+				}
+				t.AssociatedPartyId = value.Id
 			}
-			if value.PartyType == CustomerType {
-				a.Parties.Customers = append(a.Parties.Customers, value)
-			} else if value.PartyType == EmployeeType {
-				a.Parties.Employees = append(a.Parties.Employees, value)
-			}
-			t.AssociatedPartyId = value.Id
 		}
 	}
 
 	document, err := t.parseAssociatedDocument(a.Expenses, a.Invoices)
-	if err == nil && util.AskForConformation(fmt.Sprintf("Use «%s» as associated document?", document.String())) {
+	if err == nil && util.AskForConformation(fmt.Sprintf("Use \"%s\" as associated document?", document.String())) {
 		t.AssociatedDocumentId = document.GetId()
 	} else {
 		docs := append(a.Expenses.SearchItems(), a.Invoices.SearchItems(a)...)
@@ -183,6 +190,16 @@ func (t Transaction) parseAssociatedDocument(expenses Expenses, invoices Invoice
 		return expense, nil
 	}
 	return invoice, nil
+}
+
+func (t Transaction) parseAssociatedParty(desc string, parties Parties) (Identifiable, error) {
+	pty := append(parties.Customers, parties.Employees...)
+	for i := range pty {
+		if strings.Contains(desc, pty[i].Name) {
+			return pty[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no party for description found")
 }
 
 // GetId returns the unique id of the element.

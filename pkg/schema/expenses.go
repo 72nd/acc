@@ -287,7 +287,7 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 
 func (e Expense) SearchItem() util.SearchItem {
 	return util.SearchItem{
-		Name:        e.Name,
+		Name:        fmt.Sprintf("%s for %.2f", e.Name, e.Amount),
 		Type:        e.Type(),
 		Value:       e.Id,
 		SearchValue: fmt.Sprintf("%s %s %s", e.Name, e.Identifier, e.ProjectName),
