@@ -125,6 +125,7 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode bool) Transaction
 				Value: int(AutoJournalMode),
 			},
 		}))
+	fmt.Println(t.JournalMode)
 	if t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode {
 		parties := append(a.Parties.CustomersSearchItems(), a.Parties.EmployeesSearchItems()...)
 		suggestion, err := t.parseAssociatedParty(t.Description, a.Parties)
@@ -137,7 +138,7 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode bool) Transaction
 				"customer/employee which is originator/recipient of the transaction",
 				parties,
 				InteractiveNewGenericParty,
-				a)
+				&a)
 			if pty != nil {
 				value, ok := pty.(Party)
 				if !ok {

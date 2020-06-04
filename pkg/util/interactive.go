@@ -238,6 +238,7 @@ func simplePromptWithEmpty(name, typeName, desc, defaultValue string) (value str
 }
 
 func searchPrompt(name, desc string, items SearchItems, showList bool, newFunction func(arg interface{}) interface{}, arg interface{}) (result interface{}, newElement interface{}) {
+	fmt.Println(newFunction)
 	functions := "'T(text)' for free text form, 'E' for empty"
 	if showList {
 		functions = fmt.Sprintf("%s, 'L(number)' for selecting by number", functions)
