@@ -225,10 +225,21 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		"Date when the obligation was settelt for the company",
 		time.Now(),
 	)
-	exp.ExpenseCategory = util.AskStringFromListSearch(
+	var cat interface{}
+	exp.ExpenseCategory, cat = util.AskStringFromSearchWithNew(
 		"Expense Category",
-		"Used for journal generation",
-		a.JournalConfig.ExpenseCategories.SearchItems())
+		"Used for journal genertaion",
+		a.JournalConfig.ExpenseCategories.SearchItems(),
+		InteractiveNewGenericExpenseCategory,
+		nil)
+	if cat != nil {
+		value, ok := cat.(ExpenseCategory)
+		if !ok {
+			logrus.Fatal("returned new expense category has different type")
+		}
+		a.JournalConfig.ExpenseCategories = append(a.JournalConfig.ExpenseCategories, value)
+		exp.ExpenseCategory = value.Name
+	}
 	exp.ProjectName = util.AskString(
 		"Project Name",
 		"Name of the associated project",
