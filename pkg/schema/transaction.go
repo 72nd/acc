@@ -138,7 +138,7 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode bool) Transaction
 				"customer/employee which is originator/recipient of the transaction",
 				parties,
 				InteractiveNewGenericParty,
-				&a)
+				a)
 			if pty != nil {
 				value, ok := pty.(Party)
 				if !ok {

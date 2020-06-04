@@ -145,6 +145,8 @@ type Expense struct {
 	SettlementTransactionId string `yaml:"settlementTransactionId" default:""`
 	// ExpenseCategory gives additional info for the categorization of the expense in the journal.
 	ExpenseCategory string `yaml:"expenseCategory" default:""`
+	// Debit Payment states whether the expense was directly payed with the main account debithether the expense was directly payed with the main account debit card.
+	PayedWithDebit bool `yaml:"payedWithDebit" default:"false"`
 	// ProjectName refers to the associated project of the expense.
 	ProjectName string `yaml:"projectName" default:""`
 }
@@ -170,24 +172,20 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp.Identifier = util.AskString(
 		"Value",
 		"Unique human readable identifier",
-		SuggestNextIdentifier(a.Expenses.GetIdentifiables(), DefaultExpensePrefix),
-	)
+		SuggestNextIdentifier(a.Expenses.GetIdentifiables(), DefaultExpensePrefix))
 	exp.Name = util.AskString(
 		"Name",
 		"Name of the expense",
-		"HAL 9000",
-	)
+		"HAL 9000")
 	exp.Amount = util.AskFloat(
 		"Amount",
 		"How much did you spend?",
-		23.42,
-	)
+		23.42)
 	if asset == "" {
 		exp.Path = util.AskString(
 			"Asset",
 			"Path to asset file (use --asset to set with flag)",
-			"",
-		)
+			"")
 	} else {
 		exp.Path = asset
 	}
@@ -199,8 +197,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp.Billable = util.AskBool(
 		"Billable?",
 		"Is expense billable to customer?",
-		false,
-	)
+		false)
 	if exp.Billable {
 		exp.ObligedCustomerId = util.AskStringFromSearch(
 			"Obliged Customer",
@@ -212,8 +209,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp.AdvancedByThirdParty = util.AskBool(
 		"Advanced?",
 		"Was this expense advanced by some third party (ex: employee)?",
-		false,
-	)
+		false)
 	if exp.AdvancedByThirdParty {
 		exp.AdvancedThirdPartyId = util.AskStringFromSearch(
 			"Advanced party",
@@ -223,8 +219,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp.DateOfSettlement = util.AskDate(
 		"Date of settlement",
 		"Date when the obligation was settelt for the company",
-		time.Now(),
-	)
+		time.Now())
 	var cat interface{}
 	exp.ExpenseCategory, cat = util.AskStringFromSearchWithNew(
 		"Expense Category",
@@ -240,11 +235,14 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		a.JournalConfig.ExpenseCategories = append(a.JournalConfig.ExpenseCategories, value)
 		exp.ExpenseCategory = value.Name
 	}
+	exp.PayedWithDebit = util.AskBool(
+		"Payed with Debit",
+		"Was this expense directly payed via the main account debit card?",
+		false)
 	exp.ProjectName = util.AskString(
 		"Project Name",
 		"Name of the associated project",
-		"",
-	)
+		"")
 	return exp
 }
 
@@ -283,6 +281,11 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 			e.ExpenseCategory = value.Name
 		}
 	}
+	e.PayedWithDebit =  util.AskBool(
+		"Payed with Debit",
+		"Was this expense directly payed via the main account debit card?",
+		false)
+
 	strategy := util.AskForStategy()
 	switch strategy {
 	case util.RedoStrategy:
