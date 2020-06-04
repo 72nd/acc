@@ -337,6 +337,14 @@ func main() {
 						Flags: completeFlags,
 					},
 					{
+						Name: "repopulate",
+						Usage: "repopulate expenses and invoices with transaction id's",
+						Action: func(c *cli.Context) error {
+							fmt.Println("to be implemented")
+							return nil
+						},
+					},
+					{
 						Name:  "transactions",
 						Usage: "complete incorrect transactions",
 						Action: func(c *cli.Context) error {
