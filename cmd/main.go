@@ -39,7 +39,7 @@ func main() {
 	completeFlags := []cli.Flag{
 		&cli.BoolFlag{
 			Name: "ask-skip",
-			Usage: "ask if non valid entries should be skipped ",
+			Usage: "ask if non valid entries should be skipped if id and identifier is set",
 		},
 		&cli.BoolFlag{
 			Name:    "auto-save",

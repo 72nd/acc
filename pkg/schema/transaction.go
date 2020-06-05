@@ -98,7 +98,7 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode, askSkip bool) Tr
 		return t
 	}
 	fmt.Printf("%s %s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize transaction:")), aurora.BrightMagenta(t.String()), aurora.BrightMagenta(t.Description))
-	if !doAll && askSkip {
+	if !doAll && askSkip && t.Id != "" && t.Identifier != "" {
 		skip := util.AskBool(
 			"Skip",
 			"Skip this non valid entry?",
