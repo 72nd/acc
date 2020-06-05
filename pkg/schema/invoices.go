@@ -289,7 +289,7 @@ func (i Invoice) String() string {
 }
 
 func (i Invoice) FileString() string {
-	result := fmt.Sprintf("%s_%s", i.Name, i.Identifier)
+	result := fmt.Sprintf("%s", i.Identifier)
 	result = strings.ReplaceAll(result, " ", "-")
 	result = strings.ReplaceAll(result, ".", "-")
 	return result
