@@ -88,16 +88,25 @@ func InteractiveNewTransaction(s BankStatement) Transaction {
 	return trn
 }
 
-func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode bool) Transaction {
+func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode, askSkip bool) Transaction {
 	tmp := t
 	if autoMode {
 		t.JournalMode = AutoJournalMode
 	}
-	if util.Check(t).Valid() {
+	if !doAll && util.Check(t).Valid() {
 		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip transaction:")), aurora.BrightMagenta(t.String()))
 		return t
 	}
 	fmt.Printf("%s %s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize transaction:")), aurora.BrightMagenta(t.String()), aurora.BrightMagenta(t.Description))
+	if !doAll && askSkip {
+		skip := util.AskBool(
+			"Skip",
+			"Skip this non valid entry?",
+			false)
+		if skip {
+			return t
+		}
+	}
 	identifier := SuggestNextIdentifier(a.BankStatement.GetIdentifiables(), DefaultTransactionPrefix)
 	if t.Id == "" {
 		t.SetId()
@@ -168,7 +177,7 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode bool) Transaction
 	strategy := util.AskForStategy()
 	switch strategy {
 	case util.RedoStrategy:
-		t.AssistedCompletion(a, doAll, autoMode)
+		t.AssistedCompletion(a, doAll, autoMode, askSkip)
 	case util.SkipStrategy:
 		return tmp
 	}

@@ -38,6 +38,10 @@ func main() {
 	}
 	completeFlags := []cli.Flag{
 		&cli.BoolFlag{
+			Name: "ask-skip",
+			Usage: "ask if non valid entries should be skipped ",
+		},
+		&cli.BoolFlag{
 			Name:    "auto-save",
 			Aliases: []string{"a"},
 			Usage:   "save each transaction immediately after completion, this is useful when working with large bank statemens",
@@ -350,7 +354,7 @@ func main() {
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							acc := schema.OpenProject(inputPath)
-							acc.BankStatement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("auto-mode"))
+							acc.BankStatement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("auto-mode"), c.Bool("ask-skip"))
 							acc.SaveProject()
 							return nil
 						},

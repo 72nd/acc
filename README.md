@@ -9,6 +9,7 @@
 - [ ] Project Mode
 - [ ] Shorts for commands 
 - [ ] Code Documentation
+- [ ] YAML Schemas
 
 ## Usage and Functions
 
@@ -126,3 +127,5 @@ Check your data.
 	- Complete with `acc complete expenses`.
 	- Validate with `acc validate -i acc.yaml`.
 8. Repopulate expenses and invoices with `acc complete repopulate -i acc.yaml`.
+
+
