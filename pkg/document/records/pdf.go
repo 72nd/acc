@@ -52,8 +52,8 @@ func NewPdf(srcPath, dstPath string) *Pdf {
 	}
 }
 
-func (p *Pdf) Generate(props Properties) {
-	if p.ScrType == PDF && p.getPdfVersion() > v15 {
+func (p *Pdf) Generate(props Properties, downConvert bool) {
+	if p.ScrType == PDF && downConvert {
 		p.useConvertedVersion = true
 		p.tmpPath = p.downConvert()
 	}

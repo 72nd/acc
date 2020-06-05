@@ -642,7 +642,8 @@ func main() {
 						logrus.Error("creation of document output folder failed: ", err)
 					}
 					acc := schema.OpenProject(inputPath)
-					records.GenerateExpensesRec(acc, c.String("output-folder"), c.Bool("do-overwrite"))
+					records.GenerateExpensesRec(acc, c.String("output-folder"), c.Bool("do-overwrite"), c.Bool("skip-downconvert"))
+					records.GenerateInvoicesRec(acc, c.String("output-folder"), c.Bool("do-overwrite"), c.Bool("skip-downconvert"))
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -662,6 +663,10 @@ func main() {
 						Aliases: []string{"overwrite", "r"},
 						Value:   false,
 						Usage:   "force overwrite existing documents",
+					},
+					&cli.BoolFlag{
+						Name: "skip-downconvert",
+						Usage: "skip downconvert with pdftops and gs",
 					},
 				},
 			},

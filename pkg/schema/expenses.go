@@ -278,6 +278,7 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 				logrus.Fatal("returned new expense category has different type")
 			}
 			a.JournalConfig.ExpenseCategories = append(a.JournalConfig.ExpenseCategories, value)
+			a.SaveAtCurrent()
 			e.ExpenseCategory = value.Name
 		}
 	}

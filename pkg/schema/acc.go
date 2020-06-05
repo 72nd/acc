@@ -109,6 +109,11 @@ func (a Acc) Save(path string) {
 	SaveToYaml(a, path)
 }
 
+func (a Acc) SaveAtCurrent() {
+	fmt.Println(path.Join(a.projectFolder, a.fileName))
+	a.Save(path.Join(a.projectFolder, a.fileName))
+}
+
 func (a Acc) SaveProject() {
 	a.SaveProjectToFolder(a.projectFolder)
 }
