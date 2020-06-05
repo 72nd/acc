@@ -117,6 +117,12 @@ func (e Expenses) AssistedCompletion(a *Acc, doAll, autoSave, openAttachment, re
 	}
 }
 
+func (e Expenses) Repopulate(a Acc) {
+	for i := range e {
+		e[i].Repopulate(a)
+	}
+}
+
 // Expense represents a payment done by the company or a third party to assure the ongoing of the business.
 type Expense struct {
 	// Id is the internal unique identifier of the Expense.
@@ -298,6 +304,16 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 	}
 	ext.Close()
 	return e
+}
+
+func (e *Expense) Repopulate(a Acc) {
+	trn, err := a.BankStatement.TransactionForDocument(e.Id)
+	if err != nil {
+		logrus.Warnf("there is no transaction for expense \"%s\" associated", e.String())
+		return
+	}
+	e.DateOfSettlement = trn.Date
+	e.SettlementTransactionId = trn.Id
 }
 
 func (e Expense) SearchItem() util.SearchItem {

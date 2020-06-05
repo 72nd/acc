@@ -344,8 +344,19 @@ func main() {
 						Name: "repopulate",
 						Usage: "repopulate expenses and invoices with transaction id's",
 						Action: func(c *cli.Context) error {
-							fmt.Println("to be implemented")
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							acc := schema.OpenProject(inputPath)
+							acc.Expenses.Repopulate(acc)
+							acc.Invoices.Repopulate(acc)
+							acc.SaveProject()
 							return nil
+						},
+						Flags: []cli.Flag {
+							&cli.StringFlag{
+								Name:    "input",
+								Aliases: []string{"i"},
+								Usage:   "acc project file",
+							},
 						},
 					},
 					{

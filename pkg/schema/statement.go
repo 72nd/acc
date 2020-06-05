@@ -124,3 +124,12 @@ func (s *BankStatement) AssistedCompletion(a Acc, doAll, autoSave, autoMode, ask
 		}
 	}
 }
+
+func (s BankStatement) TransactionForDocument(id string) (*Transaction, error) {
+	for i := range s.Transactions {
+		if s.Transactions[i].AssociatedDocumentId == id {
+			return &s.Transactions[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no transaction with associated document \"%s\" found", id)
+}

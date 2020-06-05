@@ -111,6 +111,12 @@ func (i Invoices) AssistedCompletion(a Acc, doAll, autoSave, openAttachment, ret
 	}
 }
 
+func (i Invoices) Repopulate(a Acc) {
+	for j := range i {
+		i[j].Repopulate(a)
+	}
+}
+
 // Invoice represents an invoice sent to a customer for some services.
 type Invoice struct {
 	// Id is the internal unique identifier of the Expense.
@@ -232,6 +238,16 @@ func (i Invoice) AssistedCompletion(a Acc, doAll, openAttachment, retainFocus bo
 	}
 	ext.Close()
 	return i
+}
+
+func (i *Invoice) Repopulate(a Acc) {
+	trn, err := a.BankStatement.TransactionForDocument(i.Id)
+	if err != nil {
+		logrus.Warnf("there is no transaction for invoice \"%s\" associated", i.String())
+		return
+	}
+	i.DateOfSettlement = trn.Date
+	i.SettlementTransactionId = trn.Id
 }
 
 func (i Invoice) SearchItem(a Acc) util.SearchItem {
