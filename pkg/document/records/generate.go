@@ -62,7 +62,7 @@ func GenerateInvoiceRec(a schema.Acc, inv schema.Invoice, dstPath string, downCo
 		DstName:    inv.Identifier,
 		Line1:      fmt.Sprintf("id %s", inv.Id),
 		Line2:      fmt.Sprintf("name: %s // amount: %.2f", inv.Name, inv.Amount),
-		Line3: fmt.Sprintf("send at: %s // settlement at %s", inv.SendDateTime, inv.DateOfSettlement),
+		Line3: fmt.Sprintf("send at: %s // settlement at %s", inv.SendDate, inv.DateOfSettlement),
 		Line4: fmt.Sprintf("customer: %s", a.Parties.CustomerStringById(inv.CustomerId)),
 	}
 	pdf := NewPdf(inv.Path, dstPath)
