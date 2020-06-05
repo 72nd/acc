@@ -203,9 +203,10 @@ func (t Transaction) parseAssociatedDocument(expenses Expenses, invoices Invoice
 }
 
 func (t Transaction) parseAssociatedParty(desc string, parties Parties) (Identifiable, error) {
+	desc = strings.ToLower(desc)
 	pty := append(parties.Customers, parties.Employees...)
 	for i := range pty {
-		if strings.Contains(desc, pty[i].Name) {
+		if strings.Contains(desc, strings.ToLower(pty[i].Name)) {
 			return pty[i], nil
 		}
 	}
