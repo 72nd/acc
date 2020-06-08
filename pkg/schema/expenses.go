@@ -460,7 +460,6 @@ func (e *Expense) SettlementJournal(a Acc, trn Transaction, update bool) []Entry
 		e.SettlementTransactionId = trn.Id
 	}
 
-	fmt.Println(trn.Identifier)
 	return []Entry{
 		{
 			Date:        trn.DateTime(),

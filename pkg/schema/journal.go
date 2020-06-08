@@ -70,9 +70,10 @@ func (j Journal) HLedgerHeader() string {
 	for i := range j.Aliases {
 		if first {
 			result = fmt.Sprintf("alias %s = %s", j.Aliases[i][0], j.Aliases[i][1])
+			first = false
 			continue
 		}
-		result = fmt.Sprintf("\nalias %s = %s", j.Aliases[i][0], j.Aliases[i][1])
+		result = fmt.Sprintf("%s\nalias %s = %s", result, j.Aliases[i][0], j.Aliases[i][1])
 	}
 	return fmt.Sprintf("\n%s", result)
 }
