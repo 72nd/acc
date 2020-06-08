@@ -248,6 +248,7 @@ func (i *Invoice) Repopulate(a Acc) {
 	}
 	i.DateOfSettlement = trn.Date
 	i.SettlementTransactionId = trn.Id
+	fmt.Println(i)
 }
 
 func (i Invoice) SearchItem(a Acc) util.SearchItem {
@@ -361,9 +362,9 @@ func (i Invoice) SendDateTime() time.Time {
 	return result
 }
 
-func (i Invoice) Journal(a Acc) Journal {
+func (i Invoice) Journal(a Acc) []Entry {
 	cmt := NewComment("invoice sent", i.String())
-	return Journal{
+	return []Entry{
 		{
 			Date:        i.SendDateTime(),
 			Status:      UnmarkedStatus,
@@ -387,7 +388,7 @@ func (i Invoice) sendTransactionDescription(a Acc) string {
 	return util.ApplyTemplate("invoice transaction description", a.JournalConfig.InvoicingTransactionDescription, data)
 }
 
-func (i Invoice) SettlementJournal(a Acc, trn Transaction, update bool) Journal {
+func (i Invoice) SettlementJournal(a Acc, trn Transaction, update bool) []Entry {
 	cmt := NewComment("invoice settlement", trn.String())
 	if trn.Amount != i.Amount {
 		cmt.add(fmt.Errorf("amount of transaction (%.2f) doesn't match amount of colligated invoice %s", trn.Amount, i.String()))
@@ -397,7 +398,7 @@ func (i Invoice) SettlementJournal(a Acc, trn Transaction, update bool) Journal 
 		i.SettlementTransactionId = trn.Id
 	}
 
-	return Journal{
+	return []Entry{
 		{
 			Date:        trn.DateTime(),
 			Status:      UnmarkedStatus,

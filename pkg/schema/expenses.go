@@ -288,7 +288,7 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 			e.ExpenseCategory = value.Name
 		}
 	}
-	e.PayedWithDebit =  util.AskBool(
+	e.PayedWithDebit = util.AskBool(
 		"Payed with Debit",
 		"Was this expense directly payed via the main account debit card?",
 		false)
@@ -418,7 +418,7 @@ func (e Expense) AccrualDateTime() time.Time {
 	return result
 }
 
-func (e Expense) Journal(a Acc) Journal {
+func (e Expense) Journal(a Acc) []Entry {
 	ele := "default expense"
 	if e.AdvancedByThirdParty {
 		ele = "employee advanced expense"
@@ -433,7 +433,7 @@ func (e Expense) Journal(a Acc) Journal {
 		cmt.add(err)
 	}
 
-	return Journal{
+	return []Entry{
 		{
 			Date:        e.AccrualDateTime(),
 			Status:      UnmarkedStatus,
@@ -445,7 +445,7 @@ func (e Expense) Journal(a Acc) Journal {
 		}}
 }
 
-func (e *Expense) SettlementJournal(a Acc, trn Transaction, update bool) Journal {
+func (e *Expense) SettlementJournal(a Acc, trn Transaction, update bool) []Entry {
 	cmt := NewComment("advanced expense settlement", trn.String())
 	acc1, err := e.expenseAccount(a)
 	cmt.add(err)
@@ -460,7 +460,7 @@ func (e *Expense) SettlementJournal(a Acc, trn Transaction, update bool) Journal
 		e.SettlementTransactionId = trn.Id
 	}
 
-	return Journal{
+	return []Entry{
 		{
 			Date:        trn.DateTime(),
 			Status:      UnmarkedStatus,

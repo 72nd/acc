@@ -16,18 +16,34 @@ import (
 const HLedgerDateFormat = "2006-01-02"
 const defaultAccount = "other:unknown"
 
-type Journal []Entry
+type Journal struct {
+	Aliases [][]string
+	Entries []Entry
+}
 
 func JournalFromStatement(a Acc, update bool) Journal {
 	var result Journal
+	result.Aliases = parseAliases(a.JournalConfig.AccountAliases)
 	for i := range a.Expenses {
-		result = append(result, a.Expenses[i].Journal(a)...)
+		result.Entries = append(result.Entries, a.Expenses[i].Journal(a)...)
 	}
 	for i := range a.Invoices {
-		result = append(result, a.Invoices[i].Journal(a)...)
+		result.Entries = append(result.Entries, a.Invoices[i].Journal(a)...)
 	}
 	for i := range a.BankStatement.Transactions {
-		result = append(result, a.BankStatement.Transactions[i].Journal(a, update)...)
+		result.Entries = append(result.Entries, a.BankStatement.Transactions[i].Journal(a, update)...)
+	}
+	return result
+}
+
+func parseAliases(input []string) [][]string {
+	result := make([][]string, len(input))
+	for i := range input {
+		ele := strings.Split(input[i], ":")
+		if len(ele) != 2 {
+			logrus.Fatalf("error while parsing account aliases \"%s\" couldn't be parsed as ALIAS:REPLACE", input[i])
+		}
+		result[i] = []string{ele[0], ele[1]}
 	}
 	return result
 }
@@ -40,39 +56,52 @@ func (j Journal) SaveHLedgerFile(path string) {
 }
 
 func (j Journal) HLedger() string {
-	var result string
+	result := j.HLedgerHeader()
 	sort.Sort(j)
-	for i := range j {
-		result = fmt.Sprintf("%s\n\n%s", result, j[i].Transaction())
+	for i := range j.Entries {
+		result = fmt.Sprintf("%s\n\n%s", result, j.Entries[i].Transaction())
 	}
 	return result
 }
 
+func (j Journal) HLedgerHeader() string {
+	var result string
+	first := true
+	for i := range j.Aliases {
+		if first {
+			result = fmt.Sprintf("alias %s = %s", j.Aliases[i][0], j.Aliases[i][1])
+			continue
+		}
+		result = fmt.Sprintf("\nalias %s = %s", j.Aliases[i][0], j.Aliases[i][1])
+	}
+	return fmt.Sprintf("\n%s", result)
+}
+
 func (j Journal) Len() int {
-	return len(j)
+	return len(j.Entries)
 }
 
 func (j Journal) Swap(i, k int) {
-	j[i], j[k] = j[k], j[i]
+	j.Entries[i], j.Entries[k] = j.Entries[k], j.Entries[i]
 }
 
 func (j Journal) Less(i, k int) bool {
-	return j[i].Date.Before(j[k].Date)
+	return j.Entries[i].Date.Before(j.Entries[k].Date)
 }
 
 type Comment struct {
-	Mode    string
-	Element string
+	Mode     string
+	Element  string
 	DoManual bool
-	Errors  []error
+	Errors   []error
 }
 
 func NewComment(mode, element string) Comment {
 	return Comment{
-		Mode:    mode,
-		Element: element,
+		Mode:     mode,
+		Element:  element,
 		DoManual: false,
-		Errors:  []error{},
+		Errors:   []error{},
 	}
 }
 

@@ -9,14 +9,15 @@ import (
 )
 
 type JournalConfig struct {
-	BankAccount                     string            `yaml:"bankAccount" default:"assets:Umlaufvermögen:Flüssige Mittel:Raiffeisenbank Bern"`
-	ReceivableAccount               string            `yaml:"receivableAccount" default:"assets:Umlaufvermögen:Debitoren"`
-	RevenueAccount                  string            `yaml:"revenueAccount" default:"revenues:Betrieblicher Ertrag:Dienstleistungserlös"`
-	PayableAccount                  string            `yaml:"payableAccount" default:"liabilities:Kurzfristiges Fremdkapital:Kreditoren"`
-	EmployeeLiabilitiesAccount      string            `yaml:"employeeLiabilitiesAccount" default:"liabilities:Kurzfristiges Fremdkapital:Verbindlichkeiten gegenüber Genossenschaftler"`
-	InvoicingTransactionDescription string            `yaml:"invoicingTransactionDescription" default:"Rechnungsstellung {{ .Identifier }} an {{ .Party }}"`
-	InvoiceSettlementTransactionDescription string `yaml:"invoiceSettlementTransactionDescription" default:"Erhalt Zahlung für die Rechnung {{ .Ident }} von {{ .Party }}"`
-	ExpenseCategories               ExpenseCategories `yaml:"expenseCategories" default:"[]"`
+	BankAccount                             string            `yaml:"bankAccount" default:"assets:Umlaufvermögen:Flüssige Mittel:Raiffeisenbank Bern"`
+	ReceivableAccount                       string            `yaml:"receivableAccount" default:"assets:Umlaufvermögen:Debitoren"`
+	RevenueAccount                          string            `yaml:"revenueAccount" default:"revenues:Betrieblicher Ertrag:Dienstleistungserlös"`
+	PayableAccount                          string            `yaml:"payableAccount" default:"liabilities:Kurzfristiges Fremdkapital:Kreditoren"`
+	EmployeeLiabilitiesAccount              string            `yaml:"employeeLiabilitiesAccount" default:"liabilities:Kurzfristiges Fremdkapital:Verbindlichkeiten gegenüber Genossenschaftler"`
+	InvoicingTransactionDescription         string            `yaml:"invoicingTransactionDescription" default:"Rechnungsstellung {{ .Identifier }} an {{ .Party }}"`
+	InvoiceSettlementTransactionDescription string            `yaml:"invoiceSettlementTransactionDescription" default:"Erhalt Zahlung für die Rechnung {{ .Ident }} von {{ .Party }}"`
+	AccountAliases                          []string          `yaml:"accountAliases" default:"[]"`
+	ExpenseCategories                       ExpenseCategories `yaml:"expenseCategories" default:"[]"`
 }
 
 func NewJournalConfig() JournalConfig {
