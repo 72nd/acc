@@ -250,7 +250,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp.Internal = util.AskBool(
 		"Internal",
 		"Has this expense an internal prupose?",
-		true)
+		false)
 	exp.ProjectName = util.AskString(
 		"Project Name",
 		"Name of the associated project",
@@ -280,7 +280,7 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 		var cat interface{}
 		e.ExpenseCategory, cat = util.AskStringFromSearchWithNew(
 			"Expense Category",
-			"Used for journal genertaion",
+			"Used for journal generation",
 			a.JournalConfig.ExpenseCategories.SearchItems(),
 			InteractiveNewGenericExpenseCategory,
 			nil)
@@ -301,7 +301,7 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 	e.Internal = util.AskBool(
 		"Internal",
 		"Has this expense an internal prupose?",
-		true)
+		false)
 
 	strategy := util.AskForStategy()
 	switch strategy {
@@ -515,7 +515,7 @@ func (e Expense) Match(from *time.Time, to *time.Time, identifier string) (bool,
 	if err != nil {
 		return false, fmt.Errorf("error while parsing \"%s\" as regex for identifier", identifier)
 	}
-	if !re.MatchString(e.Identifier) {
+	if identifier != "" && !re.MatchString(e.Identifier) {
 		return false, nil
 	}
 	return true, nil

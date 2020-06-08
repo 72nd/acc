@@ -21,17 +21,27 @@ type Journal struct {
 	Entries []Entry
 }
 
-func JournalFromStatement(a Acc, update bool) Journal {
+func JournalFromStatement(a Acc, update bool, year int) Journal {
 	var result Journal
 	result.Aliases = parseAliases(a.JournalConfig.AccountAliases)
-	for i := range a.Expenses {
-		result.Entries = append(result.Entries, a.Expenses[i].Journal(a)...)
+
+	exp := a.Expenses
+	inv := a.Invoices
+	stn := a.BankStatement
+	if year > 0 {
+		from, to := util.DateRangeFromYear(year)
+		exp, _ = a.Expenses.Filter(&from, &to, "")
+		inv, _ = a.Invoices.Filter(&from, &to)
+		stn.Transactions, _ = a.BankStatement.FilterTransactions(&from, &to)
 	}
-	for i := range a.Invoices {
-		result.Entries = append(result.Entries, a.Invoices[i].Journal(a)...)
+	for i := range exp {
+		result.Entries = append(result.Entries, exp[i].Journal(a)...)
 	}
-	for i := range a.BankStatement.Transactions {
-		result.Entries = append(result.Entries, a.BankStatement.Transactions[i].Journal(a, update)...)
+	for i := range inv {
+		result.Entries = append(result.Entries, inv[i].Journal(a)...)
+	}
+	for i := range stn.Transactions {
+		result.Entries = append(result.Entries, stn.Transactions[i].Journal(a, update)...)
 	}
 	return result
 }

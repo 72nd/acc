@@ -38,7 +38,7 @@ func main() {
 	}
 	completeFlags := []cli.Flag{
 		&cli.BoolFlag{
-			Name: "ask-skip",
+			Name:  "ask-skip",
 			Usage: "ask if non valid entries should be skipped if id and identifier is set",
 		},
 		&cli.BoolFlag{
@@ -341,7 +341,7 @@ func main() {
 						Flags: completeFlags,
 					},
 					{
-						Name: "repopulate",
+						Name:  "repopulate",
 						Usage: "repopulate expenses and invoices with transaction id's",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
@@ -351,7 +351,7 @@ func main() {
 							acc.SaveProject()
 							return nil
 						},
-						Flags: []cli.Flag {
+						Flags: []cli.Flag{
 							&cli.StringFlag{
 								Name:    "input",
 								Aliases: []string{"i"},
@@ -370,7 +370,7 @@ func main() {
 							return nil
 						},
 						Flags: append(completeFlags, &cli.BoolFlag{
-							Name: "auto-mode",
+							Name:  "auto-mode",
 							Usage: "set all transactions to auto mode, so third party has to be reviewed",
 						}),
 					},
@@ -482,6 +482,15 @@ func main() {
 				Name:    "ledger",
 				Aliases: []string{"ldg"},
 				Usage:   "generate hledger journal",
+				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					outputPath := getPathOrExit(c, c.Bool("force"), "transactions.journal", "output", "the journal file")
+					acc := schema.OpenProject(inputPath)
+					journal := schema.JournalFromStatement(acc, c.Bool("update"), c.Int("year"))
+					journal.SaveHLedgerFile(outputPath)
+					logrus.Info("journal saved as ", outputPath)
+					return nil
+				},
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
 						Name:    "force",
@@ -503,15 +512,11 @@ func main() {
 						Aliases: []string{"u"},
 						Usage:   "update transaction id's in expenses and invoices",
 					},
-				},
-				Action: func(c *cli.Context) error {
-					inputPath := getReadPathOrExit(c, "input", "acc project file")
-					outputPath := getPathOrExit(c, c.Bool("force"), "transactions.journal", "output", "the journal file")
-					acc := schema.OpenProject(inputPath)
-					journal := schema.JournalFromStatement(acc, c.Bool("update"))
-					journal.SaveHLedgerFile(outputPath)
-					logrus.Info("journal saved as ", outputPath)
-					return nil
+					&cli.IntFlag{
+						Name:    "year",
+						Aliases: []string{"y"},
+						Usage:   "generate journal for specific year",
+					},
 				},
 			},
 			{
@@ -609,9 +614,9 @@ func main() {
 				},
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name: "date",
-						Aliases: []string{"d"}, 
-						Usage: "filter keys by date ranges key:from:to as `REGEX:YYYY-MM-DD:YYYY-MM-DD` multiple can be seperated by comma",
+						Name:    "date",
+						Aliases: []string{"d"},
+						Usage:   "filter keys by date ranges key:from:to as `REGEX:YYYY-MM-DD:YYYY-MM-DD` multiple can be seperated by comma",
 					},
 					&cli.StringFlag{
 						Name:    "input",
@@ -624,12 +629,12 @@ func main() {
 						Usage:   "match key:value compbinations with `REGEX:REGEX` multiple can be seperated by comma",
 					},
 					&cli.StringFlag{
-						Name: "select",
+						Name:    "select",
 						Aliases: []string{"s"},
-						Usage: "select displayed keys, multiple can be sperated by comma `KEY[,KEY]`",
+						Usage:   "select displayed keys, multiple can be sperated by comma `KEY[,KEY]`",
 					},
-					&cli.BoolFlag {
-						Name: "strict",
+					&cli.BoolFlag{
+						Name:  "strict",
 						Usage: "case sensitive matching",
 					},
 					&cli.StringFlag{
@@ -676,7 +681,7 @@ func main() {
 						Usage:   "force overwrite existing documents",
 					},
 					&cli.BoolFlag{
-						Name: "skip-downconvert",
+						Name:  "skip-downconvert",
 						Usage: "skip downconvert with pdftops and gs",
 					},
 				},

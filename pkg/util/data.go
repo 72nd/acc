@@ -3,6 +3,7 @@ package util
 import (
 	"bytes"
 	"text/template"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -35,4 +36,13 @@ func ApplyTemplate(name, tpl string, data interface{}) string {
 		logrus.Fatalf("error while apling data to %s template: %s", name, err)
 	}
 	return b.String()
+}
+
+func DateRangeFromYear(year int) (from, to time.Time) {
+	if year < 1 {
+		logrus.Fatalf("acc doesn't support years before the common era (given: \"%s\")", year)
+	}
+	from = time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
+	to = time.Date(year, time.December, 31, 0, 0, 0, 0, time.UTC)
+	return from, to
 }

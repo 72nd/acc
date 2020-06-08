@@ -2,11 +2,13 @@ package schema
 
 import (
 	"fmt"
+	"io/ioutil"
+	"time"
+
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
 )
 
 const DefaultBankStatementFile = "bank-statement.yaml"
@@ -127,9 +129,24 @@ func (s *BankStatement) AssistedCompletion(a Acc, doAll, autoSave, autoMode, ask
 
 func (s BankStatement) TransactionForDocument(id string) (*Transaction, error) {
 	for i := range s.Transactions {
+		fmt.Println(s.Transactions[i].AssociatedDocumentId)
 		if s.Transactions[i].AssociatedDocumentId == id {
 			return &s.Transactions[i], nil
 		}
 	}
 	return nil, fmt.Errorf("no transaction with associated document \"%s\" found", id)
+}
+
+func (s BankStatement) FilterTransactions(from *time.Time, to *time.Time) ([]Transaction, error) {
+	var result []Transaction
+	for i := range s.Transactions {
+		date, err := time.Parse(util.DateFormat, s.Transactions[i].Date)
+		if err != nil {
+			return nil, fmt.Errorf("transaction \"%s\": %s", s.Transactions[i].String(), err)
+		}
+		if from != nil && to != nil && (date.After(*from) || date.Equal(*from)) && (date.Before(*to) || date.Equal(*to)) {
+			result = append(result, s.Transactions[i])
+		}
+	}
+	return result, nil
 }
