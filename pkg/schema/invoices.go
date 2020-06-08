@@ -402,6 +402,7 @@ func (i Invoice) SettlementJournal(a Acc, trn Transaction, update bool) []Entry 
 		{
 			Date:        trn.DateTime(),
 			Status:      UnmarkedStatus,
+			Code:        trn.Identifier,
 			Description: i.settlementTransactionDescription(a),
 			Comment:     cmt,
 			Account1:    a.JournalConfig.BankAccount,

@@ -460,10 +460,12 @@ func (e *Expense) SettlementJournal(a Acc, trn Transaction, update bool) []Entry
 		e.SettlementTransactionId = trn.Id
 	}
 
+	fmt.Println(trn.Identifier)
 	return []Entry{
 		{
 			Date:        trn.DateTime(),
 			Status:      UnmarkedStatus,
+			Code:        trn.Identifier,
 			Description: "TODO expense employee booking description",
 			Comment:     cmt,
 			Account1:    acc1,

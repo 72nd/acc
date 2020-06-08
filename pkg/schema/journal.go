@@ -163,6 +163,7 @@ type Entry struct {
 	TransactionType util.TransactionType
 	Date            time.Time
 	Status          EntryStatus
+	Code            string
 	Description     string
 	Comment         Comment
 	Account1        string
@@ -171,7 +172,7 @@ type Entry struct {
 }
 
 const trnTpl = `
-{{.Date}} {{.Description}} {{if ne .Comment ""}}; {{.Comment}}{{end}}
+{{.Date}} {{if .Code }}({{.Code}}) {{end}}{{.Description}} {{if ne .Comment ""}}; {{.Comment}}{{end}}
     {{.Account1}}{{.Space1}}{{.Amount1}}
     {{.Account2}}{{.Space2}}{{.Amount2}}
 `
@@ -179,6 +180,7 @@ const trnTpl = `
 func (e Entry) Transaction() string {
 	data := struct {
 		Date        string
+		Code        string
 		Description string
 		Comment     string
 		Account1    string
@@ -189,6 +191,7 @@ func (e Entry) Transaction() string {
 		Amount2     string
 	}{
 		Date:        e.trnDate(),
+		Code:        e.Code,
 		Description: e.Description,
 		Comment:     e.Comment.String(),
 		Account1:    e.Account1,

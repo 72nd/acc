@@ -363,6 +363,7 @@ func (t Transaction) defaultJournal(a Acc) []Entry {
 		{
 			Date:        t.DateTime(),
 			Status:      UnmarkedStatus,
+			Code:        t.Identifier,
 			Description: t.JournalDescription(a),
 			Comment:     NewManualComment("default", t.String()),
 			Account1:    account1,
