@@ -153,6 +153,8 @@ type Expense struct {
 	ExpenseCategory string `yaml:"expenseCategory" default:""`
 	// Debit Payment states whether the expense was directly payed with the main account debithether the expense was directly payed with the main account debit card.
 	PayedWithDebit bool `yaml:"payedWithDebit" default:"false"`
+	// Internal states whether this expense is for an internal purpose or not.
+	Internal bool `yaml:"internal" default:"true"`
 	// ProjectName refers to the associated project of the expense.
 	ProjectName string `yaml:"projectName" default:""`
 }
@@ -245,6 +247,10 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		"Payed with Debit",
 		"Was this expense directly payed via the main account debit card?",
 		false)
+	exp.Internal = util.AskBool(
+		"Internal",
+		"Has this expense an internal prupose?",
+		true)
 	exp.ProjectName = util.AskString(
 		"Project Name",
 		"Name of the associated project",
@@ -292,6 +298,10 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 		"Payed with Debit",
 		"Was this expense directly payed via the main account debit card?",
 		false)
+	e.Internal = util.AskBool(
+		"Internal",
+		"Has this expense an internal prupose?",
+		true)
 
 	strategy := util.AskForStategy()
 	switch strategy {
