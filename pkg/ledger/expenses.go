@@ -7,7 +7,7 @@ import (
 	"gitlab.com/72th/acc/pkg/util"
 )
 
-// INITIAL ENTRIES
+// OCCURRENCE ENTRIES
 
 // EntriesForExpense returns the journal entries for a given schema.Expense.
 // Depending on the nature of the expense the appropriate function will be called.
@@ -114,9 +114,9 @@ func entriesForCompanyPaidExpenses(a schema.Acc, exp schema.Expense) []Entry {
 
 // SETTLEMENT ENTRIES
 
-// SettlementEntriesFromExpense takes the related schema.Transaction and schema.Expense and returns
+// SettlementEntriesForExpense takes the related schema.Transaction and schema.Expense and returns
 // the settlement entries.
-func SettlementEntriesFromExpense(a schema.Acc, trn schema.Transaction, exp schema.Expense) []Entry {
+func SettlementEntriesForExpense(a schema.Acc, trn schema.Transaction, exp schema.Expense) []Entry {
 	if trn.TransactionType == util.DebitTransaction && exp.AdvancedByThirdParty {
 		return settlementEntriesForAdvancedSettlement(a, trn, exp)
 	}
@@ -182,5 +182,3 @@ func settlementEntriesForCompanyPaidExpenses(a schema.Acc, trn schema.Transactio
 			Amount:      trn.Amount,
 		}}
 }
-
-

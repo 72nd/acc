@@ -15,9 +15,9 @@ type JournalConfig struct {
 	PayableAccount                          string            `yaml:"payableAccount" default:"liabilities:Kurzfristiges Fremdkapital:Kreditoren"`
 	EmployeeLiabilitiesAccount              string            `yaml:"employeeLiabilitiesAccount" default:"liabilities:Kurzfristiges Fremdkapital:Verbindlichkeiten gegenüber Genossenschaftler"`
 	InvoicingTransactionDescription         string            `yaml:"invoicingTransactionDescription" default:"Rechnungsstellung {{ .Identifier }} an {{ .Party }}"`
-	InvoiceSettlementTransactionDescription string            `yaml:"invoiceSettlementTransactionDescription" default:"Erhalt Zahlung für die Rechnung {{ .Ident }} von {{ .Party }}"`
+	InvoiceSettlementTransactionDescription string            `yaml:"invoiceSettlementTransactionDescription" default:"Erhalt Zahlung für die Rechnung {{ .Identifier }} von {{ .Party }}"`
 	ExpenseAdvancedByEmployeeDescription    string            `yaml:"expenseAdvancedByEmployeeDescription" default:"Bezahlung des Aufwands {{ .Identifier }} durch {{ .Party }} mit Privatvermögen"`
-	InternalExpenseOccurenceDescription     string            `yaml:"internalExpenseOccurenceDescription" default:"Einkauf von {{.Name}} ({{.Identifier}})"`
+	InternalExpenseOccurenceDescription     string            `yaml:"internalExpenseOccurenceDescription" default:"Aufwand für {{.Name}} ({{.Identifier}})"`
 	ProductionExpenseOccurenceDescription   string            `yaml:"productionExpenseOccurenceDescription" default:"Einkauf von {{.Name}} ({{.Identifier}}) für Projekt {{.Project}}"`
 	InternalExpenseTransactionDescription   string            `yaml:"internalExpenseTransactionDescription" default:"Bezahlung der Rechnung {{.Identifier}}"`
 	AdvancedExpenseSettlementDescription    string            `yaml:"advancedExpenseSettlementDescription" default:"Rückerstattung der Zahlung von {{.Party}} für {{.Identifier}}"`
