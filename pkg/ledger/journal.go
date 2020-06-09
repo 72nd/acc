@@ -1,4 +1,13 @@
-package schema
+// The ledger package delivers the functionality to generate hledger journals out of a given
+// schema.Acc struct.
+//
+// Design Rationale
+//
+// Initially the mechanisms for generating journals was part of the schema package. But
+// the complexity of generating the transactions made the code quit hard to understand.
+// As this generation doesn't alter any data of a given acc project it was decided to move
+// the functionality into it's own package.
+package ledger
 
 import (
 	"bytes"
@@ -10,40 +19,63 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
 )
 
+// HLedgerDateFormat defines the default date format as required by hledger.
 const HLedgerDateFormat = "2006-01-02"
+// defaultAccount is used when no account can be chosen and the user has to manually complete the journal entry.
 const defaultAccount = "other:unknown"
 
+// Journal is a data structure which can be converted into a hledger journal.
+// 
+// On Aliases
+//
+// Some standard chart of accounts uses multiple root accounts for the same account type.
+// An example is Switzerland where "Personalaufwand" and "Betriebsfremder Aufwand" are
+// both root accounts. In hledger both of them have to be children of the "expense" account.
+// To accomplish this the use of aliases is possible. Alias declaration for the given example:
+//
+//	aliases := [][]string{
+//		[]string{"Personalaufwand", "expenses"},
+//		[]string{"Betriebsfremder Aufwand", "expenses"}}
 type Journal struct {
 	Aliases [][]string
 	Entries []Entry
 }
 
-func JournalFromAcc(a Acc, update bool, year int) Journal {
-	var result Journal
-	result.Aliases = parseAliases(a.JournalConfig.AccountAliases)
+// NewJournalConfig returns a new Journal with the given aliases.
+func NewJournal(aliases [][]string) Journal {
+	return Journal{
+		Aliases: aliases,
+	}
+}
 
-	exp := a.Expenses
-	inv := a.Invoices
-	stn := a.BankStatement
-	if year > 0 {
-		from, to := util.DateRangeFromYear(year)
-		exp, _ = a.Expenses.Filter(&from, &to, "")
-		inv, _ = a.Invoices.Filter(&from, &to)
-		stn.Transactions, _ = a.BankStatement.FilterTransactions(&from, &to)
+// AddEntries adds new entries to the journal.
+func (j *Journal) AddEntries(entries []Entry) {
+	j.Entries = append(j.Entries, entries...)
+}
+
+// JournalFromAcc takes an schema.Acc project and converts it into an Journal. This is
+// mainly used to export the Journal afterwards into a hledger journal. Optionally the
+// year can be filtered, if the given year parameter is > 0, only events happened in
+// this year will be converted into transactions.
+func JournalFromAcc(a schema.Acc, year int) Journal {
+	rsl := NewJournal(parseAliases(a.JournalConfig.AccountAliases))
+	a = a.FilterYear(year)
+
+	for i := range a.Expenses {
+		rsl.AddEntries(a.Expenses[i].Journal(a))
 	}
-	for i := range exp {
-		result.Entries = append(result.Entries, exp[i].Journal(a)...)
-	}
-	for i := range inv {
+	for i := range a.Invoices {
+		rsl.AddEntries(a.Invoices[i].Journal(a))
 		result.Entries = append(result.Entries, inv[i].Journal(a)...)
 	}
 	for i := range stn.Transactions {
 		result.Entries = append(result.Entries, stn.Transactions[i].JournalEntries(a, update)...)
 	}
-	return result
+	return rsl
 }
 
 func parseAliases(input []string) [][]string {

@@ -227,6 +227,7 @@ func (a Acc) FilterYear(year int) Acc {
 		from, to := util.DateRangeFromYear(year)
 		a.Expenses, _ = a.Expenses.Filter(&from, &to, "")
 		a.Invoices, _ = a.Invoices.Filter(&from, &to)
+		a.BankStatement.Transactions, _ = a.BankStatement.FilterTransactions(&from, &to)
 	}
 	return a
 }
