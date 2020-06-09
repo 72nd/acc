@@ -1,4 +1,5 @@
 package ledger
+
 // The ledger package delivers the functionality to generate hledger journals out of a given
 // schema.Acc struct.
 //
@@ -25,11 +26,12 @@ import (
 
 // HLedgerDateFormat defines the default date format as required by hledger.
 const HLedgerDateFormat = "2006-01-02"
+
 // defaultAccount is used when no account can be chosen and the user has to manually complete the journal entry.
 const defaultAccount = "other:unknown"
 
 // Journal is a data structure which can be converted into a hledger journal.
-// 
+//
 // On Aliases
 //
 // Some standard chart of accounts uses multiple root accounts for the same account type.
@@ -66,15 +68,17 @@ func JournalFromAcc(a schema.Acc, year int) Journal {
 	a = a.FilterYear(year)
 
 	for i := range a.Expenses {
-		rsl.AddEntries(a.Expenses[i].Journal(a))
+		rsl.AddEntries(EntriesForExpense(a, a.Expenses[i]))
 	}
-	for i := range a.Invoices {
-		rsl.AddEntries(a.Invoices[i].Journal(a))
-		result.Entries = append(result.Entries, inv[i].Journal(a)...)
-	}
-	for i := range stn.Transactions {
-		result.Entries = append(result.Entries, stn.Transactions[i].JournalEntries(a, update)...)
-	}
+	/*
+		for i := range a.Invoices {
+			rsl.AddEntries(a.Invoices[i].Journal(a))
+			result.Entries = append(result.Entries, inv[i].Journal(a)...)
+		}
+		for i := range stn.Transactions {
+			result.Entries = append(result.Entries, stn.Transactions[i].JournalEntries(a, update)...)
+		}
+	*/
 	return rsl
 }
 

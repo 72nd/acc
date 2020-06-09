@@ -14,6 +14,7 @@ import (
 	"gitlab.com/72th/acc/pkg/camt"
 	"gitlab.com/72th/acc/pkg/document/invoices"
 	"gitlab.com/72th/acc/pkg/document/records"
+	"gitlab.com/72th/acc/pkg/ledger"
 	"gitlab.com/72th/acc/pkg/query"
 	"gitlab.com/72th/acc/pkg/schema"
 )
@@ -486,7 +487,7 @@ func main() {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					outputPath := getPathOrExit(c, c.Bool("force"), "transactions.journal", "output", "the journal file")
 					acc := schema.OpenProject(inputPath)
-					journal := schema.JournalFromAcc(acc, c.Bool("update"), c.Int("year"))
+					journal := ledger.JournalFromAcc(acc, c.Int("year"))
 					journal.SaveHLedgerFile(outputPath)
 					logrus.Info("journal saved as ", outputPath)
 					return nil
