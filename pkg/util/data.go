@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	"math"
 	"text/template"
 	"time"
 
@@ -45,4 +46,9 @@ func DateRangeFromYear(year int) (from, to time.Time) {
 	from = time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
 	to = time.Date(year, time.December, 31, 0, 0, 0, 0, time.UTC)
 	return from, to
+}
+
+// CompareFloats rounds both numbers to their third decimal place and compares them.
+func CompareFloats(a float64, b float64) bool {
+	return math.Floor(a*1000)/1000 == math.Floor(b*1000)/1000
 }

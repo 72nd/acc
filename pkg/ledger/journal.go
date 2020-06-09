@@ -1,3 +1,4 @@
+package ledger
 // The ledger package delivers the functionality to generate hledger journals out of a given
 // schema.Acc struct.
 //
@@ -7,7 +8,6 @@
 // the complexity of generating the transactions made the code quit hard to understand.
 // As this generation doesn't alter any data of a given acc project it was decided to move
 // the functionality into it's own package.
-package ledger
 
 import (
 	"bytes"
@@ -284,4 +284,11 @@ func (e Entry) trnAmount(invers bool) string {
 		return fmt.Sprintf("CHF%s%d", sign, whole)
 	}
 	return fmt.Sprintf("CHF%s%.2f", sign, e.Amount)
+}
+
+func compareAmounts(a float64, b float64) error {
+	if util.CompareFloats(a, b) {
+		return nil
+	}
+	return fmt.Errorf("the two involved amounts don't match: %.3f vs %.3f", a, b)
 }

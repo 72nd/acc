@@ -16,8 +16,12 @@ type JournalConfig struct {
 	EmployeeLiabilitiesAccount              string            `yaml:"employeeLiabilitiesAccount" default:"liabilities:Kurzfristiges Fremdkapital:Verbindlichkeiten gegenüber Genossenschaftler"`
 	InvoicingTransactionDescription         string            `yaml:"invoicingTransactionDescription" default:"Rechnungsstellung {{ .Identifier }} an {{ .Party }}"`
 	InvoiceSettlementTransactionDescription string            `yaml:"invoiceSettlementTransactionDescription" default:"Erhalt Zahlung für die Rechnung {{ .Ident }} von {{ .Party }}"`
-	ExpenseAdvancedByEmployeeDescription string `yaml:"expenseAdvancedByEmployeeDescription" default:"Bezahlung des Aufwands {{ .Identfier }} durch {{ .Party }} mit Privatvermögen"`
-	InternalExpenseTransactionDescription string `yaml:"internalExpenseTransactionDescription" default:"Bezahlung der Rechnung {{ .Identifier }}"`
+	ExpenseAdvancedByEmployeeDescription    string            `yaml:"expenseAdvancedByEmployeeDescription" default:"Bezahlung des Aufwands {{ .Identfier }} durch {{ .Party }} mit Privatvermögen"`
+	InternalExpenseOccurenceDescription     string            `yaml:"internalExpenseOccurenceDescription" default:"Einkauf von {{.Name}} ({{.Identfier}})"`
+	ProductionExpenseOccurenceDescription string `yaml:"productionExpenseOccurenceDescription" default"Einkauf von {{.Name}} ({{.Identfier}}) für Projekt {{.Project}}"`
+	InternalExpenseTransactionDescription   string            `yaml:"internalExpenseTransactionDescription" default:"Bezahlung der Rechnung {{.Identifier}}"`
+	AdvancedExpenseSettlementDescription string `yaml:"advancedExpenseSettlementDescription" default:"Rückerstattung der Zahlung von {{.Party}} für {{.Identifier}}"`
+	CompanyPaidExpenseSettlementDescription string `yaml:"companyPaidExpenseSettlementDescription" default:"Bezahlen des Aufwands {{.Identifier}}"`
 	AccountAliases                          []string          `yaml:"accountAliases" default:"[]"`
 	ExpenseCategories                       ExpenseCategories `yaml:"expenseCategories" default:"[]"`
 }
