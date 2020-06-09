@@ -438,6 +438,9 @@ func (e Expense) Journal(a Acc) []Entry {
 	acc1, err := e.expenseAccount(a)
 	cmt.add(err)
 	acc2 := a.JournalConfig.PayableAccount
+	if e.Identifier == "e-19-52" {
+		fmt.Println(e.AdvancedByThirdParty)
+	}
 	if e.AdvancedByThirdParty {
 		acc2, err = e.employeeLiabilityAccount(a)
 		cmt.add(err)
@@ -484,6 +487,24 @@ func (e *Expense) SettlementJournal(a Acc, trn Transaction, update bool) []Entry
 
 }
 
+func (e Expense) InternalSettlementEntries(a Acc, trn Transaction) []Entry {
+	cmt := NewComment("internal expense settlement", trn.String())
+	if trn.Amount != e.Amount {
+		cmt.add(fmt.Errorf("amount of transaction (%.2f) doesn't match amount of colligated expense %s", trn.Amount, e.String()))
+	}
+	return []Entry{
+		{
+			Date:        trn.DateTime(),
+			Status:      UnmarkedStatus,
+			Code:        trn.Identifier,
+			Description: e.internalSettlementDescription(a),
+			Comment:     cmt,
+			Account1:    a.JournalConfig.PayableAccount,
+			Account2:    a.JournalConfig.BankAccount,
+			Amount:      trn.Amount,
+		}}
+}
+
 func (e Expense) expenseAccount(a Acc) (string, error) {
 	cat, err := a.JournalConfig.ExpenseCategories.CategoryByName(e.ExpenseCategory)
 	if err != nil {
@@ -498,6 +519,13 @@ func (e Expense) employeeLiabilityAccount(a Acc) (string, error) {
 		return defaultAccount, err
 	}
 	return fmt.Sprintf("%s:%s", a.JournalConfig.EmployeeLiabilitiesAccount, emp.Name), nil
+}
+
+func (e Expense) internalSettlementDescription(a Acc) string {
+	data := map[string]string{
+		"Identifier": e.Identifier,
+	}
+	return util.ApplyTemplate("internal expense settlement description", a.JournalConfig.InternalExpenseTransactionDescription, data)
 }
 
 func (e Expense) Match(from *time.Time, to *time.Time, identifier string) (bool, error) {

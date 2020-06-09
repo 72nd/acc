@@ -19,7 +19,6 @@ const (
 	UnknownJournalMode JournalMode = iota
 	ManualJournalMode
 	AutoJournalMode
-	ExpensePaidMode
 )
 
 // Transaction represents a single transaction of a bank statement.
@@ -97,10 +96,6 @@ func InteractiveNewTransaction(s BankStatement) Transaction {
 			{
 				Name:  "Auto Mode",
 				Value: int(AutoJournalMode),
-			},
-			{
-				Name:  "Expense Paid Mode",
-				Value: int(ExpensePaidMode),
 			}}))
 	return trn
 }
@@ -149,10 +144,6 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode, askSkip bool) Tr
 			{
 				Name:  "Auto Mode",
 				Value: int(AutoJournalMode),
-			},
-			{
-				Name:  "Expense Paid Mode",
-				Value: int(ExpensePaidMode),
 			}}))
 	fmt.Println(t.JournalMode)
 	if t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode {
@@ -339,6 +330,9 @@ func (t Transaction) Journal(a Acc, update bool) []Entry {
 		// TOOD: Zustäzliche Weiche, je ob AutoMode (dann SettlementJournal) wenn ExpensePaidMode neue funktion in Expense
 		exp, err := a.Expenses.ExpenseById(t.AssociatedDocumentId)
 		if err == nil {
+			if exp.Internal {
+				return exp.InternalSettlementEntries(a, t)
+			}
 			return exp.SettlementJournal(a, t, update)
 		}
 		inv, err := a.Invoices.InvoiceById(t.AssociatedDocumentId)

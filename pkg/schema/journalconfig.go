@@ -16,6 +16,7 @@ type JournalConfig struct {
 	EmployeeLiabilitiesAccount              string            `yaml:"employeeLiabilitiesAccount" default:"liabilities:Kurzfristiges Fremdkapital:Verbindlichkeiten gegenüber Genossenschaftler"`
 	InvoicingTransactionDescription         string            `yaml:"invoicingTransactionDescription" default:"Rechnungsstellung {{ .Identifier }} an {{ .Party }}"`
 	InvoiceSettlementTransactionDescription string            `yaml:"invoiceSettlementTransactionDescription" default:"Erhalt Zahlung für die Rechnung {{ .Ident }} von {{ .Party }}"`
+	InternalExpenseTransactionDescription string `yaml:"internalExpenseTransactionDescription" default:"Bezahlung der Rechnung {{ .Identifier }}"`
 	AccountAliases                          []string          `yaml:"accountAliases" default:"[]"`
 	ExpenseCategories                       ExpenseCategories `yaml:"expenseCategories" default:"[]"`
 }
