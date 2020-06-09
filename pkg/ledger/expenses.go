@@ -25,6 +25,11 @@ func entriesForEmployeeAdvancedExpense(a schema.Acc, exp schema.Expense) []Entry
 	cat, err := a.JournalConfig.ExpenseCategories.CategoryByName(exp.ExpenseCategory)
 	cmt.add(err)
 
+	acc1 := "no account found"
+	if err == nil {
+		acc1 = cat.Account
+	}
+
 	emp, err := a.Parties.EmployeeById(exp.AdvancedThirdPartyId)
 	cmt.add(err)
 
@@ -47,7 +52,7 @@ func entriesForEmployeeAdvancedExpense(a schema.Acc, exp schema.Expense) []Entry
 			Code:        exp.Identifier,
 			Description: desc,
 			Comment:     cmt,
-			Account1:    cat.Account,
+			Account1:    acc1,
 			Account2:    fmt.Sprintf("%s:%s", a.JournalConfig.EmployeeLiabilitiesAccount, emp.Name),
 			Amount:      exp.Amount,
 		}}
@@ -60,6 +65,11 @@ func entriesForCompanyPaidExpenses(a schema.Acc, exp schema.Expense) []Entry {
 
 	cat, err := a.JournalConfig.ExpenseCategories.CategoryByName(exp.ExpenseCategory)
 	cmt.add(err)
+
+	acc1 := "no account found"
+	if err == nil {
+		acc1 = cat.Account
+	}
 
 	var desc string
 	if exp.Internal {
@@ -96,7 +106,7 @@ func entriesForCompanyPaidExpenses(a schema.Acc, exp schema.Expense) []Entry {
 			Code:        exp.Identifier,
 			Description: desc,
 			Comment:     cmt,
-			Account1:    cat.Account,
+			Account1:    acc1,
 			Account2:    acc2,
 			Amount:      exp.Amount,
 		}}
