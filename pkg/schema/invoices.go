@@ -86,7 +86,7 @@ func (i Invoices) Filter(from *time.Time, to *time.Time) (Invoices, error) {
 		if err != nil {
 			return nil, fmt.Errorf("invoice \"%s\": %s", i[j].String(), err)
 		}
-		if from != nil && (date.After(*from) || date.Equal(*from)) && (date.Before(*to) || date.Equal(*to)) {
+		if from != nil && to != nil && (date.After(*from) || date.Equal(*from)) && (date.Before(*to) || date.Equal(*to)) {
 			result = append(result, i[j])
 		}
 	}

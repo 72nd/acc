@@ -141,10 +141,20 @@ func (s BankStatement) FilterTransactions(from *time.Time, to *time.Time) ([]Tra
 	var result []Transaction
 	for i := range s.Transactions {
 		date, err := time.Parse(util.DateFormat, s.Transactions[i].Date)
+		rsl := false
 		if err != nil {
 			return nil, fmt.Errorf("transaction \"%s\": %s", s.Transactions[i].String(), err)
 		}
-		if from != nil && to != nil && (date.After(*from) || date.Equal(*from)) && (date.Before(*to) || date.Equal(*to)) {
+		if from != nil && to == nil && (date.After(*from) || date.Equal(*from)) {
+			rsl = true
+		}
+		if to != nil && from == nil && (date.Before(*to) || date.Equal(*to)) {
+			rsl = true
+		}
+		if to != nil && from != nil && (date.After(*from) || date.Equal(*from)) && (date.Before(*to) || date.Equal(*to)) {
+			rsl = true
+		}
+		if rsl {
 			result = append(result, s.Transactions[i])
 		}
 	}
