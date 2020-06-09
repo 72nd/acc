@@ -438,19 +438,18 @@ func (e Expense) Journal(a Acc) []Entry {
 	acc1, err := e.expenseAccount(a)
 	cmt.add(err)
 	acc2 := a.JournalConfig.PayableAccount
-	if e.Identifier == "e-19-52" {
-		fmt.Println(e.AdvancedByThirdParty)
-	}
+	var desc string
 	if e.AdvancedByThirdParty {
 		acc2, err = e.employeeLiabilityAccount(a)
 		cmt.add(err)
+		desc = e.employeeAdvancedDescription(a)
 	}
 
 	return []Entry{
 		{
 			Date:        e.AccrualDateTime(),
 			Status:      UnmarkedStatus,
-			Description: "TODO expense employee booking description",
+			Description: desc,
 			Comment:     cmt,
 			Account1:    acc1,
 			Account2:    acc2,
@@ -458,6 +457,7 @@ func (e Expense) Journal(a Acc) []Entry {
 		}}
 }
 
+// TODO: Settlement für nicht AdvancedByThirdParty transactions
 func (e *Expense) SettlementJournal(a Acc, trn Transaction, update bool) []Entry {
 	cmt := NewComment("advanced expense settlement", trn.String())
 	acc1, err := e.expenseAccount(a)
@@ -519,6 +519,18 @@ func (e Expense) employeeLiabilityAccount(a Acc) (string, error) {
 		return defaultAccount, err
 	}
 	return fmt.Sprintf("%s:%s", a.JournalConfig.EmployeeLiabilitiesAccount, emp.Name), nil
+}
+
+func (e Expense) employeeAdvancedDescription(a Acc) string {
+	emp, err := a.Parties.EmployeeById(e.AdvancedThirdPartyId)
+	if err != nil {
+		logrus.Error("no emplyee found: ", err)
+	}
+	data := map[string]string{
+		"Identifier": e.Identifier,
+		"Party": fmt.Sprintf("%s (%s)", emp.Name, emp.Identifier),
+	}
+	return util.ApplyTemplate("expense advanced by employee description", a.JournalConfig.ExpenseAdvancedByEmployeeDescription, data)
 }
 
 func (e Expense) internalSettlementDescription(a Acc) string {

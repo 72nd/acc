@@ -21,7 +21,7 @@ type Journal struct {
 	Entries []Entry
 }
 
-func JournalFromStatement(a Acc, update bool, year int) Journal {
+func JournalFromAcc(a Acc, update bool, year int) Journal {
 	var result Journal
 	result.Aliases = parseAliases(a.JournalConfig.AccountAliases)
 
@@ -41,7 +41,7 @@ func JournalFromStatement(a Acc, update bool, year int) Journal {
 		result.Entries = append(result.Entries, inv[i].Journal(a)...)
 	}
 	for i := range stn.Transactions {
-		result.Entries = append(result.Entries, stn.Transactions[i].Journal(a, update)...)
+		result.Entries = append(result.Entries, stn.Transactions[i].JournalEntries(a, update)...)
 	}
 	return result
 }

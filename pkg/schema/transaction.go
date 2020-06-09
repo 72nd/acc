@@ -325,9 +325,8 @@ func (t Transaction) SearchItem() util.SearchItem {
 	}
 }
 
-func (t Transaction) Journal(a Acc, update bool) []Entry {
+func (t Transaction) JournalEntries(a Acc, update bool) []Entry {
 	if t.AssociatedDocumentId != "" {
-		// TOOD: Zustäzliche Weiche, je ob AutoMode (dann SettlementJournal) wenn ExpensePaidMode neue funktion in Expense
 		exp, err := a.Expenses.ExpenseById(t.AssociatedDocumentId)
 		if err == nil {
 			if exp.Internal {

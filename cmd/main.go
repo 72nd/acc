@@ -486,7 +486,7 @@ func main() {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					outputPath := getPathOrExit(c, c.Bool("force"), "transactions.journal", "output", "the journal file")
 					acc := schema.OpenProject(inputPath)
-					journal := schema.JournalFromStatement(acc, c.Bool("update"), c.Int("year"))
+					journal := schema.JournalFromAcc(acc, c.Bool("update"), c.Int("year"))
 					journal.SaveHLedgerFile(outputPath)
 					logrus.Info("journal saved as ", outputPath)
 					return nil
