@@ -126,6 +126,8 @@ type Invoice struct {
 	Amount float64 `yaml:"amount" default:"10.00"`
 	// Path is the full path to the voucher utils.
 	Path string `yaml:"path" default:"/path/to/file.utils"`
+	// Revoked invoices are disabled an no longer taken into account.
+	Revoked bool `yaml:"revoked" default:"false"` 
 	// CustomerId refers to the customer the invoice was sent to.
 	CustomerId string `yaml:"customerId" default:""`
 	// SendDate states the date, the invoice was sent to the customer.

@@ -658,6 +658,7 @@ func main() {
 						logrus.Error("creation of document output folder failed: ", err)
 					}
 					acc := schema.OpenProject(inputPath)
+					acc = acc.FilterYear(c.Int("year"))
 					records.GenerateExpensesRec(acc, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
 					records.GenerateInvoicesRec(acc, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
 					return nil
@@ -683,6 +684,11 @@ func main() {
 					&cli.BoolFlag{
 						Name:  "skip-downconvert",
 						Usage: "skip downconvert with pdftops and gs",
+					},
+					&cli.IntFlag{
+						Name:    "year",
+						Aliases: []string{"y"},
+						Usage:   "generate journal for specific year",
 					},
 				},
 			},

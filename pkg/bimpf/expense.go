@@ -2,11 +2,12 @@ package bimpf
 
 import (
 	"fmt"
+	"os"
+	"path"
+
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
-	"os"
-	"path"
 )
 
 // Expense reassembles the structure of a Expense in a Bimpf json dump file.

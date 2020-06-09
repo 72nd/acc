@@ -221,3 +221,12 @@ func appendSuffix(file, suffix string) string {
 	ext := path.Ext(file)
 	return fmt.Sprintf("%s-%s%s", strings.TrimSuffix(file, ext), suffix, ext)
 }
+
+func (a Acc) FilterYear(year int) Acc {
+	if year > 0 {
+		from, to := util.DateRangeFromYear(year)
+		a.Expenses, _ = a.Expenses.Filter(&from, &to, "")
+		a.Invoices, _ = a.Invoices.Filter(&from, &to)
+	}
+	return a
+}
