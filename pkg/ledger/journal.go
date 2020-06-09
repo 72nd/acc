@@ -63,18 +63,20 @@ func (j *Journal) AddEntries(entries []Entry) {
 // mainly used to export the Journal afterwards into a hledger journal. Optionally the
 // year can be filtered, if the given year parameter is > 0, only events happened in
 // this year will be converted into transactions.
+//
+// TODO: Es brauch ein separates acc für alle Jahre und eins für d
 func JournalFromAcc(a schema.Acc, year int) Journal {
 	rsl := NewJournal(parseAliases(a.JournalConfig.AccountAliases))
-	a = a.FilterYear(year)
+	fAcc := a.FilterYear(year)
 
-	for i := range a.Expenses {
-		rsl.AddEntries(EntriesForExpense(a, a.Expenses[i]))
+	for i := range fAcc.Expenses {
+		rsl.AddEntries(EntriesForExpense(a, fAcc.Expenses[i]))
 	}
-	for i := range a.Invoices {
-		rsl.AddEntries(EntriesForInvoicing(a, a.Invoices[i]))
+	for i := range fAcc.Invoices {
+		rsl.AddEntries(EntriesForInvoicing(a, fAcc.Invoices[i]))
 	}
-	for i := range a.BankStatement.Transactions {
-		rsl.AddEntries(EntriesForTransaction(a, a.BankStatement.Transactions[i]))
+	for i := range fAcc.BankStatement.Transactions {
+		rsl.AddEntries(EntriesForTransaction(a, fAcc.BankStatement.Transactions[i]))
 	}
 	return rsl
 }
