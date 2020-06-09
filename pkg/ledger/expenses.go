@@ -120,7 +120,7 @@ func SettlementEntriesForExpense(a schema.Acc, trn schema.Transaction, exp schem
 	if trn.TransactionType == util.DebitTransaction && exp.AdvancedByThirdParty {
 		return settlementEntriesForAdvancedSettlement(a, trn, exp)
 	}
-	return settlementEntriesForAdvancedSettlement(a, trn, exp)
+	return settlementEntriesForCompanyPaidExpenses(a, trn, exp)
 }
 
 // settlementEntriesForAdvancedSettlement returns the entries for the settlement of an employee advance.

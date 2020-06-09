@@ -1,22 +1,64 @@
 package ledger
 
-/*
-func (t Transaction) JournalEntries(a Acc) []Entry {
-	if t.AssociatedDocumentId != "" {
-		exp, err := a.Expenses.ExpenseById(t.AssociatedDocumentId)
-		if err == nil {
-			if exp.Internal {
-				return exp.InternalSettlementEntries(a, t)
-			}
-			return exp.SettlementJournal(a, t, update)
-		}
-		inv, err := a.Invoices.InvoiceById(t.AssociatedDocumentId)
-		if err == nil {
-			return inv.SettlementJournal(a, t, update)
-		}
+import (
+	"fmt"
+
+	"gitlab.com/72th/acc/pkg/schema"
+	"gitlab.com/72th/acc/pkg/util"
+)
+
+// EntriesForTransaction returns the journal entries for a given schema.Transaction.
+func EntriesForTransaction(a schema.Acc, trn schema.Transaction) []Entry {
+	if trn.AssociatedDocumentId != "" {
+		return entriesForTransactionWithDocument(a, trn)
 	}
-	return t.defaultEntries(a)
+	return entrieForDefaultTransaction(a, trn, nil)
 }
+
+// entriesForTransactionWithDocument returns the entries for transactions with an associated
+// document.
+func entriesForTransactionWithDocument(a schema.Acc, trn schema.Transaction) []Entry {
+	exp, err := a.Expenses.ExpenseById(trn.AssociatedDocumentId)
+	if err == nil {
+		return SettlementEntriesForExpense(a, trn, *exp)
+	}
+	inv, err := a.Invoices.InvoiceById(trn.AssociatedDocumentId)
+	if err == nil {
+		return SettlementEntriesForInvoice(a, trn, *inv)
+	}
+	return entrieForDefaultTransaction(a, trn, fmt.Errorf("no expense/invoice for id \"%s\" found", trn.AssociatedDocumentId))
+}
+
+// entrieForDefaultTransaction is the fallback function. It is possible to give an additional
+// error as parameter. This error will be appended to the transaction comment.
+func entrieForDefaultTransaction(a schema.Acc, trn schema.Transaction, err error) []Entry {
+	cmt := NewManualComment("default", trn.String())
+	cmt.add(err)
+
+	var acc1, acc2 string
+	if trn.TransactionType == util.CreditTransaction {
+		// Incoming transaction
+		acc1 = a.JournalConfig.BankAccount
+		acc2 = defaultAccount
+	} else {
+		// Outgoing transaction
+		acc1 = defaultAccount
+		acc2 = a.JournalConfig.BankAccount
+	}
+	return []Entry{
+		{
+			Date:        trn.DateTime(),
+			Status:      UnmarkedStatus,
+			Code:        trn.Identifier,
+			Description: fmt.Sprintf("some help: %s", trn.String()),
+			Comment:     cmt,
+			Account1:    acc1,
+			Account2:    acc2,
+			Amount:      trn.Amount,
+		}}
+}
+
+/*
 
 func (t Transaction) defaultEntries(a Acc) []Entry {
 	var account1, account2 string

@@ -73,11 +73,9 @@ func JournalFromAcc(a schema.Acc, year int) Journal {
 	for i := range a.Invoices {
 		rsl.AddEntries(EntriesForInvoicing(a, a.Invoices[i]))
 	}
-	/*
-		for i := range stn.Transactions {
-			result.Entries = append(result.Entries, stn.Transactions[i].JournalEntries(a, update)...)
-		}
-	*/
+	for i := range a.BankStatement.Transactions {
+		rsl.AddEntries(EntriesForTransaction(a, a.BankStatement.Transactions[i]))
+	}
 	return rsl
 }
 
