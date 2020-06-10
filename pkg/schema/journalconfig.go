@@ -9,7 +9,7 @@ import (
 )
 
 type JournalConfig struct {
-	Currency              string        `yaml:"currency" default:"SFr."`
+	Currency                                string            `yaml:"currency" default:"SFr."`
 	BankAccount                             string            `yaml:"bankAccount" default:"assets:Umlaufvermögen:Flüssige Mittel:Raiffeisenbank Bern"`
 	ReceivableAccount                       string            `yaml:"receivableAccount" default:"assets:Umlaufvermögen:Debitoren"`
 	RevenueAccount                          string            `yaml:"revenueAccount" default:"revenues:Betrieblicher Ertrag:Dienstleistungserlös"`
@@ -242,4 +242,3 @@ func (e ExpenseCategory) Conditions() util.Conditions {
 		},
 	}
 }
-

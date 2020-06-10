@@ -71,6 +71,15 @@ func (s BankStatement) GetIdentifiables() []Identifiable {
 	return trn
 }
 
+func (s BankStatement) TransactionById(id string) (*Transaction, error) {
+	for i := range s.Transactions {
+		if s.Transactions[i].Id == id {
+			return &s.Transactions[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no transaction for id \"%s\" found", id)
+}
+
 // Type returns a string with the type name of the element.
 func (s BankStatement) Type() string {
 	return "Bank-Statement"
