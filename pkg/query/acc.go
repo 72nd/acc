@@ -64,5 +64,5 @@ func (q Queryables) QueryAcc(a schema.Acc, termsInput, dateInput, selectInput st
 		sel := util.EscapedSplit(selectInput, ",")
 		ele = ele.Select(sel, caseSensitive)
 	}
-	OutputsFromElements(ele).PPKeyValue(mode)
+	OutputsFromElements(a, ele).PPKeyValue(a, mode)
 }

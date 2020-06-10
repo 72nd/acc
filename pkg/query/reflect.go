@@ -3,9 +3,11 @@ package query
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/schema"
 )
 
 type ElementGroup []Element
@@ -64,6 +66,7 @@ func NewElement(v reflect.Value) Element {
 		rsl = append(rsl, KeyValue{
 			Key:   t.Field(i).Name,
 			Value: fmt.Sprint(v.Field(i)),
+			Field: t.Field(i),
 		})
 	}
 	return rsl
@@ -95,10 +98,10 @@ func (e Element) DateMatch(ranges DateTerms) bool {
 	return true
 }
 
-func (g Element) Select(sel []string, caseSensitive bool) Element {
+func (e Element) Select(sel []string, caseSensitive bool) Element {
 	var rsl Element
-	for i := range g {
-		key := g[i].Key
+	for i := range e {
+		key := e[i].Key
 		if !caseSensitive {
 			key = strings.ToLower(key)
 		}
@@ -109,7 +112,17 @@ func (g Element) Select(sel []string, caseSensitive bool) Element {
 			}
 		}
 		if contains {
-			rsl = append(rsl, g[i])
+			rsl = append(rsl, e[i])
+		}
+	}
+	return rsl
+}
+
+func (e Element) MaxKeyLength() int {
+	var rsl int
+	for i := range e {
+		if rsl < len(e[i].Key) {
+			rsl = len(e[i].Key)
 		}
 	}
 	return rsl
@@ -118,4 +131,68 @@ func (g Element) Select(sel []string, caseSensitive bool) Element {
 type KeyValue struct {
 	Key   string
 	Value string
+	Field reflect.StructField
+}
+
+func (k KeyValue) RenderValue(a schema.Acc) string {
+	switch k.Field.Tag.Get("query") {
+	case "amount":
+		amount, err := strconv.ParseFloat(k.Value, 64)
+		if err != nil {
+			return k.Value
+		}
+		return fmt.Sprintf("%s %.2f", a.JournalConfig.Currency, amount)
+	case "customer":
+		cst, err := a.Parties.CustomerById(k.Value)
+		if err != nil {
+			return fmt.Sprintf("%s (no such customer exists)", k.Value)
+		}
+		return fmt.Sprintf("%s (%s, %s)", k.Value, cst.Name, cst.Identifier)
+	case "employee":
+		emp, err := a.Parties.EmployeeById(k.Value)
+		if err != nil {
+			return fmt.Sprintf("%s (no such employee exists)", k.Value)
+		}
+		return fmt.Sprintf("%s (%s, %s)", k.Value, emp.Name, emp.Identifier)
+	case "customer,employee":
+		cst, err := a.Parties.CustomerById(k.Value)
+		if err == nil {
+			return fmt.Sprintf("%s (%s, %s)", k.Value, cst.Name, cst.Identifier)
+		}
+		emp, err := a.Parties.EmployeeById(k.Value)
+		if err != nil {
+			return fmt.Sprintf("%s (no such party exists)", k.Value)
+		}
+		return fmt.Sprintf("%s (%s, %s)", k.Value, emp.Name, emp.Identifier)
+	case "expense":
+		exp, err := a.Expenses.ExpenseById(k.Value)
+		if err != nil {
+			return fmt.Sprintf("%s (no such expense exists)", k.Value)
+		}
+		return fmt.Sprintf("%s (%s, %s)", k.Value, exp.Name, exp.Identifier)
+	case "invoice":
+		inv, err := a.Invoices.InvoiceById(k.Value)
+		if err != nil {
+			return fmt.Sprintf("%s (no such invoice exists)", k.Value)
+		}
+		return fmt.Sprintf("%s (%s, %s)", k.Value, inv.Name, inv.Identifier)
+	case "expense,invoice":
+		exp, err := a.Expenses.ExpenseById(k.Value)
+		if err == nil {
+			return fmt.Sprintf("%s (%s, %s)", k.Value, exp.Name, exp.Identifier)
+		}
+		inv, err := a.Invoices.InvoiceById(k.Value)
+		if err != nil {
+			return fmt.Sprintf("%s (no such expense/invoice exists)", k.Value)
+		}
+		return fmt.Sprintf("%s (%s, %s)", k.Value, inv.Name, inv.Identifier)
+	case "transaction":
+		trn, err := a.BankStatement.TransactionById(k.Value)
+		if err != nil {
+			return fmt.Sprintf("%s (no such transaction exists)", k.Value)
+		}
+		return fmt.Sprintf("%s (%s)", k.Value, trn.Identifier)
+	}
+
+	return k.Value
 }
