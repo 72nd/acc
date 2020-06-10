@@ -1,7 +1,6 @@
 package query
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -14,7 +13,7 @@ type SearchTerms []SearchTerm
 
 func searchTermsFromUserInput(input string, caseSensitive bool) SearchTerms {
 	var rsl SearchTerms
-	ele := separate(input, ",")
+	ele := util.EscapedSplit(input, ",")
 	for i := range ele {
 		rsl = append(rsl, searchTermFromUserInput(ele[i], caseSensitive))
 	}
@@ -46,7 +45,7 @@ func newSearchTerm(key, value string, caseSensitive bool) SearchTerm {
 }
 
 func searchTermFromUserInput(input string, caseSensitive bool) SearchTerm {
-	ele := separate(input, ":")
+	ele := util.EscapedSplit(input, ":")
 	if len(ele) != 2 {
 		logrus.Fatalf("input \"%s\" couldn't be parsed as KEY:VALUE, use \\: to escape colons inside your pattern", input)
 	}
@@ -72,7 +71,7 @@ type DateTerms []DateTerm
 
 func dateTermsFromUserInput(input string) DateTerms {
 	var rsl DateTerms
-	ele := separate(input, ",")
+	ele := util.EscapedSplit(input, ",")
 	for i := range ele {
 		rsl = append(rsl, dateTermFromUserInput(ele[i]))
 	}
@@ -87,7 +86,7 @@ type DateTerm struct {
 }
 
 func dateTermFromUserInput(input string) DateTerm {
-	ele := separate(input, ":")
+	ele := util.EscapedSplit(input, ":")
 	if len(ele) != 3 {
 		logrus.Fatalf("input \"%s\" couldn't be parsed as KEY:FROM:TO, use \\: to escape colons inside your pattern", input)
 	}
@@ -120,17 +119,4 @@ func (d DateTerm) matchRange(input string) bool {
 		logrus.Fatalf("\"%s\" couldn't be parsed as date: %s", input, err)
 	}
 	return !date.Before(d.From) && !date.After(d.To)
-}
-
-func separate(input, sep string) []string {
-	const esc = "ESCAPE"
-	if strings.Contains(input, esc) {
-		logrus.Fatalf("match string may not contain \"%s\"", esc)
-	}
-	input = strings.Replace(input, fmt.Sprintf("\\%s", sep), esc, -1)
-	ele := strings.Split(input, sep)
-	for i := range ele {
-		ele[i] = strings.Replace(ele[i], esc, sep, -1)
-	}
-	return ele
 }

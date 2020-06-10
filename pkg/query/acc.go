@@ -3,6 +3,7 @@ package query
 import (
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/schema"
+	"gitlab.com/72th/acc/pkg/util"
 )
 
 var AccQueryables = Queryables{
@@ -60,7 +61,7 @@ func (q Queryables) QueryAcc(a schema.Acc, termsInput, dateInput, selectInput st
 		ele = ele.DateMatch(ranges)
 	}
 	if selectInput != "" {
-		sel := separate(selectInput, ",")
+		sel := util.EscapedSplit(selectInput, ",")
 		ele = ele.Select(sel, caseSensitive)
 	}
 	OutputsFromElements(ele).PPKeyValue(mode)

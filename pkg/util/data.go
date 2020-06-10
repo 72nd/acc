@@ -2,7 +2,9 @@ package util
 
 import (
 	"bytes"
+	"fmt"
 	"math"
+	"strings"
 	"text/template"
 	"time"
 
@@ -51,4 +53,19 @@ func DateRangeFromYear(year int) (from, to time.Time) {
 // CompareFloats rounds both numbers to their third decimal place and compares them.
 func CompareFloats(a float64, b float64) bool {
 	return math.Floor(a*1000)/1000 == math.Floor(b*1000)/1000
+}
+
+// EscapedSplit separates a string with a given separator while ignoring separators which are escaped with a backslash (ex.: "\:" is ignored when splitting by ":" ).
+func EscapedSplit(input, sep string) []string {
+	const esc = "ESCAPE"
+	if strings.Contains(input, esc) {
+		logrus.Fatalf("match string may not contain \"%s\"", esc)
+	}
+	input = strings.Replace(input, fmt.Sprintf("\\%s", sep), esc, -1)
+	ele := strings.Split(input, sep)
+	for i := range ele {
+		ele[i] = strings.Replace(ele[i], esc, sep, -1)
+	}
+	return ele
+
 }
