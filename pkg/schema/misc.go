@@ -134,7 +134,7 @@ func (m *MiscRecord) SetId() {
 
 // Repopulate MiscRecord based on the transactions.
 func (m *MiscRecord) Repopulate(a Acc) {
-	trn, err := a.Statement().TransactionForDocument(m.Id)
+	trn, err := a.Statement.TransactionForDocument(m.Id)
 	if err != nil {
 		logrus.Warnf("there is no transaction for expense \"%s\" associated", m.String())
 		return

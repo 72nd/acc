@@ -131,7 +131,7 @@ func (s *Statement) AssistedCompletion(a Acc, doAll, autoSave, autoMode, askSkip
 		}
 		s.Transactions[i] = s.Transactions[i].AssistedCompletion(a, doAll, autoMode, askSkip)
 		if autoSave {
-			a.SaveProject()
+			a.SaveAccComplex()
 		}
 	}
 }

@@ -91,14 +91,14 @@ func main() {
 						Usage:   "add a customer",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							if c.Bool("default") {
 								acc.Parties.Customers = append(acc.Parties.Customers, schema.NewPartyWithUuid())
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.Parties.Customers = append(acc.Parties.Customers, schema.InteractiveNewCustomer(acc))
 							}
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: addFlags,
@@ -109,14 +109,14 @@ func main() {
 						Usage:   "add a employee",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							if c.Bool("default") {
 								acc.Parties.Employees = append(acc.Parties.Employees, schema.NewPartyWithUuid())
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.Parties.Employees = append(acc.Parties.Employees, schema.InteractiveNewEmployee(acc))
 							}
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: addFlags,
@@ -127,14 +127,14 @@ func main() {
 						Usage:   "add a expense",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							if c.Bool("default") {
 								acc.Expenses = append(acc.Expenses, schema.NewExpenseWithUuid())
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.Expenses = append(acc.Expenses, schema.InteractiveNewExpense(acc, c.String("asset")))
 							}
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: addFlags,
@@ -145,14 +145,14 @@ func main() {
 						Usage:   "add one or multiple expense category",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							if c.Bool("default") {
 								acc.JournalConfig.ExpenseCategories = append(acc.JournalConfig.ExpenseCategories, schema.NewExpenseCategory())
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.JournalConfig.ExpenseCategories = append(acc.JournalConfig.ExpenseCategories, schema.InteractiveNewExpenseCategories(c.Bool("multiple"))...)
 							}
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: append(addFlags, &cli.BoolFlag{
@@ -167,14 +167,14 @@ func main() {
 						Usage:   "add a invoice",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							if c.Bool("default") {
 								acc.Invoices = append(acc.Invoices, schema.NewInvoiceWithUuid())
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.Invoices = append(acc.Invoices, schema.InteractiveNewInvoice(acc, c.String("asset")))
 							}
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: addFlags,
@@ -185,14 +185,14 @@ func main() {
 						Usage:   "add a transaction",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							if c.Bool("default") {
 								acc.Statement.Transactions = append(acc.Statement.Transactions, schema.NewTransactionWithUuid())
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								acc.Statement.Transactions = append(acc.Statement.Transactions, schema.InteractiveNewTransaction(acc.Statement))
 							}
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: addFlags,
@@ -224,7 +224,7 @@ func main() {
 
 							dump := bimpf.OpenDump(dumpPath)
 							project := dump.Convert(outPath, ncPath)
-							project.SaveProjectToFolder(outPath)
+							project.SaveAccComplexToFolder(outPath)
 							return nil
 						},
 						Flags: []cli.Flag{
@@ -291,9 +291,9 @@ func main() {
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
-					acc := schema.OpenProject(inputPath)
+					acc := schema.OpenAccComplex(inputPath)
 					acc.Statement.AddTransaction(btcStatement.Transactions())
-					acc.SaveProject()
+					acc.SaveAccComplex()
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -322,9 +322,9 @@ func main() {
 						Usage: "complete incorrect expenses",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							acc.Expenses.AssistedCompletion(&acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("open-attachment"), c.Bool("retain-focus"))
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: completeFlags,
@@ -334,9 +334,9 @@ func main() {
 						Usage: "complete incorrect invoices",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							acc.Invoices.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("open-attachment"), c.Bool("retain-focus"))
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: completeFlags,
@@ -346,10 +346,10 @@ func main() {
 						Usage: "repopulate expenses and invoices with transaction id's",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							acc.Expenses.Repopulate(acc)
 							acc.Invoices.Repopulate(acc)
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: []cli.Flag{
@@ -365,9 +365,9 @@ func main() {
 						Usage: "complete incorrect transactions",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							acc := schema.OpenProject(inputPath)
+							acc := schema.OpenAccComplex(inputPath)
 							acc.Statement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("auto-mode"), c.Bool("ask-skip"))
-							acc.SaveProject()
+							acc.SaveAccComplex()
 							return nil
 						},
 						Flags: append(completeFlags, &cli.BoolFlag{
@@ -388,9 +388,9 @@ func main() {
 					}
 					from := getDateOrExit(c, "from")
 					to := getDateOrExit(c, "to")
-					acc := schema.OpenProject(inputPath)
+					acc := schema.OpenAccComplex(inputPath)
 					acc.Filter(types, from, to, c.String("output"), c.Bool("force"), c.String("identifier"))
-					acc.SaveProject()
+					acc.SaveAccComplex()
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -438,7 +438,7 @@ func main() {
 					if err := os.MkdirAll(c.String("output-folder"), os.ModePerm); err != nil {
 						logrus.Fatal("creation of document output folder failed: ", err)
 					}
-					acc := schema.OpenProject(inputPath)
+					acc := schema.OpenAccComplex(inputPath)
 					if c.Bool("all") {
 						invoices.GenerateAllInvoices(
 							acc,
@@ -486,7 +486,7 @@ func main() {
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					outputPath := getPathOrExit(c, c.Bool("force"), "transactions.journal", "output", "the journal file")
-					acc := schema.OpenProject(inputPath)
+					acc := schema.OpenAccComplex(inputPath)
 					journal := ledger.JournalFromAcc(acc, c.Int("year"))
 					journal.SaveHLedgerFile(outputPath)
 					logrus.Info("journal saved as ", outputPath)
@@ -529,7 +529,7 @@ func main() {
 					if !c.Bool("default") {
 						fmt.Println(aurora.BrightMagenta("assistant for new acc project, use --default for non interactive use"))
 					}
-					schema.NewProject(outputPath, c.String("logo"), true, !c.Bool("default"))
+					schema.NewAccComplex(outputPath, c.String("logo"), true, !c.Bool("default"))
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -605,7 +605,7 @@ func main() {
 						logrus.Fatal(err)
 					}
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
-					acc := schema.OpenProject(inputPath)
+					acc := schema.OpenAccComplex(inputPath)
 					mode := query.TableMode
 					if c.Bool("yaml") {
 						mode = query.YamlMode
@@ -663,7 +663,7 @@ func main() {
 					if err := os.MkdirAll(c.String("output-folder"), os.ModePerm); err != nil {
 						logrus.Error("creation of document output folder failed: ", err)
 					}
-					acc := schema.OpenProject(inputPath)
+					acc := schema.OpenAccComplex(inputPath)
 					acc = acc.FilterYear(c.Int("year"))
 					records.GenerateExpensesRec(acc, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
 					records.GenerateInvoicesRec(acc, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
@@ -722,7 +722,7 @@ func main() {
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					outputPath := getPathOrExit(c, c.Bool("force"), "acc-report.txt", "report", "the validation report")
-					acc := schema.OpenProject(inputPath)
+					acc := schema.OpenAccComplex(inputPath)
 					acc.ValidateAndReportProject(outputPath)
 					logrus.Info("report saved as ", outputPath)
 					return nil
