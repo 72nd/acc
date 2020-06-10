@@ -103,7 +103,7 @@ func (i Invoices) AssistedCompletion(a Acc, doAll, autoSave, openAttachment, ret
 		}
 		i[j] = i[j].AssistedCompletion(a, doAll, openAttachment, retainFocus)
 		if autoSave {
-			a.SaveProject()
+			a.SaveAccComplex()
 		}
 	}
 }
@@ -266,6 +266,14 @@ func (i Invoice) SearchItem(a Acc) util.SearchItem {
 		Value:       i.Id,
 		SearchValue: fmt.Sprintf("%s %s %s %s", i.Name, i.Identifier, i.ProjectName, party),
 	}
+}
+
+func (i Invoices) Validate() util.ValidateResults {
+	var rsl util.ValidateResults
+	for j := range i {
+		rsl = append(rsl, util.Check(i[j]))
+	}
+	return rsl
 }
 
 // GetId returns the unique id of the element.

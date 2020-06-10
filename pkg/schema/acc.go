@@ -27,23 +27,27 @@ var DefaultProjectFiles = []string{
 // Acc represents an entry point into the utils and also provides general information.
 type Acc struct {
 	// Company contains the information about the organisation which uses acc.
-	Company           Company       `yaml:"company" default:""`
-	JournalConfig     JournalConfig `yaml:"journalConfig" default:""`
-	ProjectMode       bool          `yaml:"projectMode" default:"false"`
-	ExpensesFilePath  string        `yaml:"expensesFilePath" default:"expenses.yaml"`
-	InvoicesFilePath  string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
-	PartiesFilePath   string        `yaml:"partiesFilePath" default:"parties.yaml"`
-	StatementFilePath string        `yaml:"statementFilePath" default:"bank.yaml"`
-	Expenses          Expenses      `yaml:"-"`
-	Invoices          Invoices      `yaml:"-"`
-	Parties           Parties       `yaml:"-"`
-	Statement         Statement     `yaml:"-"`
-	fileName          string        `yaml:"-"`
-	projectFolder     string        `yaml:"-"`
+	Company             Company       `yaml:"company" default:""`
+	JournalConfig       JournalConfig `yaml:"journalConfig" default:""`
+	ProjectMode         bool          `yaml:"projectMode" default:"false"`
+	ExpensesFilePath    string        `yaml:"expensesFilePath" default:"expenses.yaml"`
+	InvoicesFilePath    string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
+	MiscRecordsFilePath string        `yaml:"miscRecordsFilePath" default:"misc.yaml"`
+	PartiesFilePath     string        `yaml:"partiesFilePath" default:"parties.yaml"`
+	ProjectsFilePath    string        `yaml:"projectsFilePath" default:"projects.yaml"`
+	StatementFilePath   string        `yaml:"statementFilePath" default:"bank.yaml"`
+	Expenses            Expenses      `yaml:"-"`
+	Invoices            Invoices      `yaml:"-"`
+	MiscRecords         MiscRecords   `yaml:"-"`
+	Parties             Parties       `yaml:"-"`
+	Projects            Projects      `yaml:"-"`
+	Statement           Statement     `yaml:"-"`
+	fileName            string        `yaml:"-"`
+	projectFolder       string        `yaml:"-"`
 }
 
-// NewProject creates a new acc project in the given folder path.
-func NewProject(folderPath, logo string, doSave, interactive bool) Acc {
+// NewAccComplex creates a new acc project in the given folder path.
+func NewAccComplex(folderPath, logo string, doSave, interactive bool) Acc {
 	var cmp Company
 	var jrc JournalConfig
 	if interactive {
@@ -93,12 +97,14 @@ func OpenAcc(path string) Acc {
 	return acc
 }
 
-// OpenProject reads first the Acc file and then tries to open all linked files.
-func OpenProject(path string) Acc {
+// OpenAccComplex reads first the Acc file and then tries to open all linked files.
+func OpenAccComplex(path string) Acc {
 	acc := OpenAcc(path)
 	acc.Expenses = OpenExpenses(acc.ExpensesFilePath)
 	acc.Invoices = OpenInvoices(acc.InvoicesFilePath)
+	acc.MiscRecords = OpenMiscRecords(acc.MiscRecordsFilePath)
 	acc.Parties = OpenParties(acc.PartiesFilePath)
+	acc.Projects = OpenProjects(acc.ProjectsFilePath)
 	acc.Statement = OpenBankStatement(acc.StatementFilePath)
 	return acc
 }
@@ -114,16 +120,18 @@ func (a Acc) SaveAtCurrent() {
 	a.Save(path.Join(a.projectFolder, a.fileName))
 }
 
-func (a Acc) SaveProject() {
-	a.SaveProjectToFolder(a.projectFolder)
+func (a Acc) SaveAccComplex() {
+	a.SaveAccComplexToFolder(a.projectFolder)
 }
 
 // SaveProjectToFolder saves all files linked in the Acc config to the given folder.
-func (a Acc) SaveProjectToFolder(pth string) {
+func (a Acc) SaveAccComplexToFolder(pth string) {
 	a.Save(path.Join(pth, a.fileName))
 	a.Expenses.Save(path.Join(pth, a.ExpensesFilePath))
 	a.Invoices.Save(path.Join(pth, a.InvoicesFilePath))
+	a.MiscRecords.Save(path.Join(pth, a.InvoicesFilePath))
 	a.Parties.Save(path.Join(pth, a.PartiesFilePath))
+	a.Projects.Save(path.Join(pth, a.PartiesFilePath))
 	a.Statement.Save(path.Join(pth, a.StatementFilePath))
 }
 
@@ -166,22 +174,16 @@ func (a Acc) Validate() util.ValidateResults {
 }
 
 func (a Acc) ValidateProject() util.ValidateResults {
-	results := a.Validate()
-	results = append(results, util.Check(a.Company))
-	for i := range a.Expenses {
-		results = append(results, util.Check(a.Expenses[i]))
-	}
-	for i := range a.Invoices {
-		results = append(results, util.Check(a.Invoices[i]))
-	}
-	for i := range a.Parties.Customers {
-		results = append(results, util.Check(a.Parties.Customers[i]))
-	}
-	for i := range a.Parties.Employees {
-		results = append(results, util.Check(a.Parties.Employees[i]))
-	}
-	results = append(results, a.Statement.Validate()...)
-	return results
+	rsl := a.Validate()
+	rsl = append(rsl, util.Check(a.Company))
+	rsl = append(rsl, a.Expenses.Validate()...)
+	rsl = append(rsl, a.Invoices.Validate()...)
+	rsl = append(rsl, a.MiscRecords.Validate()...)
+	rsl = append(rsl, a.Statement.Validate()...)
+	rsl = append(rsl, a.Parties.Validate()...)
+	rsl = append(rsl, a.Projects.Validate()...)
+	rsl = append(rsl, a.Statement.Validate()...)
+	return rsl
 }
 
 // ValidateAndReportProject validates the acc project files and saves the report to the given path.

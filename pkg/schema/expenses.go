@@ -87,6 +87,14 @@ func (e Expenses) SearchItems() util.SearchItems {
 	return result
 }
 
+func (e Expenses) Validate() util.ValidateResults {
+	var rsl util.ValidateResults
+	for i := range e {
+		rsl = append(rsl, util.Check(e[i]))
+	}
+	return rsl
+}
+
 func (e Expenses) Filter(from *time.Time, to *time.Time, identifier string) (Expenses, error) {
 	var result Expenses
 	for i := range e {
@@ -111,7 +119,7 @@ func (e Expenses) AssistedCompletion(a *Acc, doAll, autoSave, openAttachment, re
 		}
 		e[i] = e[i].AssistedCompletion(a, doAll, openAttachment, retainFocus)
 		if autoSave {
-			a.SaveProject()
+			a.SaveAccComplex()
 		}
 	}
 }

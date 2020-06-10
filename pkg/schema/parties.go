@@ -178,6 +178,17 @@ func (p Parties) CustomersSearchItems() util.SearchItems {
 	return result
 }
 
+func (p Parties) Validate() util.ValidateResults {
+	var rsl util.ValidateResults
+	for i := range p.Customers {
+		rsl = append(rsl, util.Check(p.Customers[i]))
+	}
+	for i := range p.Employees {
+		rsl = append(rsl, util.Check(p.Employees[i]))
+	}
+	return rsl
+}
+
 // Party represents some person or organisation.
 type Party struct {
 	// Id is the internal unique identifier of the Expense.

@@ -79,7 +79,7 @@ func (o Output) tableKeyValue(a *schema.Acc, render bool) string {
 		logrus.Warnf("%s using 80 as default instead", err)
 		termWidth = 80
 	}
-	valueWidth := int(termWidth) - o.Element.MaxKeyLength() - 7
+	valueWidth := termWidth - o.Element.MaxKeyLength() - 7
 
 	tblStr := &bytes.Buffer{}
 	tbl := tablewriter.NewWriter(tblStr)
