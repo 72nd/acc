@@ -98,6 +98,18 @@ func (c JournalConfig) Validate() util.ValidateResults {
 	return append(util.ValidateResults{util.Check(c)}, c.ExpenseCategories.Validate()...)
 }
 
+func (c JournalConfig) Aliases() [][]string {
+	result := make([][]string, len(c.AccountAliases))
+	for i := range c.AccountAliases {
+		ele := util.EscapedSplit(c.AccountAliases[i], ":")
+		if len(ele) != 2 {
+			logrus.Fatalf("error while parsing account aliases \"%s\" couldn't be parsed as ALIAS:REPLACE, hint: you can escape the colons with \\:", c.AccountAliases[i])
+		}
+		result[i] = []string{ele[0], ele[1]}
+	}
+	return result
+}
+
 type ExpenseCategories []ExpenseCategory
 
 func InteractiveNewExpenseCategories(multiple bool) ExpenseCategories {
@@ -229,3 +241,4 @@ func (e ExpenseCategory) Conditions() util.Conditions {
 		},
 	}
 }
+

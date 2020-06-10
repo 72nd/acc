@@ -66,7 +66,7 @@ func (j *Journal) AddEntries(entries []Entry) {
 //
 // TODO: Es brauch ein separates acc für alle Jahre und eins für d
 func JournalFromAcc(a schema.Acc, year int) Journal {
-	rsl := NewJournal(parseAliases(a.JournalConfig.AccountAliases))
+	rsl := NewJournal(a.JournalConfig.Aliases())
 	fAcc := a.FilterYear(year)
 
 	for i := range fAcc.Expenses {
@@ -79,18 +79,6 @@ func JournalFromAcc(a schema.Acc, year int) Journal {
 		rsl.AddEntries(EntriesForTransaction(a, fAcc.BankStatement.Transactions[i]))
 	}
 	return rsl
-}
-
-func parseAliases(input []string) [][]string {
-	result := make([][]string, len(input))
-	for i := range input {
-		ele := strings.Split(input[i], ":")
-		if len(ele) != 2 {
-			logrus.Fatalf("error while parsing account aliases \"%s\" couldn't be parsed as ALIAS:REPLACE", input[i])
-		}
-		result[i] = []string{ele[0], ele[1]}
-	}
-	return result
 }
 
 func (j Journal) SaveHLedgerFile(path string) {
