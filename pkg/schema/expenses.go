@@ -132,23 +132,23 @@ type Expense struct {
 	// Name describes meaningful the kind of the Expense.
 	Name string `yaml:"name" default:"Expense Name"`
 	// Amount states the amount of the Expense.
-	Amount float64 `yaml:"amount" default:"10.00"`
+	Amount float64 `yaml:"amount" default:"10.00" query:"amount"`
 	// Path is the full path to the business record document.
-	Path string `yaml:"path" default:"/path/to/expense.pdf"`
+	Path string `yaml:"path" default:"/path/to/expense.pdf" query:"path"`
 	// DateOfAccrual represents the day the obligation emerged.
 	DateOfAccrual string `yaml:"dateOfAccrual" default:"2019-12-20"`
 	// Billable states if the costs for the Expense will be forwarded to the customer.
 	Billable bool `yaml:"billable" default:"false"`
 	// ObligedCustomerId refers to the customer which have to pay the Expense.
-	ObligedCustomerId string `yaml:"obligedCustomerId" default:""`
+	ObligedCustomerId string `yaml:"obligedCustomerId" default:"" query:"customer"`
 	// AdvancedByThirdParty states if a third party (employee, etc.) advanced the payment of this expense for the company.
 	AdvancedByThirdParty bool `yaml:"advancedByThirdParty" default:"false"`
 	// AdvancePartyId refers to the third party which advanced the payment.
-	AdvancedThirdPartyId string `yaml:"advancedThirdPartyId" default:""`
+	AdvancedThirdPartyId string `yaml:"advancedThirdPartyId" default:"" query:"emplyee"`
 	// DateOfSettlement states the date of the settlement of the expense (the company has not to take further actions).
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
-	SettlementTransactionId string `yaml:"settlementTransactionId" default:""`
+	SettlementTransactionId string `yaml:"settlementTransactionId" default:"" query:"transaction"`
 	// ExpenseCategory gives additional info for the categorization of the expense in the journal.
 	ExpenseCategory string `yaml:"expenseCategory" default:""`
 	// Debit Payment states whether the expense was directly payed with the main account debithether the expense was directly payed with the main account debit card.

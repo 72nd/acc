@@ -25,12 +25,12 @@ const (
 type Transaction struct {
 	Id                   string               `yaml:"id" default:""`
 	Identifier           string               `yaml:"identifier" default:""`
+	Amount               float64              `yaml:"amount" default:"10.00" query:"amount"`
 	Description          string               `yaml:"description" default:""`
 	TransactionType      util.TransactionType `yaml:"transactionType" default:"0"`
-	AssociatedPartyId    string               `yaml:"associatedPartyId" default:""`
-	AssociatedDocumentId string               `yaml:"associatedDocumentId" default:""`
+	AssociatedPartyId    string               `yaml:"associatedPartyId" default:"" query:"customer,employee"`
+	AssociatedDocumentId string               `yaml:"associatedDocumentId" default:"" query:"expense,invoice"`
 	Date                 string               `yaml:"date" default:""`
-	Amount               float64              `yaml:"amount" default:"10.00"`
 	JournalMode          JournalMode          `yaml:"journalMode" default:"0"`
 }
 

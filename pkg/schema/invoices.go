@@ -123,19 +123,19 @@ type Invoice struct {
 	// Name describes meaningful the kind of the Expense.
 	Name string `yaml:"name" default:"Expense Name"`
 	// Amount states the amount of the Expense.
-	Amount float64 `yaml:"amount" default:"10.00"`
+	Amount float64 `yaml:"amount" default:"10.00" query:"amount"`
 	// Path is the full path to the voucher utils.
-	Path string `yaml:"path" default:"/path/to/file.utils"`
+	Path string `yaml:"path" default:"/path/to/file.utils" query:"path"`
 	// Revoked invoices are disabled an no longer taken into account.
 	Revoked bool `yaml:"revoked" default:"false"` 
 	// CustomerId refers to the customer the invoice was sent to.
-	CustomerId string `yaml:"customerId" default:""`
+	CustomerId string `yaml:"customerId" default:"" query:"customer"`
 	// SendDate states the date, the invoice was sent to the customer.
 	SendDate string `yaml:"sendDate" default:"2019-12-20"`
 	// DateOfSettlement states the date the customer paid the outstanding amount.
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
-	SettlementTransactionId string `yaml:"settlementTransactionId" default:""`
+	SettlementTransactionId string `yaml:"settlementTransactionId" default:"" query:"transaction"`
 	// ProjectName refers to the associated project of the expense.
 	ProjectName string `yaml:"projectName" default:""`
 }
