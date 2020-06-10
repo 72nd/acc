@@ -610,7 +610,7 @@ func main() {
 					if c.Bool("yaml") {
 						mode = query.YamlMode
 					}
-					qry.QueryAcc(acc, c.String("match"), c.String("date"), c.String("select"), mode, c.Bool("strict"))
+					qry.QueryAcc(acc, c.String("match"), c.String("date"), c.String("select"), mode, !c.Bool("no-render"), c.Bool("strict"))
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -628,6 +628,11 @@ func main() {
 						Name:    "match",
 						Aliases: []string{"r"},
 						Usage:   "match key:value compbinations with `REGEX:REGEX` multiple can be seperated by comma",
+					},
+					&cli.BoolFlag{
+						Name:    "no-render",
+						Aliases: []string{"n"},
+						Usage:   "do not render the output values",
 					},
 					&cli.StringFlag{
 						Name:    "select",

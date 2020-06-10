@@ -28,9 +28,9 @@ func OutputsFromElements(a schema.Acc, ele []Element) Outputs {
 	return rsl
 }
 
-func (o Outputs) PPKeyValue(a schema.Acc, mode OutputMode) {
+func (o Outputs) PPKeyValue(a schema.Acc, mode OutputMode, render bool) {
 	for i := range o {
-		o[i].PPKeyValue(&a, mode)
+		o[i].PPKeyValue(&a, mode, render)
 	}
 }
 
@@ -46,21 +46,21 @@ func NewOutput(a schema.Acc, ele Element) Output {
 	}
 }
 
-func (o Output) PPKeyValue(a *schema.Acc, mode OutputMode) {
+func (o Output) PPKeyValue(a *schema.Acc, mode OutputMode, render bool) {
 	switch mode {
 	case YamlMode:
-		fmt.Print(o.yamlKeyValue(a))
+		fmt.Print(o.yamlKeyValue(a, render))
 	case TableMode:
-		fmt.Print(o.tableKeyValue(a))
+		fmt.Print(o.tableKeyValue(a, render))
 	default:
 		logrus.Fatalf("illegal output mode \"%d\"", mode)
 	}
 }
 
-func (o Output) yamlKeyValue(a *schema.Acc) string {
+func (o Output) yamlKeyValue(a *schema.Acc, render bool) string {
 	data := make(map[string]string)
 	for i := range o.Element {
-		if a != nil {
+		if a != nil && render {
 			data[o.Element[i].Key] = o.Element[i].RenderValue(*a)
 		} else {
 			data[o.Element[i].Key] = o.Element[i].Value
@@ -73,9 +73,9 @@ func (o Output) yamlKeyValue(a *schema.Acc) string {
 	return string(yml)
 }
 
-func (o Output) tableKeyValue(a *schema.Acc) string {
+func (o Output) tableKeyValue(a *schema.Acc, render bool) string {
 	termWidth, err := util.TerminalWidth()
-	if err != nil {
+	if err != nil && render {
 		logrus.Warnf("%s using 80 as default instead", err)
 		termWidth = 80
 	}
