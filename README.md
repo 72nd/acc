@@ -114,18 +114,31 @@ Check your data.
 
 ## Workflow
 
-1. Dump Bimpf data
-2. Validate dump with `acc bimpf validate -i dump.json` and resolve the problems in Bimpf, then re-export the data.
-3. Import the date with `acc bimpf import -i dump.json -n /path/to/nc-folder`.
-4. Validate the import with `acc validate -i acc.yaml`.
-5. Complete...
+1. Import from Bimpf
+	- Dump Bimpf data as JSON.
+	- Validate dump with `acc bimpf validate -i dump.json` and resolve the problems in Bimpf, then re-export the data.
+	- Import the date with `acc bimpf import -i dump.json -n /path/to/nc-folder`.
+	- Validate the import with `acc validate -i acc.yaml`.
+2. Open `acc.yaml` and complete the configuration. Do not forget to...
+	- ...enter your company details (name, street, etc.).
+	- ...change the journal accounts to your needs.
+	- ...enter all account aliases.
+	- ...define known expense categories and their appropriate journal account (you also can add categories while complete expenses).
+3. Complete...
 	- ...expenses with `acc complete expenses`.
 	- ...invoices with `acc complete invoices`.
-6. Validate the result with `acc validate -i acc.yaml`.
-7. Bank statement:
+4. Validate the result with `acc validate -i acc.yaml`.
+5. Bank statement:
 	- Import the bank statement with `acc camt -i acc.yaml -s camt.xml`.
 	- Complete with `acc complete expenses`.
 	- Validate with `acc validate -i acc.yaml`.
-8. Repopulate expenses and invoices with `acc complete repopulate -i acc.yaml`.
-
-
+6. Repopulate expenses and invoices with `acc complete repopulate -i acc.yaml`.
+7. Complete transactions with `acc complete transactions -i acc.yaml`
+9. Export the journal with `acc ledger -i acc.yaml -o ledger.journal -y 20XX` while replacing «20XX» with the year you want to filter for. Take a close look at the warnings and change the files if needed. 
+10. Manually correct the journal:
+	- Manually book all opening entries.
+	- Check **all** generated bookings.
+	- Amortize the positions you're legally obliged/allowed to.
+	- Book all necessary reserve assets.
+	- Finalize your journal.
+	- 
