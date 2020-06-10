@@ -30,12 +30,13 @@ func EntriesForInvoicing(a schema.Acc, inv schema.Invoice) []Entry {
 			"invoice sent transaction description",
 			a.JournalConfig.InvoicingTransactionDescription,
 			data)
-	} 
+	}
 
 	return []Entry{
 		{
 			Date:        inv.SendDateTime(),
 			Status:      UnmarkedStatus,
+			Code:        inv.Identifier,
 			Description: desc,
 			Comment:     cmt,
 			Account1:    a.JournalConfig.ReceivableAccount,
@@ -65,7 +66,7 @@ func SettlementEntriesForInvoice(a schema.Acc, trn schema.Transaction, inv schem
 			"invoice settlement transaction description",
 			a.JournalConfig.InvoiceSettlementTransactionDescription,
 			data)
-	} 
+	}
 
 	return []Entry{
 		{
@@ -79,4 +80,3 @@ func SettlementEntriesForInvoice(a schema.Acc, trn schema.Transaction, inv schem
 			Amount:      trn.Amount,
 		}}
 }
-

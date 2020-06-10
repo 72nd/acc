@@ -126,7 +126,7 @@ func (e ExpenseCategories) CategoryByName(name string) (*ExpenseCategory, error)
 			return &e[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no epense category for name «%s» found", name)
+	return nil, fmt.Errorf("no expense category for name «%s» found", name)
 }
 
 func (e ExpenseCategories) SearchItems() util.SearchItems {

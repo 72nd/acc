@@ -159,7 +159,7 @@ func settlementEntriesForAdvancedSettlement(a schema.Acc, trn schema.Transaction
 // settlementEntriesForCompanyPaidExpenses returns the journal entries for the settlement of company
 // paid expenses.
 func settlementEntriesForCompanyPaidExpenses(a schema.Acc, trn schema.Transaction, exp schema.Expense) []Entry {
-	cmt := NewComment("settlement of employee advancement", trn.String())
+	cmt := NewComment("settlement of company paid exense", trn.String())
 	cmt.add(compareAmounts(trn.Amount, exp.Amount))
 
 	data := map[string]string{
