@@ -30,6 +30,7 @@ type Acc struct {
 	Company               Company       `yaml:"company" default:""`
 	JournalConfig         JournalConfig `yaml:"journalConfig" default:""`
 	ProjectMode           bool          `yaml:"projectMode" default:"false"`
+	Currency              string        `yaml:"currency" default:"SFr."`
 	ExpensesFilePath      string        `yaml:"expensesFilePath" default:"expenses.yaml"`
 	InvoicesFilePath      string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
 	PartiesFilePath       string        `yaml:"partiesFilePath" default:"parties.yaml"`
