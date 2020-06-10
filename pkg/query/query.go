@@ -44,7 +44,7 @@ func (q Queryables) PPKeys(mode OutputMode) {
 		Header: []string{"Name Key", "Element Type(s)"},
 		Element:   kys.Data(),
 	}
-	out.PPKeyValue(nil, mode)
+	out.PPKeyValue(nil, mode, false)
 }
 
 func (q Queryables) QueryablesFromUserInput(input string) (Queryables, error) {

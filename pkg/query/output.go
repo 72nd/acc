@@ -79,7 +79,6 @@ func (o Output) tableKeyValue(a *schema.Acc, render bool) string {
 		logrus.Warnf("%s using 80 as default instead", err)
 		termWidth = 80
 	}
-	fmt.Println(termWidth)
 	valueWidth := int(termWidth) - o.Element.MaxKeyLength() - 7
 
 	tblStr := &bytes.Buffer{}
@@ -89,12 +88,15 @@ func (o Output) tableKeyValue(a *schema.Acc, render bool) string {
 		tablewriter.Colors{tablewriter.Bold})
 	tbl.SetColumnColor(tablewriter.Colors{tablewriter.FgHiCyanColor},
 		tablewriter.Colors{tablewriter.FgHiGreenColor})
+	tbl.SetAutoWrapText(false)
 	for i := range o.Element {
 		value := o.Element[i].Value
 		if a != nil {
 			value = o.Element[i].RenderValue(*a)
 		}
-		tbl.Append([]string{o.Element[i].Key, multiline(value, valueWidth)})
+		ele := []string{o.Element[i].Key, multiline(value, valueWidth)}
+		fmt.Println(ele)
+		tbl.Append(ele)
 	}
 	tbl.Render()
 	return tblStr.String()
