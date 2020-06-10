@@ -147,6 +147,7 @@ func (k KeyValue) RenderValue(a schema.Acc) string {
 		if err != nil {
 			return fmt.Sprintf("%s (no such customer exists)", k.Value)
 		}
+		fmt.Print(k.Value)
 		return fmt.Sprintf("%s (%s, %s)", k.Value, cst.Name, cst.Identifier)
 	case "employee":
 		emp, err := a.Parties.EmployeeById(k.Value)
