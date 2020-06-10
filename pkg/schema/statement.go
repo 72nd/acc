@@ -11,19 +11,19 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const DefaultBankStatementFile = "bank-statement.yaml"
+const DefaultStatementFile = "bank-statement.yaml"
 const DefaultTransactionPrefix = "t-"
 
 // BankStatement represents a bank statement.
-type BankStatement struct {
+type Statement struct {
 	Name         string        `yaml:"name" default:"e-19-01"`
 	Period       string        `yaml:"period" default:"2019"`
 	Transactions []Transaction `yaml:"transactions" default:"[]"`
 }
 
 // NewBankStatement returns a new BankStatement struct with the one Expense in it.
-func NewBankStatement(useDefaults bool) BankStatement {
-	stm := BankStatement{}
+func NewBankStatement(useDefaults bool) Statement {
+	stm := Statement{}
 	if useDefaults {
 		if err := defaults.Set(&stm); err != nil {
 			logrus.Fatal("error setting defaults: ", err)
@@ -34,12 +34,12 @@ func NewBankStatement(useDefaults bool) BankStatement {
 }
 
 // OpenBankStatement opens a BankStatement struct saved in the json file given by the path.
-func OpenBankStatement(path string) BankStatement {
+func OpenBankStatement(path string) Statement {
 	raw, err := ioutil.ReadFile(path)
 	if err != nil {
 		logrus.Fatal(err)
 	}
-	stm := BankStatement{}
+	stm := Statement{}
 	if err := yaml.Unmarshal(raw, &stm); err != nil {
 		logrus.Fatal(err)
 	}
@@ -48,22 +48,22 @@ func OpenBankStatement(path string) BankStatement {
 
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
-func (s BankStatement) Save(path string) {
+func (s Statement) Save(path string) {
 	SaveToYaml(s, path)
 }
 
-func (s *BankStatement) AddTransaction(trn []Transaction) {
+func (s *Statement) AddTransaction(trn []Transaction) {
 	s.Transactions = append(s.Transactions, trn...)
 }
 
 // SetId sets a unique id to all elements in the slice.
-func (s BankStatement) SetId() {
+func (s Statement) SetId() {
 	for i := range s.Transactions {
 		s.Transactions[i].SetId()
 	}
 }
 
-func (s BankStatement) GetIdentifiables() []Identifiable {
+func (s Statement) GetIdentifiables() []Identifiable {
 	trn := make([]Identifiable, len(s.Transactions))
 	for i := range s.Transactions {
 		trn[i] = s.Transactions[i]
@@ -71,7 +71,7 @@ func (s BankStatement) GetIdentifiables() []Identifiable {
 	return trn
 }
 
-func (s BankStatement) TransactionById(id string) (*Transaction, error) {
+func (s Statement) TransactionById(id string) (*Transaction, error) {
 	for i := range s.Transactions {
 		if s.Transactions[i].Id == id {
 			return &s.Transactions[i], nil
@@ -81,17 +81,17 @@ func (s BankStatement) TransactionById(id string) (*Transaction, error) {
 }
 
 // Type returns a string with the type name of the element.
-func (s BankStatement) Type() string {
+func (s Statement) Type() string {
 	return "Bank-Statement"
 }
 
 // String returns a human readable representation of the element.
-func (s BankStatement) String() string {
+func (s Statement) String() string {
 	return fmt.Sprintf("%s, for %s", s.Name, s.Period)
 }
 
 // Conditions returns the validation conditions.
-func (s BankStatement) Conditions() util.Conditions {
+func (s Statement) Conditions() util.Conditions {
 	return util.Conditions{
 		{
 			Condition: s.Name == "",
@@ -105,7 +105,7 @@ func (s BankStatement) Conditions() util.Conditions {
 }
 
 // Validate the element and return the result.
-func (s BankStatement) Validate() util.ValidateResults {
+func (s Statement) Validate() util.ValidateResults {
 	results := util.ValidateResults{util.Check(s)}
 	for i := range s.Transactions {
 		results = append(results, util.Check(s.Transactions[i]))
@@ -113,7 +113,7 @@ func (s BankStatement) Validate() util.ValidateResults {
 	return results
 }
 
-func (s BankStatement) TransactionSearchItems() util.SearchItems {
+func (s Statement) TransactionSearchItems() util.SearchItems {
 	result := make(util.SearchItems, len(s.Transactions))
 	for i := range s.Transactions {
 		result[i] = s.Transactions[i].SearchItem()
@@ -121,7 +121,7 @@ func (s BankStatement) TransactionSearchItems() util.SearchItems {
 	return result
 }
 
-func (s *BankStatement) AssistedCompletion(a Acc, doAll, autoSave, autoMode, askSkip bool) {
+func (s *Statement) AssistedCompletion(a Acc, doAll, autoSave, autoMode, askSkip bool) {
 	first := true
 	for i := range s.Transactions {
 		if !first {
@@ -136,7 +136,7 @@ func (s *BankStatement) AssistedCompletion(a Acc, doAll, autoSave, autoMode, ask
 	}
 }
 
-func (s BankStatement) TransactionForDocument(id string) (*Transaction, error) {
+func (s Statement) TransactionForDocument(id string) (*Transaction, error) {
 	for i := range s.Transactions {
 		fmt.Println(s.Transactions[i].AssociatedDocumentId)
 		if s.Transactions[i].AssociatedDocumentId == id {
@@ -146,7 +146,7 @@ func (s BankStatement) TransactionForDocument(id string) (*Transaction, error) {
 	return nil, fmt.Errorf("no transaction with associated document \"%s\" found", id)
 }
 
-func (s BankStatement) FilterTransactions(from *time.Time, to *time.Time) ([]Transaction, error) {
+func (s Statement) FilterTransactions(from *time.Time, to *time.Time) ([]Transaction, error) {
 	var result []Transaction
 	for i := range s.Transactions {
 		date, err := time.Parse(util.DateFormat, s.Transactions[i].Date)

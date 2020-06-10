@@ -28,7 +28,7 @@ func NewExpenses(useDefaults bool) Expenses {
 	return Expenses{}
 }
 
-// OpenExpenses opens a Expenses saved in the json file given by the path.
+// OpenExpenses opens a Expenses saved in the YAML file given by the path.
 func OpenExpenses(path string) Expenses {
 	raw, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -41,8 +41,7 @@ func OpenExpenses(path string) Expenses {
 	return exp
 }
 
-// Save writes the element as a json to the given path.
-// Indented states whether «prettify» the json output.
+// Save writes the element as a YAML to the given path.
 func (e Expenses) Save(path string) {
 	SaveToYaml(e, path)
 }
@@ -60,7 +59,7 @@ func (e Expenses) ExpenseById(id string) (*Expense, error) {
 			return &e[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no expense for id «%s» found", id)
+	return nil, fmt.Errorf("no expense for id \"%s\" found", id)
 }
 
 func (e Expenses) ExpenseByIdent(ident string) (*Expense, error) {
@@ -69,7 +68,7 @@ func (e Expenses) ExpenseByIdent(ident string) (*Expense, error) {
 			return &e[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no expense for identifier «%s» found", ident)
+	return nil, fmt.Errorf("no expense for identifier \"%s\" found", ident)
 }
 
 func (e Expenses) GetIdentifiables() []Identifiable {
@@ -317,7 +316,7 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 }
 
 func (e *Expense) Repopulate(a Acc) {
-	trn, err := a.BankStatement.TransactionForDocument(e.Id)
+	trn, err := a.Statement.TransactionForDocument(e.Id)
 	if err != nil {
 		logrus.Warnf("there is no transaction for expense \"%s\" associated", e.String())
 		return

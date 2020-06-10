@@ -48,7 +48,7 @@ func NewTransactionWithUuid() Transaction {
 	return trn
 }
 
-func InteractiveNewTransaction(s BankStatement) Transaction {
+func InteractiveNewTransaction(s Statement) Transaction {
 	trn := NewTransactionWithUuid()
 	trn.Identifier = util.AskString(
 		"Value",
@@ -119,7 +119,7 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode, askSkip bool) Tr
 			return t
 		}
 	}
-	identifier := SuggestNextIdentifier(a.BankStatement.GetIdentifiables(), DefaultTransactionPrefix)
+	identifier := SuggestNextIdentifier(a.Statement.GetIdentifiables(), DefaultTransactionPrefix)
 	if t.Id == "" {
 		t.SetId()
 	}
@@ -324,5 +324,3 @@ func (t Transaction) SearchItem() util.SearchItem {
 		SearchValue: t.Description,
 	}
 }
-
-

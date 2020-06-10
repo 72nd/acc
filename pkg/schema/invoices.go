@@ -198,7 +198,7 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 	inv.SettlementTransactionId = util.AskStringFromSearch(
 		"Settlement Transaction",
 		"Transaction which settled the invoice",
-		a.BankStatement.TransactionSearchItems())
+		a.Statement.TransactionSearchItems())
 	inv.ProjectName = util.AskString(
 		"Project Name",
 		"Name of the associated project",
@@ -240,7 +240,7 @@ func (i Invoice) AssistedCompletion(a Acc, doAll, openAttachment, retainFocus bo
 }
 
 func (i *Invoice) Repopulate(a Acc) {
-	trn, err := a.BankStatement.TransactionForDocument(i.Id)
+	trn, err := a.Statement.TransactionForDocument(i.Id)
 	if err != nil {
 		logrus.Warnf("there is no transaction for invoice \"%s\" associated", i.String())
 		return
@@ -360,5 +360,3 @@ func (i Invoice) SendDateTime() time.Time {
 	}
 	return result
 }
-
-

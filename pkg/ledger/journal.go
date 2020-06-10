@@ -75,8 +75,8 @@ func JournalFromAcc(a schema.Acc, year int) Journal {
 	for i := range fAcc.Invoices {
 		rsl.AddEntries(EntriesForInvoicing(a, fAcc.Invoices[i]))
 	}
-	for i := range fAcc.BankStatement.Transactions {
-		rsl.AddEntries(EntriesForTransaction(a, fAcc.BankStatement.Transactions[i]))
+	for i := range fAcc.Statement.Transactions {
+		rsl.AddEntries(EntriesForTransaction(a, fAcc.Statement.Transactions[i]))
 	}
 	return rsl
 }

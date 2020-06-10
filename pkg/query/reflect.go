@@ -187,7 +187,7 @@ func (k KeyValue) RenderValue(a schema.Acc) string {
 		}
 		return fmt.Sprintf("%s (%s, %s)", k.Value, inv.Name, inv.Identifier)
 	case "transaction":
-		trn, err := a.BankStatement.TransactionById(k.Value)
+		trn, err := a.Statement.TransactionById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such transaction exists)", k.Value)
 		}

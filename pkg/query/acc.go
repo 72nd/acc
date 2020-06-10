@@ -40,7 +40,7 @@ func accElementsFromQueryable(a schema.Acc, q Queryable) []Element {
 	case "invoice":
 		return NewElements(a.Invoices)
 	case "transaction":
-		return NewElements(a.BankStatement.Transactions)
+		return NewElements(a.Statement.Transactions)
 	default:
 		logrus.Fatalf("no acc elements for \"%s\" found", q.Name)
 	}

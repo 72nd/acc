@@ -21,25 +21,25 @@ var DefaultProjectFiles = []string{
 	DefaultExpensesFile,
 	DefaultInvoicesFile,
 	DefaultPartiesFile,
-	DefaultBankStatementFile,
+	DefaultStatementFile,
 }
 
 // Acc represents an entry point into the utils and also provides general information.
 type Acc struct {
 	// Company contains the information about the organisation which uses acc.
-	Company               Company       `yaml:"company" default:""`
-	JournalConfig         JournalConfig `yaml:"journalConfig" default:""`
-	ProjectMode           bool          `yaml:"projectMode" default:"false"`
-	ExpensesFilePath      string        `yaml:"expensesFilePath" default:"expenses.yaml"`
-	InvoicesFilePath      string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
-	PartiesFilePath       string        `yaml:"partiesFilePath" default:"parties.yaml"`
-	BankStatementFilePath string        `yaml:"bankStatementFilePath" default:"bank.yaml"`
-	Expenses              Expenses      `yaml:"-"`
-	Invoices              Invoices      `yaml:"-"`
-	Parties               Parties       `yaml:"-"`
-	BankStatement         BankStatement `yaml:"-"`
-	fileName              string        `yaml:"-"`
-	projectFolder         string        `yaml:"-"`
+	Company           Company       `yaml:"company" default:""`
+	JournalConfig     JournalConfig `yaml:"journalConfig" default:""`
+	ProjectMode       bool          `yaml:"projectMode" default:"false"`
+	ExpensesFilePath  string        `yaml:"expensesFilePath" default:"expenses.yaml"`
+	InvoicesFilePath  string        `yaml:"invoicesFilePath" default:"invoices.yaml"`
+	PartiesFilePath   string        `yaml:"partiesFilePath" default:"parties.yaml"`
+	StatementFilePath string        `yaml:"statementFilePath" default:"bank.yaml"`
+	Expenses          Expenses      `yaml:"-"`
+	Invoices          Invoices      `yaml:"-"`
+	Parties           Parties       `yaml:"-"`
+	Statement         Statement     `yaml:"-"`
+	fileName          string        `yaml:"-"`
+	projectFolder     string        `yaml:"-"`
 }
 
 // NewProject creates a new acc project in the given folder path.
@@ -54,13 +54,13 @@ func NewProject(folderPath, logo string, doSave, interactive bool) Acc {
 		jrc = NewJournalConfig()
 	}
 	acc := Acc{
-		Company:               cmp,
-		JournalConfig:         jrc,
-		ExpensesFilePath:      DefaultExpensesFile,
-		InvoicesFilePath:      DefaultInvoicesFile,
-		PartiesFilePath:       DefaultPartiesFile,
-		BankStatementFilePath: DefaultBankStatementFile,
-		fileName:              DefaultAccFile,
+		Company:           cmp,
+		JournalConfig:     jrc,
+		ExpensesFilePath:  DefaultExpensesFile,
+		InvoicesFilePath:  DefaultInvoicesFile,
+		PartiesFilePath:   DefaultPartiesFile,
+		StatementFilePath: DefaultStatementFile,
+		fileName:          DefaultAccFile,
 	}
 	exp := NewExpenses(!interactive)
 	inv := NewInvoices(!interactive)
@@ -72,7 +72,7 @@ func NewProject(folderPath, logo string, doSave, interactive bool) Acc {
 		exp.Save(path.Join(folderPath, DefaultExpensesFile))
 		inv.Save(path.Join(folderPath, DefaultInvoicesFile))
 		prt.Save(path.Join(folderPath, DefaultPartiesFile))
-		stm.Save(path.Join(folderPath, DefaultBankStatementFile))
+		stm.Save(path.Join(folderPath, DefaultStatementFile))
 	}
 
 	return acc
@@ -99,7 +99,7 @@ func OpenProject(path string) Acc {
 	acc.Expenses = OpenExpenses(acc.ExpensesFilePath)
 	acc.Invoices = OpenInvoices(acc.InvoicesFilePath)
 	acc.Parties = OpenParties(acc.PartiesFilePath)
-	acc.BankStatement = OpenBankStatement(acc.BankStatementFilePath)
+	acc.Statement = OpenBankStatement(acc.StatementFilePath)
 	return acc
 }
 
@@ -124,7 +124,7 @@ func (a Acc) SaveProjectToFolder(pth string) {
 	a.Expenses.Save(path.Join(pth, a.ExpensesFilePath))
 	a.Invoices.Save(path.Join(pth, a.InvoicesFilePath))
 	a.Parties.Save(path.Join(pth, a.PartiesFilePath))
-	a.BankStatement.Save(path.Join(pth, a.BankStatementFilePath))
+	a.Statement.Save(path.Join(pth, a.StatementFilePath))
 }
 
 // Type returns a string with the type name of the element.
@@ -154,7 +154,7 @@ func (a Acc) Conditions() util.Conditions {
 			Message:   "path to parties file is not set (PartiesFilePath is empty)",
 		},
 		{
-			Condition: a.BankStatementFilePath == "",
+			Condition: a.StatementFilePath == "",
 			Message:   "path to bank statement file is not set (BankStatementFilePath is empty)",
 		},
 	}
@@ -180,7 +180,7 @@ func (a Acc) ValidateProject() util.ValidateResults {
 	for i := range a.Parties.Employees {
 		results = append(results, util.Check(a.Parties.Employees[i]))
 	}
-	results = append(results, a.BankStatement.Validate()...)
+	results = append(results, a.Statement.Validate()...)
 	return results
 }
 
@@ -227,7 +227,7 @@ func (a Acc) FilterYear(year int) Acc {
 		from, to := util.DateRangeFromYear(year)
 		a.Expenses, _ = a.Expenses.Filter(&from, &to, "")
 		a.Invoices, _ = a.Invoices.Filter(&from, &to)
-		a.BankStatement.Transactions, _ = a.BankStatement.FilterTransactions(&from, &to)
+		a.Statement.Transactions, _ = a.Statement.FilterTransactions(&from, &to)
 	}
 	return a
 }

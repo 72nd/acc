@@ -187,10 +187,10 @@ func main() {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							acc := schema.OpenProject(inputPath)
 							if c.Bool("default") {
-								acc.BankStatement.Transactions = append(acc.BankStatement.Transactions, schema.NewTransactionWithUuid())
+								acc.Statement.Transactions = append(acc.Statement.Transactions, schema.NewTransactionWithUuid())
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
-								acc.BankStatement.Transactions = append(acc.BankStatement.Transactions, schema.InteractiveNewTransaction(acc.BankStatement))
+								acc.Statement.Transactions = append(acc.Statement.Transactions, schema.InteractiveNewTransaction(acc.Statement))
 							}
 							acc.SaveProject()
 							return nil
@@ -292,7 +292,7 @@ func main() {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
 					acc := schema.OpenProject(inputPath)
-					acc.BankStatement.AddTransaction(btcStatement.Transactions())
+					acc.Statement.AddTransaction(btcStatement.Transactions())
 					acc.SaveProject()
 					return nil
 				},
@@ -366,7 +366,7 @@ func main() {
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							acc := schema.OpenProject(inputPath)
-							acc.BankStatement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("auto-mode"), c.Bool("ask-skip"))
+							acc.Statement.AssistedCompletion(acc, c.Bool("force"), c.Bool("auto-save"), c.Bool("auto-mode"), c.Bool("ask-skip"))
 							acc.SaveProject()
 							return nil
 						},
