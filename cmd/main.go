@@ -690,9 +690,9 @@ func main() {
 					}
 					s := config.OpenSchema(inputPath)
 					s = s.FilterYear(c.Int("year"))
-					records.GenerateExpensesRec(s, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
-					records.GenerateInvoicesRec(s, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
-					records.GenerateMiscsRec(s, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
+					records.GenerateExpensesRec(s, c.String("output-folder"), c.Bool("force"), !c.Bool("skip-downconvert"))
+					records.GenerateInvoicesRec(s, c.String("output-folder"), c.Bool("force"), !c.Bool("skip-downconvert"))
+					records.GenerateMiscsRec(s, c.String("output-folder"), c.Bool("force"), !c.Bool("skip-downconvert"))
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -708,8 +708,8 @@ func main() {
 						Usage:   "path to the folder where the exported documents should be stored",
 					},
 					&cli.BoolFlag{
-						Name:    "do-overwrite",
-						Aliases: []string{"overwrite", "r"},
+						Name:    "force",
+						Aliases: []string{"overwrite", "f"},
 						Value:   false,
 						Usage:   "force overwrite existing documents",
 					},

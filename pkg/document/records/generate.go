@@ -52,7 +52,6 @@ func GenerateInvoicesRec(s schema.Schema, dstPath string, doOverwrite, downConve
 		logrus.Infof("(%d/%d) Generate %s...", i+1, nFiles, fileName)
 		GenerateInvoiceRec(s, s.Invoices[i], filePath, downConvert)
 	}
-
 }
 
 func GenerateInvoiceRec(s schema.Schema, inv schema.Invoice, dstPath string, downConvert bool) {

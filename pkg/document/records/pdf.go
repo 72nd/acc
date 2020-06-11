@@ -7,6 +7,7 @@ import (
 	"github.com/signintech/gopdf"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/document/utils"
+	"image"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -174,7 +175,7 @@ func (p *Pdf) processFirstPage(props Properties, maxPageNr int) {
 	} else {
 		p.pdf.SetX(45)
 		p.pdf.SetY(150)
-		if err := p.pdf.Image(p.SrcPath, 45, 150, nil); err != nil {
+		if err := p.pdf.Image(p.SrcPath, 45, 150, &fitImage(p.pdf.Image, 480, 660)); err != nil {
 			logrus.Errorf("error while including image %s into pdf: %s", p.SrcPath, err)
 		}
 	}
@@ -186,7 +187,7 @@ func (p *Pdf) processOtherPage(props Properties, pageNr, maxPageNr int) {
 	p.pdf.RectFromUpperLeftWithStyle(40, 100, 500, 700, "FD")
 	p.pdf.SetFillColor(0, 0, 0)
 
-	titleLine := fmt.Sprintf("Doc: %s  //  page %d of %d", props.Identifier, pageNr, maxPageNr)
+	titleLine := fmt.Sprintf("%s: %s  //  page %d of %d", props.Type, props.Identifier, pageNr, maxPageNr)
 	addText(&p.pdf, titleLine, 40, 40, 20, "Bold")
 
 	tpl := p.pdf.ImportPage(p.getSrcPath(), pageNr, "/MediaBox")
@@ -215,4 +216,47 @@ func addText(pdf *gopdf.GoPdf, content string, x, y float64, size int, style str
 	if err := pdf.Cell(nil, content); err != nil {
 		logrus.Fatal(err)
 	}
+}
+
+func fitImage(path string, containerWidth, containerHeight int) gopdf.Rect {
+	reader, err := os.Open(path)
+	if err != nil {
+		logrus.Fatalf("couldn't open image \"%s\": %s", path, err)
+	}
+	defer reader.Close()
+	img, _, err := image.DecodeConfig(reader)
+	if err != nil {
+		logrus.Fatalf("error while reading image \"%s\": %s", path, err)
+	}
+	iWidth := img.Width
+	iHeight := img.Height
+	cWidth := containerWidth
+	cHeight := containerHeight
+	if iWidth > cWidth && iHeight > cHeight && iWidth > iHeight {
+		// 1
+		height := float64(cWidth) / float64(iHeight)
+		return gopdf.Rect{W: float64(cWidth), H: height}
+	} else if iWidth > cWidth && iHeight > cHeight && iWidth < iHeight {
+		// 2
+
+	} else if iWidth > cWidth && iHeight < cHeight && iWidth > iHeight {
+		// 3
+
+	} else if iWidth > cWidth && iHeight < cHeight && iWidth < iHeight {
+		// 4, doesn't make sense, as container has a portraid layout
+		return gopdf.Rect{W: 10, H: 10}
+	} else if iWidth < cWidth && iHeight > cHeight && iWidth > iHeight {
+		// 5, doesn't make sense, as container has a portraid layout
+		return gopdf.Rect{W: 10, H: 10}
+	} else if iWidth < cWidth && iHeight > cHeight && iWidth < iHeight {
+		// 6
+
+	} else if iWidth < cWidth && iHeight < cHeight && iWidth > iHeight {
+		// 7, 
+
+	} else if iWidth < cWidth && iHeight < cHeight && iWidth < iHeight {
+		// 8
+
+	}
+
 }

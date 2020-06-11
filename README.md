@@ -11,8 +11,15 @@
 - [ ] Code Documentation
 - [ ] YAML Schemas
 
-## Usage and Functions
 
+## Installation
+
+```shell script
+sudo apt install wmctrl
+```
+
+
+## Usage and Functions
 
 ### add
 
