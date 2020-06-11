@@ -47,7 +47,7 @@ func accElementsFromQueryable(s schema.Schema, q Queryable) []Element {
 	return []Element{}
 }
 
-func (q Queryables) QueryAcc(s schema.Schema, termsInput, dateInput, selectInput string, mode OutputMode, render, caseSensitive bool) {
+func (q Queryables) QueryAcc(s schema.Schema, termsInput, dateInput, selectInput string, mode OutputMode, render, caseSensitive, openAttachment bool) {
 	var ele ElementGroup
 	for i := range q {
 		ele = append(ele, accElementsFromQueryable(s, q[i])...)
@@ -64,5 +64,5 @@ func (q Queryables) QueryAcc(s schema.Schema, termsInput, dateInput, selectInput
 		sel := util.EscapedSplit(selectInput, ",")
 		ele = ele.Select(sel, caseSensitive)
 	}
-	OutputsFromElements(s, ele).PPKeyValue(s, mode, render)
+	OutputsFromElements(s, ele).PPKeyValue(s, mode, render, openAttachment)
 }

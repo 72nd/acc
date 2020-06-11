@@ -28,9 +28,12 @@ func OutputsFromElements(s schema.Schema, ele []Element) Outputs {
 	return rsl
 }
 
-func (o Outputs) PPKeyValue(s schema.Schema, mode OutputMode, render bool) {
+func (o Outputs) PPKeyValue(s schema.Schema, mode OutputMode, render, openAttachment bool) {
 	for i := range o {
 		o[i].PPKeyValue(&s, mode, render)
+		if openAttachment {
+			o[i].OpenAttachment()
+		}
 	}
 }
 
@@ -54,6 +57,16 @@ func (o Output) PPKeyValue(a *schema.Schema, mode OutputMode, render bool) {
 		fmt.Print(o.tableKeyValue(a, render))
 	default:
 		logrus.Fatalf("illegal output mode \"%d\"", mode)
+	}
+}
+
+func (o Output) OpenAttachment() {
+	for i := range o.Element {
+		pth := o.Element[i].Field.Tag.Get("path")
+		if pth != "" {
+			ext := util.NewExternal(pth, false)
+			ext.Open()
+		}
 	}
 }
 

@@ -49,7 +49,7 @@ func OpenBankStatement(path string) Statement {
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
 func (t Statement) Save(path string) {
-	SaveToYaml(t, path)
+	util.SaveToYaml(t, path, "statement")
 }
 
 func (t *Statement) AddTransaction(trn []Transaction) {

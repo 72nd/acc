@@ -32,7 +32,7 @@ func NewExpenses(useDefaults bool) Expenses {
 func OpenExpenses(path string) Expenses {
 	raw, err := ioutil.ReadFile(path)
 	if err != nil {
-		logrus.Fatalf("error while reading file %s: %s", path, err)
+		logrus.Fatalf("error while reading expenses in file \"%s\": %s", path, err)
 	}
 	exp := Expenses{}
 	if err := yaml.Unmarshal(raw, &exp); err != nil {
@@ -43,7 +43,7 @@ func OpenExpenses(path string) Expenses {
 
 // Save writes the element as a YAML to the given path.
 func (e Expenses) Save(path string) {
-	SaveToYaml(e, path)
+	util.SaveToYaml(e, path, "expenses")
 }
 
 // SetId sets a unique id to all elements in the slice.

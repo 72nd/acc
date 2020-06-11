@@ -61,7 +61,7 @@ func main() {
 		&cli.BoolFlag{
 			Name:    "open-attachment",
 			Aliases: []string{"o"},
-			Usage:   "open attachment",
+			Usage:   "open attachment (experimental feature)",
 		},
 		&cli.BoolFlag{
 			Name:  "retain-focus",
@@ -588,6 +588,11 @@ func main() {
 							return nil
 						},
 						Flags: []cli.Flag{
+							&cli.BoolFlag{
+								Name:    "open-attachment",
+								Aliases: []string{"o"},
+								Usage:   "open attachment (experimental feature)",
+							},
 							&cli.StringFlag{
 								Name:    "types",
 								Aliases: []string{"t"},
@@ -611,7 +616,7 @@ func main() {
 					if c.Bool("yaml") {
 						mode = query.YamlMode
 					}
-					qry.QueryAcc(s, c.String("match"), c.String("date"), c.String("select"), mode, !c.Bool("no-render"), c.Bool("strict"))
+					qry.QueryAcc(s, c.String("match"), c.String("date"), c.String("select"), mode, !c.Bool("no-render"), c.Bool("strict"), c.Bool("open-attachment"))
 					return nil
 				},
 				Flags: []cli.Flag{

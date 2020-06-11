@@ -2,7 +2,6 @@ package schema
 
 import (
 	"fmt"
-	"io/ioutil"
 	"regexp"
 	"strconv"
 	"time"
@@ -10,7 +9,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v3"
 )
 
 type Schema struct {
@@ -115,20 +113,6 @@ func SuggestNextIdentifier(idt []Identifiable, prefix string) string {
 type Completable interface {
 	// SetId sets a unique id (UUID-4) for the object.
 	SetId()
-}
-
-// SaveToYaml writes the element (utils) as a json file to the given path.
-// Indented states whether «prettify» the json output.
-func SaveToYaml(data interface{}, path string) {
-	var raw []byte
-	var err error
-	raw, err = yaml.Marshal(data)
-	if err != nil {
-		logrus.Fatalf("error converting data from file %s to YAML (marshalling): %s", path, err)
-	}
-	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
-		logrus.Fatalf("error writing file %s: %s", path, err)
-	}
 }
 
 func GetUuid() string {

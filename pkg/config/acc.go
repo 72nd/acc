@@ -132,7 +132,7 @@ func OpenSchema(path string) schema.Schema {
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
 func (a Acc) Save(path string) {
-	schema.SaveToYaml(a, path)
+	util.SaveToYaml(a, path, "acc-config")
 }
 
 func (a Acc) SaveSchema(s schema.Schema) {

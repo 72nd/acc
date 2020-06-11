@@ -37,7 +37,7 @@ func OpenMiscRecords(path string) MiscRecords {
 
 // Save writes the element as YAML file to the given path.
 func (m MiscRecords) Save(path string) {
-	SaveToYaml(m, path)
+	util.SaveToYaml(m, path, "misc-records")
 }
 
 // MiscRecordById returns the MiscRecord with the given id. If no record could be found

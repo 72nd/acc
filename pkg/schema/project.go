@@ -36,7 +36,7 @@ func OpenProjects(path string) Projects {
 
 // Save writes the element as YAML file to the given path.
 func (p Projects) Save(path string) {
-	SaveToYaml(p, path)
+	util.SaveToYaml(p, path, "projects")
 }
 
 // ProjectById returns the Project with the given id. If no record could be found

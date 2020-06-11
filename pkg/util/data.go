@@ -3,12 +3,14 @@ package util
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"strings"
 	"text/template"
 	"time"
 
 	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 )
 
 type TransactionType int
@@ -67,5 +69,18 @@ func EscapedSplit(input, sep string) []string {
 		ele[i] = strings.Replace(ele[i], esc, sep, -1)
 	}
 	return ele
+}
 
+// SaveToYaml writes the element (utils) as a json file to the given path.
+// The elementType parameter is used in error messages.
+func SaveToYaml(data interface{}, path, elementType string) {
+	var raw []byte
+	var err error
+	raw, err = yaml.Marshal(data)
+	if err != nil {
+		logrus.Fatalf("error converting %s data for file \"%s\" to YAML (marshalling): %s", elementType, path, err)
+	}
+	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
+		logrus.Fatalf("error writing %s file \"%s\": %s", elementType, path, err)
+	}
 }
