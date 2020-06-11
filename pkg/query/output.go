@@ -62,9 +62,8 @@ func (o Output) PPKeyValue(a *schema.Schema, mode OutputMode, render bool) {
 
 func (o Output) OpenAttachment() {
 	for i := range o.Element {
-		pth := o.Element[i].Field.Tag.Get("path")
-		if pth != "" {
-			ext := util.NewExternal(pth, false)
+		if o.Element[i].Field.Tag.Get("query") == "path" {
+			ext := util.NewExternal(o.Element[i].Value, false)
 			ext.Open()
 		}
 	}
@@ -108,7 +107,6 @@ func (o Output) tableKeyValue(a *schema.Schema, render bool) string {
 			value = o.Element[i].RenderValue(*a)
 		}
 		ele := []string{o.Element[i].Key, multiline(value, valueWidth)}
-		fmt.Println(ele)
 		tbl.Append(ele)
 	}
 	tbl.Render()

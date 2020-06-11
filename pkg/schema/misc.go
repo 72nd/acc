@@ -107,13 +107,26 @@ func NewMiscRecord() MiscRecord {
 	if err := defaults.Set(&mrc); err != nil {
 		logrus.Fatal("error setting defaults for misc record: ", err)
 	}
+	mrc.Id = GetUuid()
 	return mrc
 }
 
 // InteractiveNewMiscRecord returns a new MiscRecord based on the user input.
 func InteractiveNewMiscRecord(s Schema, asset string) MiscRecord {
-	logrus.Fatal("interactive new misc record isn't implemented yet")
-	return MiscRecord{}
+	mrc := NewMiscRecord()
+	mrc.Identifier = util.AskString(
+		"Identifier",
+		"Unique human readable identifier",
+		SuggestNextIdentifier(s.Invoices.GetIdentifiables(), DefaultInvoicesPrefix))
+	mrc.Name = util.AskString(
+		"Name",
+		"Name of the record",
+		"AHV record")
+	if asset == "" {
+	} else {
+		mrc.Path = asset
+	}
+	return mrc
 }
 
 // SetId generates a unique id for the element if there isn't already one defined.

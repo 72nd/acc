@@ -588,11 +588,6 @@ func main() {
 							return nil
 						},
 						Flags: []cli.Flag{
-							&cli.BoolFlag{
-								Name:    "open-attachment",
-								Aliases: []string{"o"},
-								Usage:   "open attachment (experimental feature)",
-							},
 							&cli.StringFlag{
 								Name:    "types",
 								Aliases: []string{"t"},
@@ -639,6 +634,11 @@ func main() {
 						Name:    "no-render",
 						Aliases: []string{"n"},
 						Usage:   "do not render the output values",
+					},
+					&cli.BoolFlag{
+						Name:    "open-attachment",
+						Aliases: []string{"o"},
+						Usage:   "open attachment (experimental feature)",
 					},
 					&cli.StringFlag{
 						Name:    "select",
