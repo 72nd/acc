@@ -11,13 +11,13 @@ import (
 
 // EntriesForInvoicing returns the journal entries for invoicing of the given
 // schema.Invoice.
-func EntriesForInvoicing(a schema.Acc, inv schema.Invoice) []Entry {
+func EntriesForInvoicing(s schema.Schema, inv schema.Invoice) []Entry {
 	if inv.Revoked {
 		return []Entry{}
 	}
 	cmt := NewComment("invoice sent", inv.String())
 
-	cmp, err := a.Parties.CustomerById(inv.CustomerId)
+	cmp, err := s.Parties.CustomerById(inv.CustomerId)
 	cmt.add(err)
 
 	desc := "no customer found"
@@ -28,7 +28,7 @@ func EntriesForInvoicing(a schema.Acc, inv schema.Invoice) []Entry {
 		}
 		desc = util.ApplyTemplate(
 			"invoice sent transaction description",
-			a.JournalConfig.InvoicingTransactionDescription,
+			s.JournalConfig.InvoicingTransactionDescription,
 			data)
 	}
 
@@ -39,8 +39,8 @@ func EntriesForInvoicing(a schema.Acc, inv schema.Invoice) []Entry {
 			Code:        inv.Identifier,
 			Description: desc,
 			Comment:     cmt,
-			Account1:    a.JournalConfig.ReceivableAccount,
-			Account2:    a.JournalConfig.RevenueAccount,
+			Account1:    s.JournalConfig.ReceivableAccount,
+			Account2:    s.JournalConfig.RevenueAccount,
 			Amount:      inv.Amount,
 		}}
 }
@@ -49,11 +49,11 @@ func EntriesForInvoicing(a schema.Acc, inv schema.Invoice) []Entry {
 
 // SettlementEntriesForInvoice returns the entries for the settlement (aka receiving the
 // money from the customer) of the related invoice.
-func SettlementEntriesForInvoice(a schema.Acc, trn schema.Transaction, inv schema.Invoice) []Entry {
+func SettlementEntriesForInvoice(s schema.Schema, trn schema.Transaction, inv schema.Invoice) []Entry {
 	cmt := NewComment("invoice settlement", trn.String())
 	cmt.add(compareAmounts(trn.Amount, inv.Amount))
 
-	cmp, err := a.Parties.CustomerById(inv.CustomerId)
+	cmp, err := s.Parties.CustomerById(inv.CustomerId)
 	cmt.add(err)
 
 	desc := "TODO no customer found"
@@ -64,7 +64,7 @@ func SettlementEntriesForInvoice(a schema.Acc, trn schema.Transaction, inv schem
 		}
 		desc = util.ApplyTemplate(
 			"invoice settlement transaction description",
-			a.JournalConfig.InvoiceSettlementTransactionDescription,
+			s.JournalConfig.InvoiceSettlementTransactionDescription,
 			data)
 	}
 
@@ -75,8 +75,8 @@ func SettlementEntriesForInvoice(a schema.Acc, trn schema.Transaction, inv schem
 			Code:        trn.Identifier,
 			Description: desc,
 			Comment:     cmt,
-			Account1:    a.JournalConfig.BankAccount,
-			Account2:    a.JournalConfig.ReceivableAccount,
+			Account1:    s.JournalConfig.BankAccount,
+			Account2:    s.JournalConfig.ReceivableAccount,
 			Amount:      trn.Amount,
 		}}
 }

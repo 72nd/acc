@@ -8,42 +8,42 @@ import (
 )
 
 // EntriesForTransaction returns the journal entries for a given schema.Transaction.
-func EntriesForTransaction(a schema.Acc, trn schema.Transaction) []Entry {
+func EntriesForTransaction(s schema.Schema, trn schema.Transaction) []Entry {
 	if trn.AssociatedDocumentId != "" {
-		return entriesForTransactionWithDocument(a, trn)
+		return entriesForTransactionWithDocument(s, trn)
 	}
-	return entrieForDefaultTransaction(a, trn, nil)
+	return entrieForDefaultTransaction(s, trn, nil)
 }
 
 // entriesForTransactionWithDocument returns the entries for transactions with an associated
 // document.
-func entriesForTransactionWithDocument(a schema.Acc, trn schema.Transaction) []Entry {
-	exp, err := a.Expenses.ExpenseById(trn.AssociatedDocumentId)
+func entriesForTransactionWithDocument(s schema.Schema, trn schema.Transaction) []Entry {
+	exp, err := s.Expenses.ExpenseById(trn.AssociatedDocumentId)
 	if err == nil {
-		return SettlementEntriesForExpense(a, trn, *exp)
+		return SettlementEntriesForExpense(s, trn, *exp)
 	}
-	inv, err := a.Invoices.InvoiceById(trn.AssociatedDocumentId)
+	inv, err := s.Invoices.InvoiceById(trn.AssociatedDocumentId)
 	if err == nil {
-		return SettlementEntriesForInvoice(a, trn, *inv)
+		return SettlementEntriesForInvoice(s, trn, *inv)
 	}
-	return entrieForDefaultTransaction(a, trn, fmt.Errorf("no expense/invoice for id \"%s\" found", trn.AssociatedDocumentId))
+	return entrieForDefaultTransaction(s, trn, fmt.Errorf("no expense/invoice for id \"%s\" found", trn.AssociatedDocumentId))
 }
 
 // entrieForDefaultTransaction is the fallback function. It is possible to give an additional
 // error as parameter. This error will be appended to the transaction comment.
-func entrieForDefaultTransaction(a schema.Acc, trn schema.Transaction, err error) []Entry {
+func entrieForDefaultTransaction(s schema.Schema, trn schema.Transaction, err error) []Entry {
 	cmt := NewManualComment("default", trn.String())
 	cmt.add(err)
 
 	var acc1, acc2 string
 	if trn.TransactionType == util.CreditTransaction {
 		// Incoming transaction
-		acc1 = a.JournalConfig.BankAccount
+		acc1 = s.JournalConfig.BankAccount
 		acc2 = defaultAccount
 	} else {
 		// Outgoing transaction
 		acc1 = defaultAccount
-		acc2 = a.JournalConfig.BankAccount
+		acc2 = s.JournalConfig.BankAccount
 	}
 	return []Entry{
 		{

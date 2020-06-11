@@ -1,7 +1,7 @@
 package ledger
 
 // The ledger package delivers the functionality to generate hledger journals out of a given
-// schema.Acc struct.
+// schema.Schema struct.
 //
 // Design Rationale
 //
@@ -59,24 +59,24 @@ func (j *Journal) AddEntries(entries []Entry) {
 	j.Entries = append(j.Entries, entries...)
 }
 
-// JournalFromAcc takes an schema.Acc project and converts it into an Journal. This is
+// JournalFromAcc takes an schema.Schema project and converts it into an Journal. This is
 // mainly used to export the Journal afterwards into a hledger journal. Optionally the
 // year can be filtered, if the given year parameter is > 0, only events happened in
 // this year will be converted into transactions.
 //
 // TODO: Es brauch ein separates acc für alle Jahre und eins für d
-func JournalFromAcc(a schema.Acc, year int) Journal {
-	rsl := NewJournal(a.JournalConfig.Aliases())
-	fAcc := a.FilterYear(year)
+func JournalFromAcc(s schema.Schema, year int) Journal {
+	rsl := NewJournal(s.JournalConfig.Aliases())
+	fAcc := s.FilterYear(year)
 
 	for i := range fAcc.Expenses {
-		rsl.AddEntries(EntriesForExpense(a, fAcc.Expenses[i]))
+		rsl.AddEntries(EntriesForExpense(s, fAcc.Expenses[i]))
 	}
 	for i := range fAcc.Invoices {
-		rsl.AddEntries(EntriesForInvoicing(a, fAcc.Invoices[i]))
+		rsl.AddEntries(EntriesForInvoicing(s, fAcc.Invoices[i]))
 	}
 	for i := range fAcc.Statement.Transactions {
-		rsl.AddEntries(EntriesForTransaction(a, fAcc.Statement.Transactions[i]))
+		rsl.AddEntries(EntriesForTransaction(s, fAcc.Statement.Transactions[i]))
 	}
 	return rsl
 }
