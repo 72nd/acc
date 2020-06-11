@@ -150,26 +150,22 @@ func NewInvoiceWithUuid() Invoice {
 func InteractiveNewInvoice(s Schema, asset string) Invoice {
 	inv := NewInvoiceWithUuid()
 	inv.Identifier = util.AskString(
-		"Value",
+		"Identifier",
 		"Unique human readable identifier",
-		SuggestNextIdentifier(s.Invoices.GetIdentifiables(), DefaultInvoicesPrefix),
-	)
+		SuggestNextIdentifier(s.Invoices.GetIdentifiables(), DefaultInvoicesPrefix))
 	inv.Name = util.AskString(
 		"Name",
 		"Name of the invoice",
-		"Invoice for clingfilm",
-	)
+		"Invoice for clingfilm")
 	inv.Amount = util.AskFloat(
 		"Amount",
 		"How much is the outstanding balance",
-		23.42,
-	)
+		23.42)
 	if asset == "" {
 		inv.Path = util.AskString(
 			"Asset",
 			"Path to asset file (use --asset to set with flag)",
-			"",
-		)
+			"")
 	} else {
 		inv.Path = asset
 	}
@@ -180,13 +176,11 @@ func InteractiveNewInvoice(s Schema, asset string) Invoice {
 	inv.SendDate = util.AskDate(
 		"Send Date",
 		"Date the invoice was sent",
-		time.Now(),
-	)
+		time.Now())
 	inv.DateOfSettlement = util.AskDate(
 		"Date of settlement",
 		"Date when invoice was paid",
-		time.Now(),
-	)
+		time.Now())
 	inv.SettlementTransactionId = util.AskStringFromSearch(
 		"Settlement Transaction",
 		"Transaction which settled the invoice",
@@ -194,8 +188,7 @@ func InteractiveNewInvoice(s Schema, asset string) Invoice {
 	inv.ProjectName = util.AskString(
 		"Project Name",
 		"Name of the associated project",
-		"",
-	)
+		"")
 	return inv
 }
 
