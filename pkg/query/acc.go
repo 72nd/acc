@@ -29,28 +29,28 @@ var AccQueryables = Queryables{
 	},
 }
 
-func accElementsFromQueryable(a schema.Acc, q Queryable) []Element {
+func accElementsFromQueryable(s schema.Schema, q Queryable) []Element {
 	switch q.Name {
 	case "customer":
-		return NewElements(a.Parties.Customers)
+		return NewElements(s.Parties.Customers)
 	case "employee":
-		return NewElements(a.Parties.Employees)
+		return NewElements(s.Parties.Employees)
 	case "expense":
-		return NewElements(a.Expenses)
+		return NewElements(s.Expenses)
 	case "invoice":
-		return NewElements(a.Invoices)
+		return NewElements(s.Invoices)
 	case "transaction":
-		return NewElements(a.Statement.Transactions)
+		return NewElements(s.Statement.Transactions)
 	default:
 		logrus.Fatalf("no acc elements for \"%s\" found", q.Name)
 	}
 	return []Element{}
 }
 
-func (q Queryables) QueryAcc(a schema.Acc, termsInput, dateInput, selectInput string, mode OutputMode, render, caseSensitive bool) {
+func (q Queryables) QueryAcc(s schema.Schema, termsInput, dateInput, selectInput string, mode OutputMode, render, caseSensitive bool) {
 	var ele ElementGroup
 	for i := range q {
-		ele = append(ele, accElementsFromQueryable(a, q[i])...)
+		ele = append(ele, accElementsFromQueryable(s, q[i])...)
 	}
 	if termsInput != "" {
 		terms := searchTermsFromUserInput(termsInput, caseSensitive)
@@ -64,5 +64,5 @@ func (q Queryables) QueryAcc(a schema.Acc, termsInput, dateInput, selectInput st
 		sel := util.EscapedSplit(selectInput, ",")
 		ele = ele.Select(sel, caseSensitive)
 	}
-	OutputsFromElements(a, ele).PPKeyValue(a, mode, render)
+	OutputsFromElements(s, ele).PPKeyValue(s, mode, render)
 }

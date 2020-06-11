@@ -8,22 +8,22 @@ import (
 	"path"
 )
 
-func GenerateAllInvoices(acc schema.Acc, dstFolder, place string, doOverwrite bool) {
-	nFiles := len(acc.Invoices)
-	for i := range acc.Invoices {
-		fileName := fmt.Sprintf("%s.pdf", acc.Invoices[i].FileString())
+func GenerateAllInvoices(s schema.Schema, dstFolder, place string, doOverwrite bool) {
+	nFiles := len(s.Invoices)
+	for i := range s.Invoices {
+		fileName := fmt.Sprintf("%s.pdf", s.Invoices[i].FileString())
 		filePath := path.Join(dstFolder, fileName)
 		if _, err := os.Stat(filePath); !os.IsNotExist(err) && !doOverwrite {
 			logrus.Infof("(%d/%d) File %s exists, skipping", i+i, nFiles, fileName)
 			continue
 		}
 		logrus.Infof("(%d/%d) Generate %s...", i+1, nFiles, fileName)
-		customer, err := acc.Parties.CustomerById(acc.Invoices[i].CustomerId)
+		customer, err := s.Parties.CustomerById(s.Invoices[i].CustomerId)
 		if err != nil {
-			logrus.Errorf("found for invoice %s no customer (given: %s): %s", acc.Invoices[i].Id, acc.Invoices[i].CustomerId, err)
+			logrus.Errorf("found for invoice %s no customer (given: %s): %s", s.Invoices[i].Id, s.Invoices[i].CustomerId, err)
 			continue
 		}
-		GenerateInvoice(acc.Company, acc.Invoices[i], *customer, place, filePath)
+		GenerateInvoice(s.Company, s.Invoices[i], *customer, place, filePath)
 	}
 }
 

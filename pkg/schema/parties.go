@@ -54,7 +54,6 @@ func OpenParties(path string) Parties {
 }
 
 // Save writes the element as a json to the given path.
-// Indented states whether «prettify» the json output.
 func (p Parties) Save(path string) {
 	SaveToYaml(p, path)
 }

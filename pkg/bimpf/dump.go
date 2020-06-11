@@ -3,10 +3,12 @@ package bimpf
 
 import (
 	"encoding/json"
+	"io/ioutil"
+
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/config"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
-	"io/ioutil"
 )
 
 // Dump reassembles the structure of a Bimpf json dump file.
@@ -58,18 +60,18 @@ func (d Dump) ValidateAndReport(path string) {
 }
 
 // Convert returns the bimpf dump as an Acc struct. Needs a project path and a Nextcloud Bimpf folder path.
-func (d Dump) Convert(outputFolder, bimpfFolder string) schema.Acc {
-	acc := schema.NewAccComplex(outputFolder, "", false, false)
-	acc.Parties.Customers = make([]schema.Party, len(d.Customers))
+func (d Dump) Convert(outputFolder, bimpfFolder string) schema.Schema {
+	s := config.NewSchema(outputFolder, "", false, false)
+	s.Parties.Customers = make([]schema.Party, len(d.Customers))
 	for i := range d.Customers {
-		acc.Parties.Customers[i] = d.Customers[i].Convert()
+		s.Parties.Customers[i] = d.Customers[i].Convert()
 	}
-	acc.Parties.Employees = make([]schema.Party, len(d.Employees))
+	s.Parties.Employees = make([]schema.Party, len(d.Employees))
 	for i := range d.Employees {
-		acc.Parties.Employees[i] = d.Employees[i].Convert()
+		s.Parties.Employees[i] = d.Employees[i].Convert()
 	}
-	acc.Expenses = d.Customers.ConvertExpenses(bimpfFolder, acc.Parties, d.Employees)
-	acc.Invoices = d.Customers.ConvertInvoices(bimpfFolder, acc.Parties)
+	s.Expenses = d.Customers.ConvertExpenses(bimpfFolder, s.Parties, d.Employees)
+	s.Invoices = d.Customers.ConvertInvoices(bimpfFolder, s.Parties)
 
-	return acc
+	return s
 }

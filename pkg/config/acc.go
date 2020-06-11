@@ -41,8 +41,8 @@ type Acc struct {
 	projectFolder       string               `yaml:"-"`
 }
 
-// NewAccComplex creates a new acc project in the given folder path.
-func NewAccComplex(folderPath, logo string, doSave, interactive bool) schema.Schema {
+// NewSchema creates a new acc project in the given folder path.
+func NewSchema(folderPath, logo string, doSave, interactive bool) schema.Schema {
 	var cmp schema.Company
 	var jrc schema.JournalConfig
 	if interactive {
@@ -53,14 +53,16 @@ func NewAccComplex(folderPath, logo string, doSave, interactive bool) schema.Sch
 		jrc = schema.NewJournalConfig()
 	}
 	acc := Acc{
-		Company:           cmp,
-		JournalConfig:     jrc,
-		ProjectMode:       false,
-		ExpensesFilePath:  schema.DefaultExpensesFile,
-		InvoicesFilePath:  schema.DefaultInvoicesFile,
-		PartiesFilePath:   schema.DefaultPartiesFile,
-		StatementFilePath: schema.DefaultStatementFile,
-		fileName:          DefaultConfigFile,
+		Company:             cmp,
+		JournalConfig:       jrc,
+		ProjectMode:         false,
+		ExpensesFilePath:    schema.DefaultExpensesFile,
+		InvoicesFilePath:    schema.DefaultInvoicesFile,
+		MiscRecordsFilePath: schema.DefaultMiscRecordsFile,
+		PartiesFilePath:     schema.DefaultPartiesFile,
+		ProjectsFilePath:    schema.DefaultProjectsFile,
+		StatementFilePath:   schema.DefaultStatementFile,
+		fileName:            DefaultConfigFile,
 	}
 	exp := schema.NewExpenses(!interactive)
 	inv := schema.NewInvoices(!interactive)
@@ -73,7 +75,9 @@ func NewAccComplex(folderPath, logo string, doSave, interactive bool) schema.Sch
 		acc.Save(path.Join(folderPath, DefaultConfigFile))
 		exp.Save(path.Join(folderPath, schema.DefaultExpensesFile))
 		inv.Save(path.Join(folderPath, schema.DefaultInvoicesFile))
+		mrc.Save(path.Join(folderPath, schema.DefaultMiscRecordsFile))
 		prt.Save(path.Join(folderPath, schema.DefaultPartiesFile))
+		pry.Save(path.Join(folderPath, schema.DefaultProjectsFile))
 		stm.Save(path.Join(folderPath, schema.DefaultStatementFile))
 	}
 
@@ -88,7 +92,7 @@ func NewAccComplex(folderPath, logo string, doSave, interactive bool) schema.Sch
 		Statement:           stm,
 		AppendExpenseSuffix: acc.AppendExpensesSuffix,
 		AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
-		Save:                acc.SaveSchema,
+		SaveFunc:            acc.SaveSchema,
 	}
 }
 
@@ -100,7 +104,7 @@ func OpenAcc(path string) Acc {
 	}
 	acc := Acc{}
 	if err := yaml.Unmarshal(raw, &acc); err != nil {
-		logrus.Fatal(err)
+		logrus.Fatal("error unmarshalling: ", err)
 	}
 	acc.fileName = filepath.Base(path)
 	acc.projectFolder = filepath.Dir(path)
@@ -121,7 +125,7 @@ func OpenSchema(path string) schema.Schema {
 		Statement:           schema.OpenBankStatement(acc.StatementFilePath),
 		AppendExpenseSuffix: acc.AppendExpensesSuffix,
 		AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
-		Save:                acc.SaveSchema,
+		SaveFunc:            acc.SaveSchema,
 	}
 }
 
@@ -131,23 +135,23 @@ func (a Acc) Save(path string) {
 	schema.SaveToYaml(a, path)
 }
 
-func (a Acc) SaveAtCurrent() {
-	fmt.Println(path.Join(a.projectFolder, a.fileName))
-	a.Save(path.Join(a.projectFolder, a.fileName))
-}
-
 func (a Acc) SaveSchema(s schema.Schema) {
 	a.SaveSchemaToFolder(s, a.projectFolder)
 }
 
 // SaveProjectToFolder saves all files linked in the Acc config to the given folder.
 func (a Acc) SaveSchemaToFolder(s schema.Schema, pth string) {
+	fmt.Printf("journal cat: %d\nparties: %+v", len(s.JournalConfig.ExpenseCategories), s.Parties)
+
+	a.Company = s.Company
+	a.JournalConfig = s.JournalConfig
 	a.Save(path.Join(pth, a.fileName))
+
 	s.Expenses.Save(path.Join(pth, a.ExpensesFilePath))
 	s.Invoices.Save(path.Join(pth, a.InvoicesFilePath))
 	s.MiscRecords.Save(path.Join(pth, a.InvoicesFilePath))
 	s.Parties.Save(path.Join(pth, a.PartiesFilePath))
-	s.Projects.Save(path.Join(pth, a.PartiesFilePath))
+	s.Projects.Save(path.Join(pth, a.ProjectsFilePath))
 	s.Statement.Save(path.Join(pth, a.StatementFilePath))
 }
 

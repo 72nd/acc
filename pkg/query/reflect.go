@@ -134,60 +134,60 @@ type KeyValue struct {
 	Field reflect.StructField
 }
 
-func (k KeyValue) RenderValue(a schema.Acc) string {
+func (k KeyValue) RenderValue(s schema.Schema) string {
 	switch k.Field.Tag.Get("query") {
 	case "amount":
 		amount, err := strconv.ParseFloat(k.Value, 64)
 		if err != nil {
 			return k.Value
 		}
-		return fmt.Sprintf("%s %.2f", a.JournalConfig.Currency, amount)
+		return fmt.Sprintf("%s %.2f", s.JournalConfig.Currency, amount)
 	case "customer":
-		cst, err := a.Parties.CustomerById(k.Value)
+		cst, err := s.Parties.CustomerById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such customer exists)", k.Value)
 		}
 		return fmt.Sprintf("%s (%s, %s)", k.Value, cst.Name, cst.Identifier)
 	case "employee":
-		emp, err := a.Parties.EmployeeById(k.Value)
+		emp, err := s.Parties.EmployeeById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such employee exists)", k.Value)
 		}
 		return fmt.Sprintf("%s (%s, %s)", k.Value, emp.Name, emp.Identifier)
 	case "customer,employee":
-		cst, err := a.Parties.CustomerById(k.Value)
+		cst, err := s.Parties.CustomerById(k.Value)
 		if err == nil {
 			return fmt.Sprintf("%s (%s, %s)", k.Value, cst.Name, cst.Identifier)
 		}
-		emp, err := a.Parties.EmployeeById(k.Value)
+		emp, err := s.Parties.EmployeeById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such party exists)", k.Value)
 		}
 		return fmt.Sprintf("%s (%s, %s)", k.Value, emp.Name, emp.Identifier)
 	case "expense":
-		exp, err := a.Expenses.ExpenseById(k.Value)
+		exp, err := s.Expenses.ExpenseById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such expense exists)", k.Value)
 		}
 		return fmt.Sprintf("%s (%s, %s)", k.Value, exp.Name, exp.Identifier)
 	case "invoice":
-		inv, err := a.Invoices.InvoiceById(k.Value)
+		inv, err := s.Invoices.InvoiceById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such invoice exists)", k.Value)
 		}
 		return fmt.Sprintf("%s (%s, %s)", k.Value, inv.Name, inv.Identifier)
 	case "expense,invoice":
-		exp, err := a.Expenses.ExpenseById(k.Value)
+		exp, err := s.Expenses.ExpenseById(k.Value)
 		if err == nil {
 			return fmt.Sprintf("%s (%s, %s)", k.Value, exp.Name, exp.Identifier)
 		}
-		inv, err := a.Invoices.InvoiceById(k.Value)
+		inv, err := s.Invoices.InvoiceById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such expense/invoice exists)", k.Value)
 		}
 		return fmt.Sprintf("%s (%s, %s)", k.Value, inv.Name, inv.Identifier)
 	case "transaction":
-		trn, err := a.Statement.TransactionById(k.Value)
+		trn, err := s.Statement.TransactionById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such transaction exists)", k.Value)
 		}
