@@ -133,7 +133,7 @@ func main() {
 								s.Expenses = append(s.Expenses, schema.NewExpenseWithUuid())
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
-								s.Expenses = append(s.Expenses, schema.InteractiveNewExpense(s, c.String("asset")))
+								s.Expenses = append(s.Expenses, schema.InteractiveNewExpense(&s, c.String("asset")))
 							}
 							s.Save()
 							return nil

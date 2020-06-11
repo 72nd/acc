@@ -141,7 +141,7 @@ func (a Acc) SaveSchema(s schema.Schema) {
 
 // SaveProjectToFolder saves all files linked in the Acc config to the given folder.
 func (a Acc) SaveSchemaToFolder(s schema.Schema, pth string) {
-	fmt.Printf("journal cat: %d\nparties: %+v", len(s.JournalConfig.ExpenseCategories), s.Parties)
+	fmt.Printf("journal cat: %d", len(s.JournalConfig.ExpenseCategories))
 
 	a.Company = s.Company
 	a.JournalConfig = s.JournalConfig

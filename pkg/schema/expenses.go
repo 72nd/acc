@@ -182,7 +182,7 @@ func NewExpenseWithUuid() Expense {
 }
 
 // InteractiveNewExpense returns a new Expense based on the user input.
-func InteractiveNewExpense(s Schema, asset string) Expense {
+func InteractiveNewExpense(s *Schema, asset string) Expense {
 	exp := NewExpenseWithUuid()
 	exp.Identifier = util.AskString(
 		"Value",
