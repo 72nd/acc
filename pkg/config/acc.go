@@ -52,7 +52,7 @@ func NewAccComplex(folderPath, logo string, doSave, interactive bool) schema.Sch
 		cmp = schema.NewCompany(logo)
 		jrc = schema.NewJournalConfig()
 	}
-	cfg := Acc{
+	acc := Acc{
 		Company:           cmp,
 		JournalConfig:     jrc,
 		ProjectMode:       false,
@@ -70,7 +70,7 @@ func NewAccComplex(folderPath, logo string, doSave, interactive bool) schema.Sch
 	stm := schema.NewBankStatement(!interactive)
 
 	if doSave {
-		cfg.Save(path.Join(folderPath, DefaultConfigFile))
+		acc.Save(path.Join(folderPath, DefaultConfigFile))
 		exp.Save(path.Join(folderPath, schema.DefaultExpensesFile))
 		inv.Save(path.Join(folderPath, schema.DefaultInvoicesFile))
 		prt.Save(path.Join(folderPath, schema.DefaultPartiesFile))
@@ -78,14 +78,17 @@ func NewAccComplex(folderPath, logo string, doSave, interactive bool) schema.Sch
 	}
 
 	return schema.Schema{
-		Company:       cmp,
-		Expenses:      exp,
-		Invoices:      inv,
-		JournalConfig: jrc,
-		MiscRecords:   mrc,
-		Parties:       prt,
-		Projects:      pry,
-		Statement:     stm,
+		Company:             cmp,
+		Expenses:            exp,
+		Invoices:            inv,
+		JournalConfig:       jrc,
+		MiscRecords:         mrc,
+		Parties:             prt,
+		Projects:            pry,
+		Statement:           stm,
+		AppendExpenseSuffix: acc.AppendExpensesSuffix,
+		AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
+		Save:                acc.SaveSchema,
 	}
 }
 
@@ -118,6 +121,7 @@ func OpenSchema(path string) schema.Schema {
 		Statement:           schema.OpenBankStatement(acc.StatementFilePath),
 		AppendExpenseSuffix: acc.AppendExpensesSuffix,
 		AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
+		Save:                acc.SaveSchema,
 	}
 }
 

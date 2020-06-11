@@ -48,111 +48,111 @@ func OpenBankStatement(path string) Statement {
 
 // Save writes the element as a json to the given path.
 // Indented states whether «prettify» the json output.
-func (s Statement) Save(path string) {
-	SaveToYaml(s, path)
+func (t Statement) Save(path string) {
+	SaveToYaml(t, path)
 }
 
-func (s *Statement) AddTransaction(trn []Transaction) {
-	s.Transactions = append(s.Transactions, trn...)
+func (t *Statement) AddTransaction(trn []Transaction) {
+	t.Transactions = append(t.Transactions, trn...)
 }
 
 // SetId sets a unique id to all elements in the slice.
-func (s Statement) SetId() {
-	for i := range s.Transactions {
-		s.Transactions[i].SetId()
+func (t Statement) SetId() {
+	for i := range t.Transactions {
+		t.Transactions[i].SetId()
 	}
 }
 
-func (s Statement) GetIdentifiables() []Identifiable {
-	trn := make([]Identifiable, len(s.Transactions))
-	for i := range s.Transactions {
-		trn[i] = s.Transactions[i]
+func (t Statement) GetIdentifiables() []Identifiable {
+	trn := make([]Identifiable, len(t.Transactions))
+	for i := range t.Transactions {
+		trn[i] = t.Transactions[i]
 	}
 	return trn
 }
 
-func (s Statement) TransactionById(id string) (*Transaction, error) {
-	for i := range s.Transactions {
-		if s.Transactions[i].Id == id {
-			return &s.Transactions[i], nil
+func (t Statement) TransactionById(id string) (*Transaction, error) {
+	for i := range t.Transactions {
+		if t.Transactions[i].Id == id {
+			return &t.Transactions[i], nil
 		}
 	}
 	return nil, fmt.Errorf("no transaction for id \"%s\" found", id)
 }
 
 // Type returns a string with the type name of the element.
-func (s Statement) Type() string {
+func (t Statement) Type() string {
 	return "Bank-Statement"
 }
 
 // String returns a human readable representation of the element.
-func (s Statement) String() string {
-	return fmt.Sprintf("%s, for %s", s.Name, s.Period)
+func (t Statement) String() string {
+	return fmt.Sprintf("%s, for %s", t.Name, t.Period)
 }
 
 // Conditions returns the validation conditions.
-func (s Statement) Conditions() util.Conditions {
+func (t Statement) Conditions() util.Conditions {
 	return util.Conditions{
 		{
-			Condition: s.Name == "",
+			Condition: t.Name == "",
 			Message:   "name is not set (Name is empty)",
 		},
 		{
-			Condition: s.Period == "",
+			Condition: t.Period == "",
 			Message:   "period is not set (Period is empty)",
 		},
 	}
 }
 
 // Validate the element and return the result.
-func (s Statement) Validate() util.ValidateResults {
-	results := util.ValidateResults{util.Check(s)}
-	for i := range s.Transactions {
-		results = append(results, util.Check(s.Transactions[i]))
+func (t Statement) Validate() util.ValidateResults {
+	results := util.ValidateResults{util.Check(t)}
+	for i := range t.Transactions {
+		results = append(results, util.Check(t.Transactions[i]))
 	}
 	return results
 }
 
-func (s Statement) TransactionSearchItems() util.SearchItems {
-	result := make(util.SearchItems, len(s.Transactions))
-	for i := range s.Transactions {
-		result[i] = s.Transactions[i].SearchItem()
+func (t Statement) TransactionSearchItems() util.SearchItems {
+	result := make(util.SearchItems, len(t.Transactions))
+	for i := range t.Transactions {
+		result[i] = t.Transactions[i].SearchItem()
 	}
 	return result
 }
 
-func (s *Statement) AssistedCompletion(a Acc, doAll, autoSave, autoMode, askSkip bool) {
+func (t *Statement) AssistedCompletion(s Schema, doAll, autoSave, autoMode, askSkip bool) {
 	first := true
-	for i := range s.Transactions {
+	for i := range t.Transactions {
 		if !first {
 			fmt.Println()
 		} else {
 			first = false
 		}
-		s.Transactions[i] = s.Transactions[i].AssistedCompletion(a, doAll, autoMode, askSkip)
+		t.Transactions[i] = t.Transactions[i].AssistedCompletion(s, doAll, autoMode, askSkip)
 		if autoSave {
-			a.SaveAccComplex()
+			s.Save()
 		}
 	}
 }
 
-func (s Statement) TransactionForDocument(id string) (*Transaction, error) {
-	for i := range s.Transactions {
-		fmt.Println(s.Transactions[i].AssociatedDocumentId)
-		if s.Transactions[i].AssociatedDocumentId == id {
-			return &s.Transactions[i], nil
+func (t Statement) TransactionForDocument(id string) (*Transaction, error) {
+	for i := range t.Transactions {
+		fmt.Println(t.Transactions[i].AssociatedDocumentId)
+		if t.Transactions[i].AssociatedDocumentId == id {
+			return &t.Transactions[i], nil
 		}
 	}
 	return nil, fmt.Errorf("no transaction with associated document \"%s\" found", id)
 }
 
-func (s Statement) FilterTransactions(from *time.Time, to *time.Time) ([]Transaction, error) {
+func (t Statement) FilterTransactions(from *time.Time, to *time.Time) ([]Transaction, error) {
 	var result []Transaction
-	for i := range s.Transactions {
-		date, err := time.Parse(util.DateFormat, s.Transactions[i].Date)
+	for i := range t.Transactions {
+		date, err := time.Parse(util.DateFormat, t.Transactions[i].Date)
 		rsl := false
 		if err != nil {
-			return nil, fmt.Errorf("transaction \"%s\": %s", s.Transactions[i].String(), err)
+			return nil, fmt.Errorf("transaction \"%s\": %s", t.Transactions[i].String(), err)
 		}
 		if from != nil && to == nil && (date.After(*from) || date.Equal(*from)) {
 			rsl = true
@@ -164,7 +164,7 @@ func (s Statement) FilterTransactions(from *time.Time, to *time.Time) ([]Transac
 			rsl = true
 		}
 		if rsl {
-			result = append(result, s.Transactions[i])
+			result = append(result, t.Transactions[i])
 		}
 	}
 	return result, nil

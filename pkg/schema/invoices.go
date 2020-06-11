@@ -71,10 +71,10 @@ func (i Invoices) GetIdentifiables() []Identifiable {
 	return ivs
 }
 
-func (i Invoices) SearchItems(a Acc) util.SearchItems {
+func (i Invoices) SearchItems(s Schema) util.SearchItems {
 	result := make(util.SearchItems, len(i))
 	for j := range i {
-		result[j] = i[j].SearchItem(a)
+		result[j] = i[j].SearchItem(s)
 	}
 	return result
 }
@@ -93,7 +93,7 @@ func (i Invoices) Filter(from *time.Time, to *time.Time) (Invoices, error) {
 	return result, nil
 }
 
-func (i Invoices) AssistedCompletion(a Acc, doAll, autoSave, openAttachment, retainFocus bool) {
+func (i Invoices) AssistedCompletion(s Schema, doAll, autoSave, openAttachment, retainFocus bool) {
 	first := true
 	for j := range i {
 		if !first {
@@ -101,16 +101,16 @@ func (i Invoices) AssistedCompletion(a Acc, doAll, autoSave, openAttachment, ret
 		} else {
 			first = false
 		}
-		i[j] = i[j].AssistedCompletion(a, doAll, openAttachment, retainFocus)
+		i[j] = i[j].AssistedCompletion(s, doAll, openAttachment, retainFocus)
 		if autoSave {
-			a.SaveAccComplex()
+			s.Save()
 		}
 	}
 }
 
-func (i Invoices) Repopulate(a Acc) {
+func (i Invoices) Repopulate(s Schema) {
 	for j := range i {
-		i[j].Repopulate(a)
+		i[j].Repopulate(s)
 	}
 }
 
@@ -155,12 +155,12 @@ func NewInvoiceWithUuid() Invoice {
 	return inv
 }
 
-func InteractiveNewInvoice(a Acc, asset string) Invoice {
+func InteractiveNewInvoice(s Schema, asset string) Invoice {
 	inv := NewInvoiceWithUuid()
 	inv.Identifier = util.AskString(
 		"Value",
 		"Unique human readable identifier",
-		SuggestNextIdentifier(a.Invoices.GetIdentifiables(), DefaultInvoicesPrefix),
+		SuggestNextIdentifier(s.Invoices.GetIdentifiables(), DefaultInvoicesPrefix),
 	)
 	inv.Name = util.AskString(
 		"Name",
@@ -184,7 +184,7 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 	inv.CustomerId = util.AskStringFromSearch(
 		"Obliged Customer",
 		"Customer which has to pay the invoice",
-		a.Parties.CustomersSearchItems())
+		s.Parties.CustomersSearchItems())
 	inv.SendDate = util.AskDate(
 		"Send Date",
 		"Date the invoice was sent",
@@ -198,7 +198,7 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 	inv.SettlementTransactionId = util.AskStringFromSearch(
 		"Settlement Transaction",
 		"Transaction which settled the invoice",
-		a.Statement.TransactionSearchItems())
+		s.Statement.TransactionSearchItems())
 	inv.ProjectName = util.AskString(
 		"Project Name",
 		"Name of the associated project",
@@ -207,7 +207,7 @@ func InteractiveNewInvoice(a Acc, asset string) Invoice {
 	return inv
 }
 
-func (i Invoice) AssistedCompletion(a Acc, doAll, openAttachment, retainFocus bool) Invoice {
+func (i Invoice) AssistedCompletion(s Schema, doAll, openAttachment, retainFocus bool) Invoice {
 	if !doAll && util.Check(i).Valid() {
 		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip invoice:")), aurora.BrightMagenta(i.String()))
 		return i
@@ -229,7 +229,7 @@ func (i Invoice) AssistedCompletion(a Acc, doAll, openAttachment, retainFocus bo
 	strategy := util.AskForStategy()
 	switch strategy {
 	case util.RedoStrategy:
-		inv := i.AssistedCompletion(a, doAll, openAttachment, retainFocus)
+		inv := i.AssistedCompletion(s, doAll, openAttachment, retainFocus)
 		ext.Close()
 		return inv
 	case util.SkipStrategy:
@@ -239,8 +239,8 @@ func (i Invoice) AssistedCompletion(a Acc, doAll, openAttachment, retainFocus bo
 	return i
 }
 
-func (i *Invoice) Repopulate(a Acc) {
-	trn, err := a.Statement.TransactionForDocument(i.Id)
+func (i *Invoice) Repopulate(s Schema) {
+	trn, err := s.Statement.TransactionForDocument(i.Id)
 	if err != nil {
 		logrus.Warnf("there is no transaction for invoice \"%s\" associated", i.String())
 		return
@@ -250,10 +250,10 @@ func (i *Invoice) Repopulate(a Acc) {
 	fmt.Println(i)
 }
 
-func (i Invoice) SearchItem(a Acc) util.SearchItem {
+func (i Invoice) SearchItem(s Schema) util.SearchItem {
 	party := ""
 	if i.CustomerId != "" {
-		pty, err := a.Parties.CustomerById(i.CustomerId)
+		pty, err := s.Parties.CustomerById(i.CustomerId)
 		if err != nil {
 			logrus.Warn("while creating search items: ", err)
 		} else {

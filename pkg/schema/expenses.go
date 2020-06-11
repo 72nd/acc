@@ -109,7 +109,7 @@ func (e Expenses) Filter(from *time.Time, to *time.Time, identifier string) (Exp
 	return result, nil
 }
 
-func (e Expenses) AssistedCompletion(a *Acc, doAll, autoSave, openAttachment, retainFocus bool) {
+func (e Expenses) AssistedCompletion(s *Schema, doAll, autoSave, openAttachment, retainFocus bool) {
 	first := true
 	for i := range e {
 		if !first {
@@ -117,16 +117,16 @@ func (e Expenses) AssistedCompletion(a *Acc, doAll, autoSave, openAttachment, re
 		} else {
 			first = false
 		}
-		e[i] = e[i].AssistedCompletion(a, doAll, openAttachment, retainFocus)
+		e[i] = e[i].AssistedCompletion(s, doAll, autoSave, openAttachment, retainFocus)
 		if autoSave {
-			a.SaveAccComplex()
+			s.Save()
 		}
 	}
 }
 
-func (e Expenses) Repopulate(a Acc) {
+func (e Expenses) Repopulate(s Schema) {
 	for i := range e {
-		e[i].Repopulate(a)
+		e[i].Repopulate(s)
 	}
 }
 
@@ -182,12 +182,12 @@ func NewExpenseWithUuid() Expense {
 }
 
 // InteractiveNewExpense returns a new Expense based on the user input.
-func InteractiveNewExpense(a Acc, asset string) Expense {
+func InteractiveNewExpense(s Schema, asset string) Expense {
 	exp := NewExpenseWithUuid()
 	exp.Identifier = util.AskString(
 		"Value",
 		"Unique human readable identifier",
-		SuggestNextIdentifier(a.Expenses.GetIdentifiables(), DefaultExpensePrefix))
+		SuggestNextIdentifier(s.Expenses.GetIdentifiables(), DefaultExpensePrefix))
 	exp.Name = util.AskString(
 		"Name",
 		"Name of the expense",
@@ -217,7 +217,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		exp.ObligedCustomerId = util.AskStringFromSearch(
 			"Obliged Customer",
 			"Customer which has to pay this expense",
-			a.Parties.CustomersSearchItems())
+			s.Parties.CustomersSearchItems())
 	} else {
 		exp.ObligedCustomerId = ""
 	}
@@ -229,7 +229,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		exp.AdvancedThirdPartyId = util.AskStringFromSearch(
 			"Advanced party",
 			"Employee which advanced the expense",
-			a.Parties.EmployeesSearchItems())
+			s.Parties.EmployeesSearchItems())
 	}
 	exp.DateOfSettlement = util.AskDate(
 		"Date of settlement",
@@ -239,7 +239,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	exp.ExpenseCategory, cat = util.AskStringFromSearchWithNew(
 		"Expense Category",
 		"Used for journal genertaion",
-		a.JournalConfig.ExpenseCategories.SearchItems(),
+		s.JournalConfig.ExpenseCategories.SearchItems(),
 		InteractiveNewGenericExpenseCategory,
 		nil)
 	if cat != nil {
@@ -247,7 +247,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 		if !ok {
 			logrus.Fatal("returned new expense category has different type")
 		}
-		a.JournalConfig.ExpenseCategories = append(a.JournalConfig.ExpenseCategories, value)
+		s.JournalConfig.ExpenseCategories = append(s.JournalConfig.ExpenseCategories, value)
 		exp.ExpenseCategory = value.Name
 	}
 	exp.PayedWithDebit = util.AskBool(
@@ -265,7 +265,7 @@ func InteractiveNewExpense(a Acc, asset string) Expense {
 	return exp
 }
 
-func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus bool) Expense {
+func (e Expense) AssistedCompletion(s *Schema, doAll, autoSave, openAttachment, retainFocus bool) Expense {
 	if !doAll && util.Check(e).Valid() {
 		fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Skip expense:")), aurora.BrightMagenta(e.String()))
 		return e
@@ -281,14 +281,14 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 		e.AdvancedThirdPartyId = util.AskStringFromListSearch(
 			"Advanced party",
 			"Employee which advanced the expense",
-			a.Parties.EmployeesSearchItems())
+			s.Parties.EmployeesSearchItems())
 	}
 	if e.ExpenseCategory == "" {
 		var cat interface{}
 		e.ExpenseCategory, cat = util.AskStringFromSearchWithNew(
 			"Expense Category",
 			"Used for journal generation",
-			a.JournalConfig.ExpenseCategories.SearchItems(),
+			s.JournalConfig.ExpenseCategories.SearchItems(),
 			InteractiveNewGenericExpenseCategory,
 			nil)
 		if cat != nil {
@@ -296,8 +296,10 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 			if !ok {
 				logrus.Fatal("returned new expense category has different type")
 			}
-			a.JournalConfig.ExpenseCategories = append(a.JournalConfig.ExpenseCategories, value)
-			a.SaveAtCurrent()
+			s.JournalConfig.ExpenseCategories = append(s.JournalConfig.ExpenseCategories, value)
+			if autoSave {
+				s.Save()
+			}
 			e.ExpenseCategory = value.Name
 		}
 	}
@@ -313,7 +315,7 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 	strategy := util.AskForStategy()
 	switch strategy {
 	case util.RedoStrategy:
-		exp := e.AssistedCompletion(a, doAll, openAttachment, retainFocus)
+		exp := e.AssistedCompletion(s, doAll, autoSave, openAttachment, retainFocus)
 		ext.Close()
 		return exp
 	case util.SkipStrategy:
@@ -323,8 +325,8 @@ func (e Expense) AssistedCompletion(a *Acc, doAll, openAttachment, retainFocus b
 	return e
 }
 
-func (e *Expense) Repopulate(a Acc) {
-	trn, err := a.Statement.TransactionForDocument(e.Id)
+func (e *Expense) Repopulate(s Schema) {
+	trn, err := s.Statement.TransactionForDocument(e.Id)
 	if err != nil {
 		logrus.Warnf("there is no transaction for expense \"%s\" associated", e.String())
 		return

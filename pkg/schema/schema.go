@@ -24,6 +24,11 @@ type Schema struct {
 	Statement           Statement
 	AppendExpenseSuffix func(suffix string, overwrite bool)
 	AppendInvoiceSuffix func(suffix string, overwrite bool)
+	SaveFunc                func(s Schema)
+}
+
+func (s Schema) Save() {
+	s.SaveFunc(s)
 }
 
 func (s Schema) ValidateProject() util.ValidateResults {

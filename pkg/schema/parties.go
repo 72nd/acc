@@ -248,22 +248,22 @@ func InteractiveNewParty(partyType string) Party {
 	return pty
 }
 
-func InteractiveNewCustomer(a Acc) Party {
+func InteractiveNewCustomer(s Schema) Party {
 	pty := InteractiveNewParty("Customer")
 	pty.Identifier = util.AskString(
 		"Identifier",
 		"Unique human readable identifier",
-		SuggestNextIdentifier(a.Parties.GetCustomerIdentifiables(), DefaultCustomerPrefix))
+		SuggestNextIdentifier(s.Parties.GetCustomerIdentifiables(), DefaultCustomerPrefix))
 	pty.PartyType = CustomerType
 	return pty
 }
 
-func InteractiveNewEmployee(a Acc) Party {
+func InteractiveNewEmployee(s Schema) Party {
 	pty := InteractiveNewParty("Employee")
 	pty.Identifier = util.AskString(
 		"Identifier",
 		"Unique human readable identifier",
-		SuggestNextIdentifier(a.Parties.GetEmployeeIdentifiables(), DefaultEmployeePrefix))
+		SuggestNextIdentifier(s.Parties.GetEmployeeIdentifiables(), DefaultEmployeePrefix))
 	pty.PartyType = EmployeeType
 	return pty
 }
@@ -282,15 +282,15 @@ func InteractiveNewGenericParty(arg interface{}) interface{} {
 				Value: 2,
 			},
 		})
-	a, ok := arg.(Acc)
+	s, ok := arg.(Schema)
 	if !ok {
 		logrus.Fatalf("arg \"%s\" couldn't be parsed as Acc", arg)
 	}
 	switch sel {
 	case 1:
-		return InteractiveNewCustomer(a)
+		return InteractiveNewCustomer(s)
 	case 2:
-		return InteractiveNewEmployee(a)
+		return InteractiveNewEmployee(s)
 	default:
 		logrus.Fatal("invalid result form AskIntFromList")
 	}

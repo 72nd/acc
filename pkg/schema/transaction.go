@@ -100,7 +100,7 @@ func InteractiveNewTransaction(s Statement) Transaction {
 	return trn
 }
 
-func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode, askSkip bool) Transaction {
+func (t Transaction) AssistedCompletion(s Schema, doAll, autoMode, askSkip bool) Transaction {
 	tmp := t
 	if autoMode {
 		t.JournalMode = AutoJournalMode
@@ -119,7 +119,7 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode, askSkip bool) Tr
 			return t
 		}
 	}
-	identifier := SuggestNextIdentifier(a.Statement.GetIdentifiables(), DefaultTransactionPrefix)
+	identifier := SuggestNextIdentifier(s.Statement.GetIdentifiables(), DefaultTransactionPrefix)
 	if t.Id == "" {
 		t.SetId()
 	}
@@ -147,8 +147,8 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode, askSkip bool) Tr
 			}}))
 	fmt.Println(t.JournalMode)
 	if t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode {
-		parties := append(a.Parties.CustomersSearchItems(), a.Parties.EmployeesSearchItems()...)
-		suggestion, err := t.parseAssociatedParty(t.Description, a.Parties)
+		parties := append(s.Parties.CustomersSearchItems(), s.Parties.EmployeesSearchItems()...)
+		suggestion, err := t.parseAssociatedParty(t.Description, s.Parties)
 		if err == nil && util.AskForConformation(fmt.Sprintf("Use \"%s\" as associeted third party?", suggestion.String())) {
 			t.AssociatedPartyId = suggestion.GetId()
 		} else {
@@ -158,27 +158,27 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode, askSkip bool) Tr
 				"customer/employee which is originator/recipient of the transaction",
 				parties,
 				InteractiveNewGenericParty,
-				a)
+				s)
 			if pty != nil {
 				value, ok := pty.(Party)
 				if !ok {
 					logrus.Fatal("returned party has invalid type")
 				}
 				if value.PartyType == CustomerType {
-					a.Parties.Customers = append(a.Parties.Customers, value)
+					s.Parties.Customers = append(s.Parties.Customers, value)
 				} else if value.PartyType == EmployeeType {
-					a.Parties.Employees = append(a.Parties.Employees, value)
+					s.Parties.Employees = append(s.Parties.Employees, value)
 				}
 				t.AssociatedPartyId = value.Id
 			}
 		}
 	}
 
-	document, err := t.parseAssociatedDocument(a.Expenses, a.Invoices)
+	document, err := t.parseAssociatedDocument(s.Expenses, s.Invoices)
 	if err == nil && util.AskForConformation(fmt.Sprintf("Use \"%s\" as associated document?", document.String())) {
 		t.AssociatedDocumentId = document.GetId()
 	} else {
-		docs := append(a.Expenses.SearchItems(), a.Invoices.SearchItems(a)...)
+		docs := append(s.Expenses.SearchItems(), s.Invoices.SearchItems(s)...)
 		t.AssociatedDocumentId = util.AskStringFromSearch(
 			"Associated Document",
 			"couldn't find associated document, manual search",
@@ -188,7 +188,7 @@ func (t Transaction) AssistedCompletion(a Acc, doAll, autoMode, askSkip bool) Tr
 	strategy := util.AskForStategy()
 	switch strategy {
 	case util.RedoStrategy:
-		t.AssistedCompletion(a, doAll, autoMode, askSkip)
+		t.AssistedCompletion(s, doAll, autoMode, askSkip)
 	case util.SkipStrategy:
 		return tmp
 	}
@@ -260,10 +260,6 @@ func (t Transaction) String() string {
 		return fmt.Sprintf("%s: received %.2f at %s", t.Identifier, t.Amount, t.Date)
 	}
 	return fmt.Sprintf("%s: payed %.2f at %s", t.Identifier, t.Amount, t.Date)
-}
-
-func (t Transaction) JournalDescription(a Acc) string {
-	return fmt.Sprintf("TODO %s", t.Description)
 }
 
 // Conditions returns the validation conditions.

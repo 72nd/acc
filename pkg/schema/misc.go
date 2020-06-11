@@ -92,9 +92,9 @@ func (m MiscRecords) Validate() util.ValidateResults {
 }
 
 // Repopulate all MiscRecords based on the transactions.
-func (m MiscRecords) Repopulate(a Acc) {
+func (m MiscRecords) Repopulate(s Schema) {
 	for i := range m {
-		m[i].Repopulate(a)
+		m[i].Repopulate(s)
 	}
 }
 
@@ -119,7 +119,7 @@ func NewMiscRecord() MiscRecord {
 }
 
 // InteractiveNewMiscRecord returns a new MiscRecord based on the user input.
-func InteractiveNewMiscRecord(a Acc, asset string) MiscRecord {
+func InteractiveNewMiscRecord(s Schema, asset string) MiscRecord {
 	logrus.Fatal("interactive new misc record isn't implemented yet")
 	return MiscRecord{}
 }
@@ -133,8 +133,8 @@ func (m *MiscRecord) SetId() {
 }
 
 // Repopulate MiscRecord based on the transactions.
-func (m *MiscRecord) Repopulate(a Acc) {
-	trn, err := a.Statement.TransactionForDocument(m.Id)
+func (m *MiscRecord) Repopulate(s Schema) {
+	trn, err := s.Statement.TransactionForDocument(m.Id)
 	if err != nil {
 		logrus.Warnf("there is no transaction for expense \"%s\" associated", m.String())
 		return

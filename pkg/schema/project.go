@@ -108,7 +108,7 @@ func NewProject() Project {
 }
 
 // InteractiveNewProject returns a new Project based on the user input.
-func InteractiveNewProject(a Acc, asset string) Project {
+func InteractiveNewProject(s Schema, asset string) Project {
 	logrus.Fatal("interactive new project isn't implemented yet")
 	return Project{}
 }
