@@ -62,9 +62,36 @@ func GenerateInvoiceRec(s schema.Schema, inv schema.Invoice, dstPath string, dow
 		DstName:    inv.Identifier,
 		Line1:      fmt.Sprintf("id %s", inv.Id),
 		Line2:      fmt.Sprintf("name: %s // amount: %.2f", inv.Name, inv.Amount),
-		Line3: fmt.Sprintf("send at: %s // settlement at %s", inv.SendDate, inv.DateOfSettlement),
-		Line4: fmt.Sprintf("customer: %s", s.Parties.CustomerStringById(inv.CustomerId)),
+		Line3:      fmt.Sprintf("send at: %s // settlement at %s", inv.SendDate, inv.DateOfSettlement),
+		Line4:      fmt.Sprintf("customer: %s", s.Parties.CustomerStringById(inv.CustomerId)),
 	}
 	pdf := NewPdf(inv.Path, dstPath)
+	pdf.Generate(props, downConvert)
+}
+
+func GenerateMiscsRec(s schema.Schema, dstPath string, doOverwrite, downConvert bool) {
+	nFiles := len(s.MiscRecords)
+	for i := range s.MiscRecords {
+		fileName := fmt.Sprintf("%s.pdf", s.MiscRecords[i].FileString())
+		filePath := path.Join(dstPath, fileName)
+		if _, err := os.Stat(filePath); !os.IsNotExist(err) && !doOverwrite {
+			logrus.Infof("(%d/%d) File %s exists, skipping", i+i, nFiles, fileName)
+			continue
+		}
+		logrus.Infof("(%d/%d) Generate %s...", i+1, nFiles, fileName)
+		GenerateMiscRec(s, s.MiscRecords[i], filePath, downConvert)
+	}
+}
+
+func GenerateMiscRec(s schema.Schema, mrc schema.MiscRecord, dstPath string, downConvert bool) {
+	props := Properties{
+		Type:       "Miscellaneous Record",
+		Identifier: mrc.Identifier,
+		DstName:    mrc.Identifier,
+		Line1:      fmt.Sprintf("id %s", mrc.Id),
+		Line2:      fmt.Sprintf("name: %s", mrc.Name),
+		Line3:      fmt.Sprintf("received at: %s", mrc.Date),
+	}
+	pdf := NewPdf(mrc.Path, dstPath)
 	pdf.Generate(props, downConvert)
 }

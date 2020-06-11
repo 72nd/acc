@@ -692,6 +692,7 @@ func main() {
 					s = s.FilterYear(c.Int("year"))
 					records.GenerateExpensesRec(s, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
 					records.GenerateInvoicesRec(s, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
+					records.GenerateMiscsRec(s, c.String("output-folder"), c.Bool("do-overwrite"), !c.Bool("skip-downconvert"))
 					return nil
 				},
 				Flags: []cli.Flag{
