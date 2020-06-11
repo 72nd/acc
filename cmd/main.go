@@ -106,7 +106,7 @@ func main() {
 					},
 					{
 						Name:    "employee",
-						Aliases: []string{"epy"},
+						Aliases: []string{"emp"},
 						Usage:   "add a employee",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
@@ -142,7 +142,7 @@ func main() {
 					},
 					{
 						Name:    "expense-category",
-						Aliases: []string{"exp"},
+						Aliases: []string{"cat"},
 						Usage:   "add one or multiple expense category",
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
@@ -174,6 +174,24 @@ func main() {
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
 								s.Invoices = append(s.Invoices, schema.InteractiveNewInvoice(s, c.String("asset")))
+							}
+							s.Save()
+							return nil
+						},
+						Flags: addFlags,
+					},
+					{
+						Name:    "misc-record",
+						Aliases: []string{"mrc"},
+						Usage:   "add a misc business record",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							s := config.OpenSchema(inputPath)
+							if c.Bool("default") {
+								s.MiscRecords = append(s.MiscRecords, schema.NewMiscRecord())
+							} else {
+								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
+								s.MiscRecords = append(s.MiscRecords, schema.InteractiveNewMiscRecord(s, c.String("asset")))
 							}
 							s.Save()
 							return nil
@@ -350,6 +368,7 @@ func main() {
 							s := config.OpenSchema(inputPath)
 							s.Expenses.Repopulate(s)
 							s.Invoices.Repopulate(s)
+							s.MiscRecords.Repopulate(s)
 							s.Save()
 							return nil
 						},

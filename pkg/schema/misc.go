@@ -3,6 +3,7 @@ package schema
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
@@ -117,12 +118,20 @@ func InteractiveNewMiscRecord(s Schema, asset string) MiscRecord {
 	mrc.Identifier = util.AskString(
 		"Identifier",
 		"Unique human readable identifier",
-		SuggestNextIdentifier(s.Invoices.GetIdentifiables(), DefaultInvoicesPrefix))
+		SuggestNextIdentifier(s.MiscRecords.GetIdentifiables(), DefaultMiscRecordPrefix))
 	mrc.Name = util.AskString(
 		"Name",
 		"Name of the record",
 		"AHV record")
 	if asset == "" {
+		mrc.Path = util.AskString(
+			"Asset",
+			"Path to asset file (use --asset to set with flag)",
+			"")
+	mrc.Date = util.AskDate(
+		"Date",
+		"Receiving date of the record",
+		time.Now())
 	} else {
 		mrc.Path = asset
 	}

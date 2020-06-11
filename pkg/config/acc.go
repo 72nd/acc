@@ -70,7 +70,7 @@ func NewSchema(folderPath, logo string, doSave, interactive bool) schema.Schema 
 
 	if doSave {
 		acc.Save(path.Join(folderPath, DefaultConfigFile))
-		exp.Save(path.Join(folderPath, schema.DefaultExpensesFile))
+		exp.Save(nil, path.Join(folderPath, schema.DefaultExpensesFile))
 		inv.Save(path.Join(folderPath, schema.DefaultInvoicesFile))
 		mrc.Save(path.Join(folderPath, schema.DefaultMiscRecordsFile))
 		prt.Save(path.Join(folderPath, schema.DefaultPartiesFile))
@@ -97,6 +97,7 @@ func NewSchema(folderPath, logo string, doSave, interactive bool) schema.Schema 
 func OpenAcc(path string) Acc {
 	var acc Acc
 	util.OpenYaml(&acc, path, "acc")
+	acc.fileName = path
 	return acc
 }
 
@@ -130,15 +131,13 @@ func (a Acc) SaveSchema(s schema.Schema) {
 
 // SaveProjectToFolder saves all files linked in the Acc config to the given folder.
 func (a Acc) SaveSchemaToFolder(s schema.Schema, pth string) {
-	fmt.Printf("journal cat: %d", len(s.JournalConfig.ExpenseCategories))
-
 	a.Company = s.Company
 	a.JournalConfig = s.JournalConfig
 	a.Save(path.Join(pth, a.fileName))
 
-	s.Expenses.Save(path.Join(pth, a.ExpensesFilePath))
+	s.Expenses.Save(&s, path.Join(pth, a.ExpensesFilePath))
 	s.Invoices.Save(path.Join(pth, a.InvoicesFilePath))
-	s.MiscRecords.Save(path.Join(pth, a.InvoicesFilePath))
+	s.MiscRecords.Save(path.Join(pth, a.MiscRecordsFilePath))
 	s.Parties.Save(path.Join(pth, a.PartiesFilePath))
 	s.Projects.Save(path.Join(pth, a.ProjectsFilePath))
 	s.Statement.Save(path.Join(pth, a.StatementFilePath))
