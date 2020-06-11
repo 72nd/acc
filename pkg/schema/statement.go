@@ -2,13 +2,11 @@ package schema
 
 import (
 	"fmt"
-	"io/ioutil"
 	"time"
 
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v2"
 )
 
 const DefaultStatementFile = "bank-statement.yaml"
@@ -35,14 +33,8 @@ func NewBankStatement(useDefaults bool) Statement {
 
 // OpenBankStatement opens a BankStatement struct saved in the json file given by the path.
 func OpenBankStatement(path string) Statement {
-	raw, err := ioutil.ReadFile(path)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	stm := Statement{}
-	if err := yaml.Unmarshal(raw, &stm); err != nil {
-		logrus.Fatal(err)
-	}
+	var stm Statement
+	util.OpenYaml(&stm, path, "statement")
 	return stm
 }
 

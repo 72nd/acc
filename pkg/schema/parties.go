@@ -6,8 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 )
 
 const DefaultPartiesFile = "parties.yaml"
@@ -42,15 +40,9 @@ func NewParties(useDefault bool) Parties {
 
 // OpenParties opens a Parties element saved in the json file given by the path.
 func OpenParties(path string) Parties {
-	raw, err := ioutil.ReadFile(path)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	pty := Parties{}
-	if err := yaml.Unmarshal(raw, &pty); err != nil {
-		logrus.Fatal(err)
-	}
-	return pty
+	var prt Parties
+	util.OpenYaml(&prt, path, "parties")
+	return prt
 }
 
 // Save writes the element as a json to the given path.

@@ -2,7 +2,6 @@ package schema
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strings"
 	"time"
 
@@ -11,7 +10,6 @@ import (
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v2"
 )
 
 const DefaultInvoicesFile = "invoices.yaml"
@@ -30,14 +28,8 @@ func NewInvoices(useDefaults bool) Invoices {
 
 // OpenInvoices opens a Expenses saved in the json file given by the path.
 func OpenInvoices(path string) Invoices {
-	raw, err := ioutil.ReadFile(path)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	inv := Invoices{}
-	if err := yaml.Unmarshal(raw, &inv); err != nil {
-		logrus.Fatal(err)
-	}
+	var inv Invoices
+	util.OpenYaml(&inv, path, "invoices")
 	return inv
 }
 

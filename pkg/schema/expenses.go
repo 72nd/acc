@@ -2,7 +2,6 @@ package schema
 
 import (
 	"fmt"
-	"io/ioutil"
 	"regexp"
 	"strings"
 	"time"
@@ -11,7 +10,6 @@ import (
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v2"
 )
 
 const DefaultExpensesFile = "expenses.yaml"
@@ -30,14 +28,8 @@ func NewExpenses(useDefaults bool) Expenses {
 
 // OpenExpenses opens a Expenses saved in the YAML file given by the path.
 func OpenExpenses(path string) Expenses {
-	raw, err := ioutil.ReadFile(path)
-	if err != nil {
-		logrus.Fatalf("error while reading expenses in file \"%s\": %s", path, err)
-	}
-	exp := Expenses{}
-	if err := yaml.Unmarshal(raw, &exp); err != nil {
-		logrus.Fatalf("error reading (unmarshalling) YAML file %s: %s", path, err)
-	}
+	var exp Expenses
+	util.OpenYaml(&exp, path, "expenses")
 	return exp
 }
 

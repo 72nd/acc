@@ -2,13 +2,11 @@ package schema
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strings"
 
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v2"
 )
 
 const DefaultMiscRecordsFile = "misc.yaml"
@@ -24,14 +22,8 @@ func NewMiscRecords() MiscRecords {
 
 // OpenMiscRecords opens the MiscRecords saved in the YAML file given by the path.
 func OpenMiscRecords(path string) MiscRecords {
-	raw, err := ioutil.ReadFile(path)
-	if err != nil {
-		logrus.Fatalf("error while reading file %s: %s", path, err)
-	}
-	mrc := MiscRecords{}
-	if err := yaml.Unmarshal(raw, &mrc); err != nil {
-		logrus.Fatalf("error reading (unmarshalling) YAML file %s: %s", path, err)
-	}
+	var mrc MiscRecords
+	util.OpenYaml(&mrc, path, "misc-records")
 	return mrc
 }
 

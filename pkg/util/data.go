@@ -73,14 +73,29 @@ func EscapedSplit(input, sep string) []string {
 
 // SaveToYaml writes the element (utils) as a json file to the given path.
 // The elementType parameter is used in error messages.
-func SaveToYaml(data interface{}, path, elementType string) {
+func SaveToYaml(data interface{}, path, dataType string) {
 	var raw []byte
 	var err error
 	raw, err = yaml.Marshal(data)
 	if err != nil {
-		logrus.Fatalf("error converting %s data for file \"%s\" to YAML (marshalling): %s", elementType, path, err)
+		logrus.Fatalf("error converting (marshalling) %s data for file \"%s\" to YAML: %s", dataType, path, err)
 	}
 	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
-		logrus.Fatalf("error writing %s file \"%s\": %s", elementType, path, err)
+		logrus.Fatalf("error writing %s file \"%s\": %s", dataType, path, err)
+	}
+}
+
+// OpenYaml opens a file and tries to marshal its content to the given interface.
+// The elementType parameter is used in error messages.
+func OpenYaml(data interface{}, path, dataType string) {
+	if path == "" {
+		logrus.Fatalf("error reading %s file: given path is empty", dataType)
+	}
+	raw, err := ioutil.ReadFile(path)
+	if err != nil {
+		logrus.Fatalf("error reading %s file \"%s\": %s", dataType, path, err)
+	}
+	if err := yaml.Unmarshal(raw, data); err != nil {
+		logrus.Fatalf("error converting (unmarshalling) %s data of file \"%s\": %s", dataType, path, err)
 	}
 }

@@ -2,12 +2,10 @@ package schema
 
 import (
 	"fmt"
-	"io/ioutil"
 
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v3"
 )
 
 const DefaultProjectsFile = "projects.yaml"
@@ -23,14 +21,8 @@ func NewProjects() Projects {
 
 // OpenProjects opens the Projects saved in the YAML file given by the path.
 func OpenProjects(path string) Projects {
-	raw, err := ioutil.ReadFile(path)
-	if err != nil {
-		logrus.Fatalf("error while reading file %s: %s", path, err)
-	}
-	prj := Projects{}
-	if err := yaml.Unmarshal(raw, &prj); err != nil {
-		logrus.Fatalf("error reading (unmarshalling) YAML file %s: %s", path, err)
-	}
+	var prj Projects
+	util.OpenYaml(&prj, path, "projects")
 	return prj
 }
 

@@ -2,15 +2,12 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v2"
 )
 
 const DefaultConfigFile = "acc.yaml"
@@ -98,16 +95,8 @@ func NewSchema(folderPath, logo string, doSave, interactive bool) schema.Schema 
 
 // OpenAcc opens a Acc saved in the json file given by the path.
 func OpenAcc(path string) Acc {
-	raw, err := ioutil.ReadFile(path)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	acc := Acc{}
-	if err := yaml.Unmarshal(raw, &acc); err != nil {
-		logrus.Fatal("error unmarshalling: ", err)
-	}
-	acc.fileName = filepath.Base(path)
-	acc.projectFolder = filepath.Dir(path)
+	var acc Acc
+	util.OpenYaml(&acc, path, "acc")
 	return acc
 }
 
