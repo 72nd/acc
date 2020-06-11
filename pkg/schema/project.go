@@ -137,6 +137,11 @@ func (p Project) String() string {
 	return fmt.Sprintf("project %s (%s)", p.Name, p.Identifier)
 }
 
+// Short returns a short represenation of the element.
+func (p Project) Short() string {
+	return fmt.Sprintf("%s (%s)", p.Name, p.Identifier)
+}
+
 // Type returns a string with the type name of the element.
 func (p Project) Type() string {
 	return "Project"

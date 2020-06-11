@@ -262,6 +262,11 @@ func (t Transaction) String() string {
 	return fmt.Sprintf("%s: payed %.2f at %s", t.Identifier, t.Amount, t.Date)
 }
 
+// Short returns a short represenation of the element.
+func (t Transaction) Short() string {
+	return fmt.Sprintf("%s", t.Id)
+}
+
 // Conditions returns the validation conditions.
 func (t Transaction) Conditions() util.Conditions {
 	return util.Conditions{

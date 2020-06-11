@@ -171,6 +171,11 @@ func (m MiscRecord) String() string {
 	return fmt.Sprintf("misc record %s (%s)", m.Name, m.Identifier)
 }
 
+// Short returns a short represenation of the element.
+func (m MiscRecord) Short() string {
+	return fmt.Sprintf("%s (%s)", m.Name, m.Identifier)
+}
+
 // Type returns a string with the type name of the element.
 func (m MiscRecord) Type() string {
 	return "MiscRecord"

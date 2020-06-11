@@ -10,6 +10,7 @@ import (
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
+	"gopkg.in/yaml.v3"
 )
 
 const DefaultExpensesFile = "expenses.yaml"
@@ -34,7 +35,11 @@ func OpenExpenses(path string) Expenses {
 }
 
 // Save writes the element as a YAML to the given path.
-func (e Expenses) Save(path string) {
+// If s is not nil, the id fields will be commented with the linked element.
+func (e Expenses) Save(s *Schema, path string) {
+	if s != nil {
+		e.CommentNodes(*s)
+	}
 	util.SaveToYaml(e, path, "expenses")
 }
 
@@ -122,6 +127,14 @@ func (e Expenses) Repopulate(s Schema) {
 	}
 }
 
+func (e Expenses) CommentNodes(s Schema) Expenses {
+	rsl := make(Expenses, len(e))
+	for i := range e {
+		rsl[i] = e[i].CommentNodes(s)
+	}
+	return rsl
+}
+
 // Expense represents a payment done by the company or a third party to assure the ongoing of the business.
 type Expense struct {
 	// Id is the internal unique identifier of the Expense.
@@ -139,15 +152,15 @@ type Expense struct {
 	// Billable states if the costs for the Expense will be forwarded to the customer.
 	Billable bool `yaml:"billable" default:"false"`
 	// ObligedCustomerId refers to the customer which have to pay the Expense.
-	ObligedCustomerId string `yaml:"obligedCustomerId" default:"" query:"customer"`
+	ObligedCustomerId yaml.Node `yaml:"obligedCustomerId" default:"" query:"customer"`
 	// AdvancedByThirdParty states if a third party (employee, etc.) advanced the payment of this expense for the company.
 	AdvancedByThirdParty bool `yaml:"advancedByThirdParty" default:"false"`
 	// AdvancePartyId refers to the third party which advanced the payment.
-	AdvancedThirdPartyId string `yaml:"advancedThirdPartyId" default:"" query:"emplyee"`
+	AdvancedThirdPartyId yaml.Node `yaml:"advancedThirdPartyId" default:"" query:"emplyee"`
 	// DateOfSettlement states the date of the settlement of the expense (the company has not to take further actions).
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
-	SettlementTransactionId string `yaml:"settlementTransactionId" default:"" query:"transaction"`
+	SettlementTransactionId yaml.Node `yaml:"settlementTransactionId" default:"" query:"transaction"`
 	// ExpenseCategory gives additional info for the categorization of the expense in the journal.
 	ExpenseCategory string `yaml:"expenseCategory" default:""`
 	// Debit Payment states whether the expense was directly payed with the main account debithether the expense was directly payed with the main account debit card.
@@ -206,19 +219,19 @@ func InteractiveNewExpense(s *Schema, asset string) Expense {
 		"Is expense billable to customer?",
 		false)
 	if exp.Billable {
-		exp.ObligedCustomerId = util.AskStringFromSearch(
+		exp.ObligedCustomerId.Value = util.AskStringFromSearch(
 			"Obliged Customer",
 			"Customer which has to pay this expense",
 			s.Parties.CustomersSearchItems())
 	} else {
-		exp.ObligedCustomerId = ""
+		exp.ObligedCustomerId.Value = ""
 	}
 	exp.AdvancedByThirdParty = util.AskBool(
 		"Advanced?",
 		"Was this expense advanced by some third party (ex: employee)?",
 		false)
 	if exp.AdvancedByThirdParty {
-		exp.AdvancedThirdPartyId = util.AskStringFromSearch(
+		exp.AdvancedThirdPartyId.Value = util.AskStringFromSearch(
 			"Advanced party",
 			"Employee which advanced the expense",
 			s.Parties.EmployeesSearchItems())
@@ -269,8 +282,8 @@ func (e Expense) AssistedCompletion(s *Schema, doAll, autoSave, openAttachment, 
 		ext.Open()
 	}
 	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize expense:")), aurora.BrightMagenta(e.String()))
-	if e.AdvancedByThirdParty && e.AdvancedThirdPartyId == "" {
-		e.AdvancedThirdPartyId = util.AskStringFromListSearch(
+	if e.AdvancedByThirdParty && e.AdvancedThirdPartyId.Value == "" {
+		e.AdvancedThirdPartyId.Value = util.AskStringFromListSearch(
 			"Advanced party",
 			"Employee which advanced the expense",
 			s.Parties.EmployeesSearchItems())
@@ -324,7 +337,7 @@ func (e *Expense) Repopulate(s Schema) {
 		return
 	}
 	e.DateOfSettlement = trn.Date
-	e.SettlementTransactionId = trn.Id
+	e.SettlementTransactionId.Value = trn.Id
 }
 
 func (e Expense) SearchItem() util.SearchItem {
@@ -363,6 +376,11 @@ func (e Expense) String() string {
 	return fmt.Sprintf("%s (%s): %.2f for %s", e.Name, e.Identifier, e.Amount, e.ProjectName)
 }
 
+// Short returns a short represenation of the element.
+func (e Expense) Short() string {
+	return fmt.Sprintf("%s (%s)", e.Name, e.Identifier)
+}
+
 // FileString returns the file name for exporting the expense as a document.
 func (e Expense) FileString() string {
 	result := e.Identifier
@@ -395,11 +413,11 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfAccrual),
 		},
 		{
-			Condition: e.Billable && e.ObligedCustomerId == "",
+			Condition: e.Billable && e.ObligedCustomerId.Value == "",
 			Message:   "although billable, no obliged customer is set (ObligedCustomerId is empty)",
 		},
 		{
-			Condition: e.AdvancedByThirdParty && e.AdvancedThirdPartyId == "",
+			Condition: e.AdvancedByThirdParty && e.AdvancedThirdPartyId.Value == "",
 			Message:   "although advanced by third party, no third party id is set (AdvancedThirdPartyId is empty)",
 		},
 		{
@@ -407,7 +425,7 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfSettlement),
 		},
 		{
-			Condition: e.DateOfSettlement != "" && e.SettlementTransactionId == "",
+			Condition: e.DateOfSettlement != "" && e.SettlementTransactionId.Value == "",
 			Message:   "although date of settlement is set, the corresponding transaction is empty (SettlementTransactionId is empty",
 		},
 		{
@@ -448,4 +466,14 @@ func (e Expense) Match(from *time.Time, to *time.Time, identifier string) (bool,
 		return false, nil
 	}
 	return true, nil
+}
+
+func (e Expense) CommentNodes(s Schema) Expense {
+	cst, err := s.Parties.CustomerById(e.ObligedCustomerId.Value)
+	if err != nil {
+		e.ObligedCustomerId.LineComment = "no customer exists for this id"
+	} else {
+		e.ObligedCustomerId.LineComment = cmt.Short()
+	}
+	return e
 }

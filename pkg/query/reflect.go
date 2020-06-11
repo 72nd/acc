@@ -147,51 +147,51 @@ func (k KeyValue) RenderValue(s schema.Schema) string {
 		if err != nil {
 			return fmt.Sprintf("%s (no such customer exists)", k.Value)
 		}
-		return fmt.Sprintf("%s (%s, %s)", k.Value, cst.Name, cst.Identifier)
+		return cst.Short()
 	case "employee":
 		emp, err := s.Parties.EmployeeById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such employee exists)", k.Value)
 		}
-		return fmt.Sprintf("%s (%s, %s)", k.Value, emp.Name, emp.Identifier)
+		return emp.Short()
 	case "customer,employee":
 		cst, err := s.Parties.CustomerById(k.Value)
 		if err == nil {
-			return fmt.Sprintf("%s (%s, %s)", k.Value, cst.Name, cst.Identifier)
+			return cst.Short()
 		}
 		emp, err := s.Parties.EmployeeById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such party exists)", k.Value)
 		}
-		return fmt.Sprintf("%s (%s, %s)", k.Value, emp.Name, emp.Identifier)
+		return emp.Short()
 	case "expense":
 		exp, err := s.Expenses.ExpenseById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such expense exists)", k.Value)
 		}
-		return fmt.Sprintf("%s (%s, %s)", k.Value, exp.Name, exp.Identifier)
+		return exp.Short()
 	case "invoice":
 		inv, err := s.Invoices.InvoiceById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such invoice exists)", k.Value)
 		}
-		return fmt.Sprintf("%s (%s, %s)", k.Value, inv.Name, inv.Identifier)
+		return inv.Short()
 	case "expense,invoice":
 		exp, err := s.Expenses.ExpenseById(k.Value)
 		if err == nil {
-			return fmt.Sprintf("%s (%s, %s)", k.Value, exp.Name, exp.Identifier)
+			return exp.Short()
 		}
 		inv, err := s.Invoices.InvoiceById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such expense/invoice exists)", k.Value)
 		}
-		return fmt.Sprintf("%s (%s, %s)", k.Value, inv.Name, inv.Identifier)
+		return inv.Short()
 	case "transaction":
 		trn, err := s.Statement.TransactionById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such transaction exists)", k.Value)
 		}
-		return fmt.Sprintf("%s (%s)", k.Value, trn.Identifier)
+		return trn.Short()
 	}
 
 	return k.Value

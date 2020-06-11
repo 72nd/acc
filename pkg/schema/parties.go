@@ -324,6 +324,11 @@ func (p Party) String() string {
 	return fmt.Sprintf("%s (%s), %s", p.Name, p.Identifier, p.Place)
 }
 
+// Short returns a short represenation of the element.
+func (p Party) Short() string {
+	return fmt.Sprintf("%s (%s)", p.Name, p.Identifier)
+}
+
 func (p Party) AddressLines() string {
 	result := p.Name
 	if p.Street != "" && p.StreetNr != 0 {

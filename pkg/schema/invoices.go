@@ -119,7 +119,7 @@ type Invoice struct {
 	// Path is the full path to the voucher utils.
 	Path string `yaml:"path" default:"/path/to/file.utils" query:"path"`
 	// Revoked invoices are disabled an no longer taken into account.
-	Revoked bool `yaml:"revoked" default:"false"` 
+	Revoked bool `yaml:"revoked" default:"false"`
 	// CustomerId refers to the customer the invoice was sent to.
 	CustomerId string `yaml:"customerId" default:"" query:"customer"`
 	// SendDate states the date, the invoice was sent to the customer.
@@ -295,6 +295,11 @@ func (i Invoice) Type() string {
 // String returns a human readable representation of the element.
 func (i Invoice) String() string {
 	return fmt.Sprintf("%s (%s): %.2f", i.Name, i.Identifier, i.Amount)
+}
+
+// Short returns a short represenation of the element.
+func (i Invoice) Short() string {
+	return fmt.Sprintf("%s (%s)", i.Name, i.Identifier)
 }
 
 func (i Invoice) FileString() string {
