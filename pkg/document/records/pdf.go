@@ -229,20 +229,15 @@ func fitImage(path string, containerWidth, containerHeight int) gopdf.Rect {
 	if err != nil {
 		logrus.Fatalf("error while reading image \"%s\": %s", path, err)
 	}
-	fmt.Printf("%d\t%d\n%d\t%d", img.Width, img.Height, containerWidth, containerHeight)
+	fmt.Printf("image:\t%d\t%d\ncontainer:\t%d\t%d\n", img.Width, img.Height, containerWidth, containerHeight)
 	iWidth := float64(img.Width)
 	iHeight := float64(img.Height)
 	cWidth := float64(containerWidth)
 	cHeight := float64(containerHeight)
-    if iWidth > cWidth {
-		height := (iHeight / iWidth) * cWidth
-		return gopdf.Rect{W: cWidth, H: height}
-	} else if iWidth < cWidth {
-		width := (iWidth / iHeight) * cHeight
-		fmt.Println(width)
-		return gopdf.Rect{W: width, H: cHeight}
-	} 
-	return gopdf.Rect{W: iWidth, H: iHeight}
+	if cWidth/cHeight > iWidth/iHeight {
+		return gopdf.Rect{W: iWidth * cHeight / iHeight, H: cHeight}
+	}
+	return gopdf.Rect{W: cWidth, H: iHeight * cWidth / iWidth}
 }
 
 /*
