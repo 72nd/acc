@@ -37,7 +37,7 @@ func GenerateExpenseRec(s schema.Schema, exp schema.Expense, dstPath string, dow
 		Identifier: exp.Identifier,
 		DstName:    exp.Identifier,
 		Line1:      fmt.Sprintf("id: %s", exp.Id),
-		Line2:      fmt.Sprintf("name: %s // amount: %.2f", exp.Name, exp.Amount),
+		Line2:      fmt.Sprintf("name: %s // amount: %.2f // expense category: %s", exp.Name, exp.Amount, exp.ExpenseCategory),
 		Line3:      fmt.Sprintf("accrual at: %s // advanced by 3th: %t // settlement at: %s", exp.DateOfAccrual, exp.AdvancedByThirdParty, exp.DateOfSettlement),
 		Line4:      fmt.Sprintf("3rd party: %s // customer: %s", emp, s.Parties.CustomerStringById(exp.ObligedCustomerId)),
 	}
