@@ -240,29 +240,3 @@ func fitImage(path string, containerWidth, containerHeight int) gopdf.Rect {
 	return gopdf.Rect{W: cWidth, H: iHeight * cWidth / iWidth}
 }
 
-/*
-if iWidth > cWidth && iHeight > cHeight{
-	// 1
-	height := (iHeight / iWidth) * cWidth
-	return gopdf.Rect{W: cWidth, H: height}
-} else if iWidth > cWidth && iHeight < cHeight && iWidth > iHeight {
-	// 3
-	height := (iHeight / iWidth) * cWidth
-	return gopdf.Rect{W: cWidth, H: height}
-} else if iWidth > cWidth && iHeight < cHeight && iWidth < iHeight {
-	// 4, doesn't make sense, as container has a portraid layout
-	return gopdf.Rect{W: 10, H: 10}
-} else if iWidth < cWidth && iHeight > cHeight && iWidth > iHeight {
-	// 5, doesn't make sense, as container has a portraid layout
-	return gopdf.Rect{W: 10, H: 10}
-} else if iWidth < cWidth && iHeight > cHeight && iWidth < iHeight {
-	// 6
-
-} else if iWidth < cWidth && iHeight < cHeight && iWidth > iHeight {
-	// 7,
-
-} else if iWidth < cWidth && iHeight < cHeight && iWidth < iHeight {
-	// 8
-
-}
-*/

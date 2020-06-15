@@ -147,51 +147,51 @@ func (k KeyValue) RenderValue(s schema.Schema) string {
 		if err != nil {
 			return fmt.Sprintf("%s (no such customer exists)", k.Value)
 		}
-		return cst.Short()
+		return fmt.Sprintf("%s, %s", k.Value, cst.Short())
 	case "employee":
 		emp, err := s.Parties.EmployeeById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such employee exists)", k.Value)
 		}
-		return emp.Short()
+		return fmt.Sprintf("%s, %s", k.Value, emp.Short())
 	case "customer,employee":
 		cst, err := s.Parties.CustomerById(k.Value)
 		if err == nil {
-			return cst.Short()
+			return fmt.Sprintf("%s, %s", k.Value, cst.Short())
 		}
 		emp, err := s.Parties.EmployeeById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such party exists)", k.Value)
 		}
-		return emp.Short()
+		return fmt.Sprintf("%s, %s", k.Value, emp.Short())
 	case "expense":
 		exp, err := s.Expenses.ExpenseById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such expense exists)", k.Value)
 		}
-		return exp.Short()
+		return fmt.Sprintf("%s, %s", k.Value, exp.Short())
 	case "invoice":
 		inv, err := s.Invoices.InvoiceById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such invoice exists)", k.Value)
 		}
-		return inv.Short()
+		return fmt.Sprintf("%s, %s", k.Value, inv.Short())
 	case "expense,invoice":
 		exp, err := s.Expenses.ExpenseById(k.Value)
 		if err == nil {
-			return exp.Short()
+			return fmt.Sprintf("%s, %s", k.Value, exp.Short())
 		}
 		inv, err := s.Invoices.InvoiceById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such expense/invoice exists)", k.Value)
 		}
-		return inv.Short()
+		return fmt.Sprintf("%s, %s", k.Value, inv.Short())
 	case "transaction":
 		trn, err := s.Statement.TransactionById(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such transaction exists)", k.Value)
 		}
-		return trn.Short()
+		return fmt.Sprintf("%s (%s)", k.Value, trn.Date)
 	}
 
 	return k.Value

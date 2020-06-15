@@ -164,6 +164,7 @@ func AskDate(name, desc string, defaultValue time.Time) string {
 		GermanLayout,
 		"01.02.2006",
 		"2006-01-02",
+		"2006.02.01",
 	}
 	header(name, "DD-MM-YYYY", desc, fmt.Sprintf("Enter for empty, 'T' for today (%s)", defaultValue.Format(GermanLayout)), true)
 	input := getInput()
