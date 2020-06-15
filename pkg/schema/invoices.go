@@ -106,6 +106,20 @@ func (i Invoices) Repopulate(s Schema) {
 	}
 }
 
+func (i Invoices) Len() int {
+	return len(i)
+}
+
+func (i Invoices) Swap(j, k int) {
+	i[j], i[k] = i[k], i[j]
+}
+
+func (i Invoices) Less(j, k int) bool {
+	dj, _ := time.Parse(util.DateFormat, i[j].SendDate)
+	dk, _ := time.Parse(util.DateFormat, i[k].SendDate)
+	return dj.Before(dk)
+}
+
 // Invoice represents an invoice sent to a customer for some services.
 type Invoice struct {
 	// Id is the internal unique identifier of the Expense.

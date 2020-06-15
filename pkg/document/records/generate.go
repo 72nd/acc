@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"sort"
+	"strconv"
 	"sync"
 
 	"github.com/sirupsen/logrus"
@@ -11,10 +13,11 @@ import (
 )
 
 func GenerateExpensesRec(s schema.Schema, dstFolder string, doOverwrite, downConvert bool) {
+	sort.Sort(s.Expenses)
 	nFiles := len(s.Expenses)
 	var wg sync.WaitGroup
 	for i := range s.Expenses {
-		fileName := fmt.Sprintf("%s.pdf", s.Expenses[i].FileString())
+		fileName := fmt.Sprintf("e-%03d_%s.pdf", i+1, s.Expenses[i].FileString())
 		filePath := path.Join(dstFolder, fileName)
 		if _, err := os.Stat(filePath); !os.IsNotExist(err) && !doOverwrite {
 			logrus.Infof("(%d/%d) File %s exists, skipping", i+i, nFiles, fileName)
@@ -36,10 +39,11 @@ func GenerateExpenseRec(s schema.Schema, exp schema.Expense, dstPath string, dow
 		Type:       "Expense",
 		Identifier: exp.Identifier,
 		DstName:    exp.Identifier,
-		Line1:      fmt.Sprintf("id: %s", exp.Id),
-		Line2:      fmt.Sprintf("name: %s // amount: %.2f // expense category: %s", exp.Name, exp.Amount, exp.ExpenseCategory),
-		Line3:      fmt.Sprintf("accrual at: %s // advanced by 3th: %t // settlement at: %s", exp.DateOfAccrual, exp.AdvancedByThirdParty, exp.DateOfSettlement),
-		Line4:      fmt.Sprintf("3rd party: %s // customer: %s", emp, s.Parties.CustomerStringById(exp.ObligedCustomerId)),
+		Line1:      fmt.Sprintf("id: %s", na(exp.Id)),
+		Line2:      fmt.Sprintf("name: %s", na(exp.Name)),
+		Line3:      fmt.Sprintf("amount: %s // expense category: %s // accrual at: %s", sfr(exp.Amount), na(exp.ExpenseCategory), na(exp.DateOfAccrual)),
+		Line4:      fmt.Sprintf("settlement at: %s // advanced by 3th: %s // 3rd party: %s", na(exp.DateOfSettlement), na(exp.AdvancedByThirdParty), emp),
+		Line5:      fmt.Sprintf("customer: %s // internal: %s // payed with debit: %s", na(s.Parties.CustomerStringById(exp.ObligedCustomerId)), na(exp.Internal), na(exp.PayedWithDebit)),
 	}
 	pdf := NewPdf(exp.Path, dstPath)
 	pdf.Generate(props, downConvert)
@@ -47,11 +51,11 @@ func GenerateExpenseRec(s schema.Schema, exp schema.Expense, dstPath string, dow
 }
 
 func GenerateInvoicesRec(s schema.Schema, dstPath string, doOverwrite, downConvert bool) {
+	sort.Sort(s.Invoices)
 	nFiles := len(s.Invoices)
 	var wg sync.WaitGroup
-
 	for i := range s.Invoices {
-		fileName := fmt.Sprintf("%s.pdf", s.Invoices[i].FileString())
+		fileName := fmt.Sprintf("i-%03d_%s.pdf", i+1, s.Invoices[i].FileString())
 		filePath := path.Join(dstPath, fileName)
 		if _, err := os.Stat(filePath); !os.IsNotExist(err) && !doOverwrite {
 			logrus.Infof("(%d/%d) File %s exists, skipping", i+i, nFiles, fileName)
@@ -109,4 +113,40 @@ func GenerateMiscRec(s schema.Schema, mrc schema.MiscRecord, dstPath string, dow
 	pdf := NewPdf(mrc.Path, dstPath)
 	pdf.Generate(props, downConvert)
 	wg.Done()
+}
+
+const NA = "n.a."
+
+// na returns the string of a given data. If data is empty "N/A" will be returned.
+// Remark: Do not use this if numbers (int, floats) <= 0 are valid.
+func na(data interface{}) string {
+	switch data.(type) {
+	case string:
+		if data == "" {
+			return NA
+		}
+		return data.(string)
+	case int:
+		if data.(int) <= 0 {
+			return NA
+		}
+		return strconv.FormatInt(data.(int64), 10)
+	case bool:
+		return strconv.FormatBool(data.(bool))
+	case float64:
+		if data.(float64) <= 0.0 {
+			return NA
+		}
+		return strconv.FormatFloat(data.(float64), 'E', 2, 64)
+	case float32:
+		if data.(float32) <= 0.0 {
+			return NA
+		}
+		return strconv.FormatFloat(data.(float64), 'E', 2, 64)
+	}
+	return "not implemented"
+}
+
+func sfr(amount float64) string {
+	return fmt.Sprintf("SFr. %.2f", amount)
 }

@@ -8,4 +8,5 @@ type Properties struct {
 	Line2      string
 	Line3      string
 	Line4      string
+	Line5      string
 }

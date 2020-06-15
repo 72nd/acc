@@ -128,6 +128,20 @@ func (e Expenses) Repopulate(s Schema) {
 	}
 }
 
+func (e Expenses) Len() int {
+	return len(e)
+}
+
+func (e Expenses) Swap(i, j int) {
+	e[i], e[j] = e[j], e[i]
+}
+
+func (e Expenses) Less(i, j int) bool {
+	di, _ := time.Parse(util.DateFormat, e[i].DateOfAccrual)
+	dj, _ := time.Parse(util.DateFormat, e[j].DateOfAccrual)
+	return di.Before(dj)
+}
+
 /*
 func (e Expenses) CommentNodes(s Schema) Expenses {
 	rsl := make(Expenses, len(e))

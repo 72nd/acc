@@ -157,9 +157,9 @@ func (p *Pdf) processPdf(props Properties) {
 
 func (p *Pdf) processFirstPage(props Properties, maxPageNr int) {
 	p.pdf.AddPage()
-	p.pdf.SetLineWidth(0.1)
+	p.pdf.SetLineWidth(0.5)
 	p.pdf.SetFillColor(255, 255, 255)
-	p.pdf.RectFromUpperLeftWithStyle(40, 130, 500, 680, "FD")
+	p.pdf.RectFromUpperLeftWithStyle(40, 146, 500, 680, "FD")
 	p.pdf.SetFillColor(0, 0, 0)
 
 	titleLine := fmt.Sprintf("%s: %s  //  page 1 of %d", props.Type, props.Identifier, maxPageNr)
@@ -168,15 +168,16 @@ func (p *Pdf) processFirstPage(props Properties, maxPageNr int) {
 	addText(&p.pdf, props.Line2, 40, 79, 12, "")
 	addText(&p.pdf, props.Line3, 40, 95, 12, "")
 	addText(&p.pdf, props.Line4, 40, 111, 12, "")
+	addText(&p.pdf, props.Line5, 40, 127, 12, "")
 
 	if p.ScrType == PDF {
 		tpl := p.pdf.ImportPage(p.getSrcPath(), 1, "/MediaBox")
-		p.pdf.UseImportedTemplate(tpl, 45, 135, 480, 0)
+		p.pdf.UseImportedTemplate(tpl, 45, 150, 480, 0)
 	} else {
 		p.pdf.SetX(45)
 		p.pdf.SetY(150)
 		rect := fitImage(p.SrcPath, 480, 660)
-		if err := p.pdf.Image(p.SrcPath, 45, 130, &rect); err != nil {
+		if err := p.pdf.Image(p.SrcPath, 45, 150, &rect); err != nil {
 			logrus.Errorf("error while including image %s into pdf: %s", p.SrcPath, err)
 		}
 	}
@@ -184,7 +185,7 @@ func (p *Pdf) processFirstPage(props Properties, maxPageNr int) {
 
 func (p *Pdf) processOtherPage(props Properties, pageNr, maxPageNr int) {
 	p.pdf.AddPage()
-	p.pdf.SetLineWidth(0.1)
+	p.pdf.SetLineWidth(0.5)
 	p.pdf.SetFillColor(255, 255, 255)
 	p.pdf.RectFromUpperLeftWithStyle(40, 100, 500, 700, "FD")
 	p.pdf.SetFillColor(0, 0, 0)
