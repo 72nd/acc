@@ -171,12 +171,12 @@ func (p *Pdf) processFirstPage(props Properties, maxPageNr int) {
 
 	if p.ScrType == PDF {
 		tpl := p.pdf.ImportPage(p.getSrcPath(), 1, "/MediaBox")
-		p.pdf.UseImportedTemplate(tpl, 45, 150, 480, 0)
+		p.pdf.UseImportedTemplate(tpl, 45, 135, 480, 0)
 	} else {
 		p.pdf.SetX(45)
 		p.pdf.SetY(150)
 		rect := fitImage(p.SrcPath, 480, 660)
-		if err := p.pdf.Image(p.SrcPath, 45, 150, &rect); err != nil {
+		if err := p.pdf.Image(p.SrcPath, 45, 130, &rect); err != nil {
 			logrus.Errorf("error while including image %s into pdf: %s", p.SrcPath, err)
 		}
 	}
@@ -184,6 +184,7 @@ func (p *Pdf) processFirstPage(props Properties, maxPageNr int) {
 
 func (p *Pdf) processOtherPage(props Properties, pageNr, maxPageNr int) {
 	p.pdf.AddPage()
+	p.pdf.SetLineWidth(0.1)
 	p.pdf.SetFillColor(255, 255, 255)
 	p.pdf.RectFromUpperLeftWithStyle(40, 100, 500, 700, "FD")
 	p.pdf.SetFillColor(0, 0, 0)
@@ -192,7 +193,7 @@ func (p *Pdf) processOtherPage(props Properties, pageNr, maxPageNr int) {
 	addText(&p.pdf, titleLine, 40, 40, 20, "Bold")
 
 	tpl := p.pdf.ImportPage(p.getSrcPath(), pageNr, "/MediaBox")
-	p.pdf.UseImportedTemplate(tpl, 40, 100, 500, 0)
+	p.pdf.UseImportedTemplate(tpl, 45, 105, 480, 0)
 }
 
 func (p *Pdf) safeAndCleanup() {
@@ -229,7 +230,6 @@ func fitImage(path string, containerWidth, containerHeight int) gopdf.Rect {
 	if err != nil {
 		logrus.Fatalf("error while reading image \"%s\": %s", path, err)
 	}
-	fmt.Printf("image:\t%d\t%d\ncontainer:\t%d\t%d\n", img.Width, img.Height, containerWidth, containerHeight)
 	iWidth := float64(img.Width)
 	iHeight := float64(img.Height)
 	cWidth := float64(containerWidth)
