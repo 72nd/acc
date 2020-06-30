@@ -10,8 +10,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const accFolderEnv = "ACC_FOLDER"
-const accRepositoryEnv = "ACC_REPOSITORY"
 
 // repositoryPath tries to get the `ACC_REPOSITORY` environment variable.
 // If not set the current working directory will be used.

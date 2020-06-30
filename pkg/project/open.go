@@ -7,7 +7,6 @@ import (
 	"sync"
 
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/config"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
 )
@@ -19,7 +18,7 @@ import (
  */
 
 // Open loads the schema for the project mode.
-func Open(a config.Acc) schema.Schema {
+func Open(cmp schema.Company, jfg schema.JournalConfig) schema.Schema {
 	var wg *sync.WaitGroup
 	repoPath := repositoryPath()
 	cstChan := make(chan schema.Party)
@@ -60,10 +59,10 @@ func Open(a config.Acc) schema.Schema {
 	}
 
 	return schema.Schema{
-		Company:       a.Company,
+		Company:       cmp,
 		Expenses:      append(exp, prj.Expenses()...),
 		Invoices:      prj.Invoices(),
-		JournalConfig: a.JournalConfig,
+		JournalConfig: jfg,
 		Parties: schema.Parties{
 			Customers: cst,
 			Employees: emp,
@@ -104,9 +103,9 @@ func customerWalk(path string, cstChan chan schema.Party, prjChan chan ProjectFi
 // openCustomerFile tries to open the `customer.yaml` file in the given folder path.
 // If the file exists it will be parsed and the customer get added to the customer channel.
 func openCustomerFile(path string, cstChan chan schema.Party, wg *sync.WaitGroup) {
-	cstFile := filepath.Join(path, CustomerFileName)
+	cstFile := filepath.Join(path, customerFileName)
 	if _, err := os.Stat(cstFile); os.IsNotExist(err) {
-		logrus.Errorf("the %s file does not exist in %s", CustomerFileName, path)
+		logrus.Errorf("the %s file does not exist in %s", customerFileName, path)
 	} else {
 		var cst schema.Party
 		util.OpenYaml(&cst, cstFile, "customer file")
@@ -118,9 +117,9 @@ func openCustomerFile(path string, cstChan chan schema.Party, wg *sync.WaitGroup
 // openProjectFile tries to open the `project.yaml` file in the given folder path.
 // If the file exists it will be parsed and the project get added to the project channel.
 func openProjectFile(path string, prjChan chan ProjectFile, wg *sync.WaitGroup) {
-	prjFile := filepath.Join(path, ProjectFileName)
+	prjFile := filepath.Join(path, projectFileName)
 	if _, err := os.Stat(prjFile); os.IsNotExist(err) {
-		logrus.Errorf("the %s file does not exist in %s", ProjectFileName, path)
+		logrus.Errorf("the %s file does not exist in %s", projectFileName, path)
 	} else {
 		var prj ProjectFile
 		util.OpenYaml(&prj, prjFile, "project file")
@@ -131,9 +130,9 @@ func openProjectFile(path string, prjChan chan ProjectFile, wg *sync.WaitGroup) 
 
 // openInternalExpenses opens the internal expenses in the `internal-expenses` folder.
 func openInternalExpenses(path string, expChan chan schema.Expense, wg *sync.WaitGroup) {
-	intFolder := filepath.Join(path, InternalFolderName)
+	intFolder := filepath.Join(path, internalFolderName)
 	if _, err := os.Stat(intFolder); os.IsNotExist(err) {
-		logrus.Errorf("the %s folder does not exist in %s", InternalFolderName, path)
+		logrus.Errorf("the %s folder does not exist in %s", internalFolderName, path)
 		wg.Done()
 		return
 	}
@@ -162,9 +161,9 @@ func openExpenseFile(path string, expChan chan schema.Expense, wg *sync.WaitGrou
 
 // openExpenseFile opens the employee file by the given path and adds the employees into the channel.
 func openEmployeeFile(path string, empChan chan schema.Party, wg *sync.WaitGroup) {
-	empPath := filepath.Join(path, EmployeesFileName)
+	empPath := filepath.Join(path, employeesFileName)
 	if _, err := os.Stat(empPath); os.IsNotExist(err) {
-		logrus.Errorf("the %s file does not exist in %s", EmployeesFileName, path)
+		logrus.Errorf("the %s file does not exist in %s", employeesFileName, path)
 		wg.Done()
 		return
 	}

@@ -1,9 +1,11 @@
 package project
 
 const (
-	CustomerFileName = "customer.yaml"
-	EmployeesFileName = "employees.yaml"
-	InternalFolderName = "internal"
-	ProjectFileName = "project.yaml"
-	ProjectFolderName = "projects"
+	accFolderEnv       = "ACC_FOLDER"
+	accRepositoryEnv   = "ACC_REPOSITORY"
+	customerFileName   = "customer.yaml"
+	employeesFileName  = "employees.yaml"
+	internalFolderName = "internal"
+	projectFileName    = "project.yaml"
+	projectFolderName  = "projects"
 )
