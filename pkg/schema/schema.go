@@ -118,3 +118,10 @@ type Completable interface {
 func GetUuid() string {
 	return uuid.Must(uuid.NewRandom()).String()
 }
+
+// Comparable objects can contain a hash of their initial file state.
+// This is used in the project mode to prevent unnecessary file writes.
+type Comparable interface {
+	GetHash() string
+	SetHash(hash string)
+}
