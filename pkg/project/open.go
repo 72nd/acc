@@ -124,7 +124,7 @@ func openProjectFile(path string, prjChan chan ProjectFile, wg *sync.WaitGroup) 
 	} else {
 		var prj ProjectFile
 		util.OpenYaml(&prj, prjFile, "project file")
-		prjChan <- prj
+		prjChan <- prj.AbsolutePaths(path)
 	}
 	wg.Done()
 }
