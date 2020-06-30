@@ -40,3 +40,4 @@ type ProjectFile struct {
 	Expenses schema.Expenses `yaml:"expenses"`
 	Invoices schema.Invoices `yaml:"invoices"`
 }
+

@@ -4,21 +4,25 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/sirupsen/logrus"
 )
 
+const accFolderEnv = "ACC_FOLDER"
+const accRepositoryEnv = "ACC_REPOSITORY"
+
 // repositoryPath tries to get the `ACC_REPOSITORY` environment variable.
 // If not set the current working directory will be used.
 func repositoryPath() string {
-	env := os.Getenv("ACC_REPOSITORY")
+	env := os.Getenv(accRepositoryEnv)
 	if env == "" {
 		path, err := os.Getwd()
 		if err != nil {
-			logrus.Fatal("\"ACC_REPOSITORY\" is not set and couldn't determine working directory: ", err)
+			logrus.Fatal("\"%s\" is not set and couldn't determine working directory: ", accFolderEnv, err)
 		}
-		logrus.Warnf("the enviroment variable \"ACC_REPOSITORY\" is not set, will use current working dir (%s)", path)
+		logrus.Warnf("the enviroment variable \"%s\" is not set, will use current working dir (%s)", accFolderEnv, path)
 		return path
 	}
 	return env
@@ -40,7 +44,7 @@ func folderName(name string) string {
 	return r.Replace(name)
 }
 
-// getFoldersInPath returns all folders in the given folder.
+// getFoldersInPath returns all folders as absolute path in the given folder.
 func getFoldersInPath(path string) []string {
 	var rsl []string
 	elements, err := ioutil.ReadDir(path)
@@ -51,6 +55,23 @@ func getFoldersInPath(path string) []string {
 		p := filepath.Join(path, elements[i].Name())
 		if stat, _ := os.Stat(p); stat.IsDir() {
 			rsl = append(rsl, p)
+		}
+	}
+	return rsl
+}
+
+// getMatchingFilesInPath matches all files and folders in the given path and matches
+// the found files against the given regex. All matching elements will be returned
+// as absolute path.
+func getMatchingFilesInPath(path string, re *regexp.Regexp) []string {
+	var rsl []string
+	elements, err := ioutil.ReadDir(path)
+	if err != nil {
+		logrus.Fatal("error reading dir: ", err)
+	}
+	for i := range elements {
+		if re.MatchString(elements[i].Name()) {
+			rsl = append(rsl, filepath.Join(path, elements[i].Name()))
 		}
 	}
 	return rsl

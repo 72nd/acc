@@ -3,55 +3,53 @@ package project
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"sync"
 
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/config"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
 )
 
 /*
  * TODO's
- * - Get internal expenses from internal-expenses per year.
  * - Save all the stuff
  * - Import from flat file
  */
 
 // Open loads the schema for the project mode.
-func Open() schema.Schema {
-	cst, prj := openCustomersProjects(repositoryPath())
-	return schema.Schema{
-		Expenses: prj.Expenses(),
-		Invoices: prj.Invoices(),
-		Parties: schema.Parties{
-			Customers: cst,
-		},
-		Projects: prj.Projects(),
-	}
-}
-
-// openCustomersProjects walks the given projects folder (path) and returns all found customers and projects.
-func openCustomersProjects(path string) ([]schema.Party, ProjectFiles) {
-	path = filepath.Join(path, "projects")
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		logrus.Fatalf("projects folder in acc repository doesn't exist, expected path: %s", path)
-	}
-	folders := getFoldersInPath(path)
-
+func Open(a config.Acc) schema.Schema {
+	var wg *sync.WaitGroup
+	repoPath := repositoryPath()
 	cstChan := make(chan schema.Party)
+	empChan := make(chan schema.Party)
+	expChan := make(chan schema.Expense)
 	prjChan := make(chan ProjectFile)
-
-	var wg sync.WaitGroup
-	for i := range folders {
-		wg.Add(1)
-		go customerWalk(folders[i], cstChan, prjChan, &wg)
-	}
+	wg.Add(1)
+	go openCustomersProjects(repoPath, cstChan, prjChan, wg)
+	wg.Add(1)
+	go openInternalExpenses(repoPath, expChan, wg)
+	wg.Add(1)
+	go openEmployeeFile(repoPath, empChan, wg)
 	wg.Wait()
 
 	cst := make([]schema.Party, len(cstChan))
 	i := 0
 	for c := range cstChan {
 		cst[i] = c
+		i++
+	}
+	emp := make([]schema.Party, len(empChan))
+	i = 0
+	for e := range empChan {
+		emp[i] = e
+		i++
+	}
+	exp := make(schema.Expenses, len(expChan))
+	i = 0
+	for e := range expChan {
+		exp[i] = e
 		i++
 	}
 	prj := make(ProjectFiles, len(prjChan))
@@ -61,18 +59,43 @@ func openCustomersProjects(path string) ([]schema.Party, ProjectFiles) {
 		i++
 	}
 
-	return cst, prj
+	return schema.Schema{
+		Company:       a.Company,
+		Expenses:      append(exp, prj.Expenses()...),
+		Invoices:      prj.Invoices(),
+		JournalConfig: a.JournalConfig,
+		Parties: schema.Parties{
+			Customers: cst,
+			Employees: emp,
+		},
+		Projects: prj.Projects(),
+	}
+}
+
+// openCustomersProjects walks the given projects folder (path) and returns all found customers and projects.
+func openCustomersProjects(path string, cstChan chan schema.Party, prjChan chan ProjectFile, wg *sync.WaitGroup) {
+	path = filepath.Join(path, "projects")
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		logrus.Fatalf("projects folder in acc repository doesn't exist, expected path: %s", path)
+	}
+	folders := getFoldersInPath(path)
+
+	for i := range folders {
+		wg.Add(1)
+		go customerWalk(folders[i], cstChan, prjChan, wg)
+	}
+	wg.Done()
 }
 
 // customerWalk goes trough one customer folder and puts the customer and all found projects into channels.
 func customerWalk(path string, cstChan chan schema.Party, prjChan chan ProjectFile, wg *sync.WaitGroup) {
 	wg.Add(1)
-	openCustomerFile(path, cstChan, wg)
+	go openCustomerFile(path, cstChan, wg)
 
 	folders := getFoldersInPath(path)
 	for i := range folders {
 		wg.Add(1)
-		openProjectFile(folders[i], prjChan, wg)
+		go openProjectFile(folders[i], prjChan, wg)
 	}
 
 	wg.Done()
@@ -81,9 +104,9 @@ func customerWalk(path string, cstChan chan schema.Party, prjChan chan ProjectFi
 // openCustomerFile tries to open the `customer.yaml` file in the given folder path.
 // If the file exists it will be parsed and the customer get added to the customer channel.
 func openCustomerFile(path string, cstChan chan schema.Party, wg *sync.WaitGroup) {
-	cstFile := filepath.Join(path, "customer.yaml")
+	cstFile := filepath.Join(path, CustomerFileName)
 	if _, err := os.Stat(cstFile); os.IsNotExist(err) {
-		logrus.Error("the customer.yaml file does not exist in ", path)
+		logrus.Errorf("the %s file does not exist in %s", CustomerFileName, path)
 	} else {
 		var cst schema.Party
 		util.OpenYaml(&cst, cstFile, "customer file")
@@ -95,13 +118,60 @@ func openCustomerFile(path string, cstChan chan schema.Party, wg *sync.WaitGroup
 // openProjectFile tries to open the `project.yaml` file in the given folder path.
 // If the file exists it will be parsed and the project get added to the project channel.
 func openProjectFile(path string, prjChan chan ProjectFile, wg *sync.WaitGroup) {
-	prjFile := filepath.Join(path, "project.yaml")
+	prjFile := filepath.Join(path, ProjectFileName)
 	if _, err := os.Stat(prjFile); os.IsNotExist(err) {
-		logrus.Error("the project.yaml file does not exist in ", path)
+		logrus.Errorf("the %s file does not exist in %s", ProjectFileName, path)
 	} else {
 		var prj ProjectFile
 		util.OpenYaml(&prj, prjFile, "project file")
 		prjChan <- prj
+	}
+	wg.Done()
+}
+
+// openInternalExpenses opens the internal expenses in the `internal-expenses` folder.
+func openInternalExpenses(path string, expChan chan schema.Expense, wg *sync.WaitGroup) {
+	intFolder := filepath.Join(path, InternalFolderName)
+	if _, err := os.Stat(intFolder); os.IsNotExist(err) {
+		logrus.Errorf("the %s folder does not exist in %s", InternalFolderName, path)
+		wg.Done()
+		return
+	}
+	files := getMatchingFilesInPath(intFolder, regexp.MustCompile(`expenses-2\d\d\d\.yaml`))
+	for i := range files {
+		wg.Add(1)
+		go openExpenseFile(files[i], expChan, wg)
+	}
+	wg.Done()
+}
+
+// openExpenseFile opens an expense file by the given path and adds the expenses into to channel.
+func openExpenseFile(path string, expChan chan schema.Expense, wg *sync.WaitGroup) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		logrus.Errorf("the internal expense file \"%s\" does not exists", path)
+		wg.Done()
+		return
+	}
+	var exp schema.Expenses
+	util.OpenYaml(&exp, path, "internal expenses file")
+	for i := range exp {
+		expChan <- exp[i]
+	}
+	wg.Done()
+}
+
+// openExpenseFile opens the employee file by the given path and adds the employees into the channel.
+func openEmployeeFile(path string, empChan chan schema.Party, wg *sync.WaitGroup) {
+	empPath := filepath.Join(path, EmployeesFileName)
+	if _, err := os.Stat(empPath); os.IsNotExist(err) {
+		logrus.Errorf("the %s file does not exist in %s", EmployeesFileName, path)
+		wg.Done()
+		return
+	}
+	var emp []schema.Party
+	util.OpenYaml(&emp, empPath, "employee file")
+	for i := range emp {
+		empChan <- emp[i]
 	}
 	wg.Done()
 }
