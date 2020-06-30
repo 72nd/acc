@@ -13,6 +13,10 @@ import (
 
 /*
  * TODO's
+ * - All schemas to comparable
+ * - Project structure done
+ * - Referencing to projects is done via id
+ * - Generate ProjectFiles from Project
  * - Save all the stuff
  * - Import from flat file
  */

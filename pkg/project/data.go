@@ -1,8 +1,20 @@
 package project
 
 import (
+	"sync"
+
 	"gitlab.com/72th/acc/pkg/schema"
 )
+
+// CustomersToSave is a slice of CustomerToSave's.
+type CustomersToSave []CustomerToSave
+
+// CustomerToSave serves as the information source to save all customers and their
+// projects in the repository structure.
+type CustomerToSave struct {
+	Customer     schema.Party
+	ProjectFiles ProjectFiles
+}
 
 // ProjectFiles is a slice of ProjectFile's.
 type ProjectFiles []ProjectFile

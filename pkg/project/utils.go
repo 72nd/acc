@@ -97,3 +97,13 @@ func relativePath(folder, absolutPath string) string {
 	}
 	return rsl
 }
+
+// createNonExistingDir creates a directory with the given path. If the folder already exists, nothing will be done.
+func createNonExistingDir(path string) {
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return
+	}
+	if err := os.Mkdir(path, 0777); err != nil {
+		logrus.Fatal("error while creating folder: ", err)
+	}
+}
