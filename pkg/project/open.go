@@ -14,6 +14,7 @@ import (
 
 /*
  * TODO's
+ * - Comperable for all schemas
  * - Save all the stuff
  * - Import from flat file
  */
