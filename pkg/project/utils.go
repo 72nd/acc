@@ -10,8 +10,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const accFolderEnv = "ACC_FOLDER"
-const accRepositoryEnv = "ACC_REPOSITORY"
 
 // repositoryPath tries to get the `ACC_REPOSITORY` environment variable.
 // If not set the current working directory will be used.
@@ -75,4 +73,37 @@ func getMatchingFilesInPath(path string, re *regexp.Regexp) []string {
 		}
 	}
 	return rsl
+}
+
+// absolutPath returns the absolute path of the relativePath in relation to the folder location.
+func absolutPath(folder, relativePath string) string {
+	return filepath.Clean(filepath.Join(folder, relativePath))
+}
+
+// relativePath returns the relative path in relation to the folder (basepath).
+// In the case of the error the absolute path is returned instead and the user is
+// presented with an error message.
+//
+// This is legit for the acc use case. The function will only be used to link assets
+// relative to the data files (like customer.yaml, project.yaml etc.) and thus enabling
+// the compatibility across different users on different system. In a case of the error
+// the user is asked to resolve this unlikely situation manually. If this doesn't happen
+// another user will prompted an error thus the data coherency is guaranteed.
+func relativePath(folder, absolutPath string) string {
+	rsl, err := filepath.Rel(folder, absolutPath)
+	if err != nil {
+		logrus.Errorf("path \"%s\" couldn't be made relative to folder \"%s\", please resolve this manually", absolutPath, folder)
+		return absolutPath
+	}
+	return rsl
+}
+
+// createNonExistingDir creates a directory with the given path. If the folder already exists, nothing will be done.
+func createNonExistingDir(path string) {
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return
+	}
+	if err := os.Mkdir(path, 0777); err != nil {
+		logrus.Fatal("error while creating folder: ", err)
+	}
 }

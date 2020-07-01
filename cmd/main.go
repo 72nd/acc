@@ -16,6 +16,7 @@ import (
 	"gitlab.com/72th/acc/pkg/document/invoices"
 	"gitlab.com/72th/acc/pkg/document/records"
 	"gitlab.com/72th/acc/pkg/ledger"
+	"gitlab.com/72th/acc/pkg/project"
 	"gitlab.com/72th/acc/pkg/query"
 	"gitlab.com/72th/acc/pkg/schema"
 )
@@ -576,6 +577,41 @@ func main() {
 						Name:    "project-mode",
 						Aliases: []string{"p"},
 						Usage:   "enable project mode",
+					},
+				},
+			},
+			{
+				Name:  "project",
+				Usage: "project mode (aka. folder mode) specific commands",
+				Action: func(c *cli.Context) error {
+					_ = cli.ShowCommandHelp(c, c.Command.Name)
+					return nil
+				},
+				Subcommands: []*cli.Command{
+					{
+						Name:  "convert",
+						Usage: "convert a flat file acc project into a folder based project",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							outputPath := c.String("output")
+							a := config.OpenAcc(inputPath).NewProjectModeAcc(outputPath)
+							s := config.OpenSchema(inputPath)
+							project.Save(s, outputPath)
+							a.Save(a.FileName)
+							return nil
+						},
+						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:    "input",
+								Aliases: []string{"i"},
+								Usage:   "acc project file",
+							},
+							&cli.StringFlag{
+								Name:    "output",
+								Aliases: []string{"o"},
+								Usage:   "output folder path",
+							},
+						},
 					},
 				},
 			},

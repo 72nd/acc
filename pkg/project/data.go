@@ -1,6 +1,20 @@
 package project
 
-import "gitlab.com/72th/acc/pkg/schema"
+import (
+	"sync"
+
+	"gitlab.com/72th/acc/pkg/schema"
+)
+
+// CustomersToSave is a slice of CustomerToSave's.
+type CustomersToSave []CustomerToSave
+
+// CustomerToSave serves as the information source to save all customers and their
+// projects in the repository structure.
+type CustomerToSave struct {
+	Customer     schema.Party
+	ProjectFiles ProjectFiles
+}
 
 // ProjectFiles is a slice of ProjectFile's.
 type ProjectFiles []ProjectFile
@@ -41,3 +55,14 @@ type ProjectFile struct {
 	Invoices schema.Invoices `yaml:"invoices"`
 }
 
+// AbsolutePaths takes the location of the project folder and changes the relative paths
+// of the assets to the correct absolute path.
+func (p ProjectFile) AbsolutePaths(prjPath string) ProjectFile {
+	for i := range p.Expenses {
+		p.Expenses[i].Path = absolutPath(prjPath, p.Expenses[i].Path)
+	}
+	for i := range p.Invoices {
+		p.Invoices[i].Path = absolutPath(prjPath, p.Invoices[i].Path)
+	}
+	return p
+}
