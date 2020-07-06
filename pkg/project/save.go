@@ -1,6 +1,7 @@
 package project
 
 import (
+	"path/filepath"
 	"sync"
 
 	"gitlab.com/72th/acc/pkg/schema"
@@ -9,33 +10,34 @@ import (
 // Save saves a schema as a folder structure to the given folder (path).
 // This function is only directly called when converting a project to folder mode.
 func Save(s schema.Schema, path string) {
-	var wg *sync.WaitGroup
+	var wg sync.WaitGroup
 	cst := customersToSave(s)
 
 	wg.Add(1)
-	saveCustomers(path, cst, wg)
+	go saveCustomers(path, cst, &wg)
+	wg.Add(1)
+	go saveEmployees(path, s.Parties.Employees, s.FileHashes, &wg)
+	wg.Add(1)
+	go saveInternalExpenses(path, s.Expenses, s.FileHashes, &wg)
 	wg.Wait()
-}
-
-// SaveWithEnv does the same as Save() but uses the `ACC_FOLDER` env variable.
-// This is the default use case.
-func SaveWithEnv(s schema.Schema) {
-	Save(s, repositoryPath())
 }
 
 // customersToSave transforms the schema into the optimized structure to save the customers
 // and their projects in folder mode.
 func customersToSave(s schema.Schema) CustomersToSave {
-	var wg *sync.WaitGroup
+	var wg sync.WaitGroup
 	cstChan := make(chan CustomerToSave)
 
 	for i := range s.Parties.Customers {
 		wg.Add(1)
-		go customerToSave(s, s.Parties.Customers[i], cstChan, wg)
+		go customerToSave(s, s.Parties.Customers[i], cstChan, &wg)
 	}
 	wg.Wait()
 
 	rsl := make(CustomersToSave, len(cstChan))
+	if len(cstChan) == 0 {
+		return rsl
+	}
 	i := 0
 	for c := range cstChan {
 		rsl[i] = c
@@ -43,23 +45,23 @@ func customersToSave(s schema.Schema) CustomersToSave {
 	return rsl
 }
 
-func saveCustomers(path string, cst CustomersToSave, wg *sync.WaitGroup) {
-	wg.Done()
-}
-
 // customerToSave builds the CustomerToSave structure for a given customer Party and
 // adds it to the channel.
 func customerToSave(s schema.Schema, cst schema.Party, cstChan chan CustomerToSave, wg *sync.WaitGroup) {
-	var prjWg *sync.WaitGroup
+	var prjWg sync.WaitGroup
 	prjChan := make(chan ProjectFile)
 
 	for i := range s.Projects {
 		prjWg.Add(1)
-		go projectFile(s, s.Projects[i], prjChan, prjWg)
+		go projectFile(s, s.Projects[i], prjChan, &prjWg)
 	}
 	prjWg.Wait()
 
 	prjFiles := make(ProjectFiles, len(prjChan))
+	if len(prjChan) == 0 {
+		wg.Done()
+		return
+	}
 	i := 0
 	for p := range prjChan {
 		prjFiles[i] = p
@@ -89,5 +91,33 @@ func projectFile(s schema.Schema, prj schema.Project, prjChan chan ProjectFile, 
 		Expenses: exp,
 		Invoices: inv,
 	}
+	wg.Done()
+}
+
+func saveCustomers(path string, cst CustomersToSave, wg *sync.WaitGroup) {
+	createNonExistingDir(filepath.Join(path, projectFolderName))
+	wg.Done()
+}
+
+func saveInternalExpenses(path string, exp schema.Expenses, hashes map[string]string, wg *sync.WaitGroup) {
+	createNonExistingDir(filepath.Join(path, internalFolderName))
+	var intExp schema.Expenses
+	for i := range exp {
+		if exp[i].Internal {
+			intExp = append(intExp, exp[i])
+		}
+	}
+	expPath := filepath.Join(path, internalFolderName, "expenses.yaml")
+	schema.SaveYamlOnChange(intExp, expPath, "internal expenses", hashes[expPath])
+	wg.Done()
+}
+
+func saveInternalExpense(path string, exp schema.Expense, hashes map[string]string, wg *sync.WaitGroup) {
+	wg.Done()
+}
+
+func saveEmployees(path string, emp []schema.Party, hashes map[string]string, wg *sync.WaitGroup) {
+	empPath := filepath.Join(path, employeesFileName)
+	schema.SaveYamlOnChange(emp, empPath, "employees", hashes[empPath])
 	wg.Done()
 }

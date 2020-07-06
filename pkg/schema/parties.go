@@ -197,6 +197,7 @@ type Party struct {
 // NewParty returns a new Party with the default values.
 func NewParty() Party {
 	pty := Party{}
+	pty.Id = GetUuid()
 	if err := defaults.Set(&pty); err != nil {
 		logrus.Fatal("error setting defaults: ", err)
 	}

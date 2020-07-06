@@ -114,19 +114,19 @@ func (c Company) Conditions() util.Conditions {
 		},
 		{
 			Condition: c.Phone == "",
-			Message: "phone is not set (Phone is empty)",
+			Message:   "phone is not set (Phone is empty)",
 		},
 		{
 			Condition: c.Mail == "",
-			Message: "mail is not set (Mail is empty)",
+			Message:   "mail is not set (Mail is empty)",
 		},
 		{
 			Condition: c.Url == "",
-			Message: "url is not set (Url is empty)",
+			Message:   "url is not set (Url is empty)",
 		},
 		{
 			Condition: !util.FileExist(c.Logo),
-			Message: fmt.Sprintf("logo at «%s» not found", c.Logo),
+			Message:   fmt.Sprintf("logo at «%s» not found", c.Logo),
 		},
 	}
 }

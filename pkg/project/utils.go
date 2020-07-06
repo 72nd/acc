@@ -10,22 +10,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-
-// repositoryPath tries to get the `ACC_REPOSITORY` environment variable.
-// If not set the current working directory will be used.
-func repositoryPath() string {
-	env := os.Getenv(accRepositoryEnv)
-	if env == "" {
-		path, err := os.Getwd()
-		if err != nil {
-			logrus.Fatal("\"%s\" is not set and couldn't determine working directory: ", accFolderEnv, err)
-		}
-		logrus.Warnf("the enviroment variable \"%s\" is not set, will use current working dir (%s)", accFolderEnv, path)
-		return path
-	}
-	return env
-}
-
 // folderName takes a string and returns version without spaces, umlauts etc.
 func folderName(name string) string {
 	name = strings.ToLower(name)

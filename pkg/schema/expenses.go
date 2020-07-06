@@ -191,6 +191,7 @@ type Expense struct {
 // NewExpense returns a new Expense element with the default values.
 func NewExpense() Expense {
 	exp := Expense{}
+	exp.Id = GetUuid()
 	if err := defaults.Set(&exp); err != nil {
 		logrus.Fatal("error setting defaults: ", err)
 	}

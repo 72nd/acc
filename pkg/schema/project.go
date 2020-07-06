@@ -96,13 +96,27 @@ func NewProject() Project {
 	if err := defaults.Set(&prj); err != nil {
 		logrus.Fatal("error setting defaults for project: ", err)
 	}
+	prj.Id = GetUuid()
 	return prj
 }
 
 // InteractiveNewProject returns a new Project based on the user input.
 func InteractiveNewProject(s Schema, asset string) Project {
-	logrus.Fatal("interactive new project isn't implemented yet")
-	return Project{}
+	var prj Project
+	prj.Id = GetUuid()
+	prj.Identifier = util.AskString(
+		"Value",
+		"Unique human readable identifier",
+		SuggestNextIdentifier(s.Projects.GetIdentifiables(), DefaultProjectPrefix))
+	prj.Name = util.AskString(
+		"Name",
+		"Name of the project",
+		"Aktion neue soziale Marktwirtschaft")
+		prj.CustomerId = util.AskStringFromSearch(
+			"Associated customer",
+			"Customer which the project is associated",
+			s.Parties.CustomersSearchItems())
+	return prj
 }
 
 // SetId generates a unique id for the element if there isn't already one defined.
@@ -168,4 +182,3 @@ func (p Project) Conditions() util.Conditions {
 		},
 	}
 }
-

@@ -1,8 +1,6 @@
 package project
 
 import (
-	"sync"
-
 	"gitlab.com/72th/acc/pkg/schema"
 )
 

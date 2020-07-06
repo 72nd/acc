@@ -2,10 +2,12 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/sirupsen/logrus"
+	"gitlab.com/72th/acc/pkg/project"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
 )
@@ -27,7 +29,7 @@ type Acc struct {
 	// Company contains the information about the organisation which uses acc.
 	Company             schema.Company       `yaml:"company" default:""`
 	JournalConfig       schema.JournalConfig `yaml:"journalConfig" default:""`
-	ProjectMode         bool                 `yaml:"projectMode" default:"false"`
+	PartionedMode       bool                 `yaml:"partionedMode" default:"false"`
 	ExpensesFilePath    string               `yaml:"expensesFilePath" default:"expenses.yaml"`
 	InvoicesFilePath    string               `yaml:"invoicesFilePath" default:"invoices.yaml"`
 	MiscRecordsFilePath string               `yaml:"miscRecordsFilePath" default:"misc.yaml"`
@@ -35,7 +37,7 @@ type Acc struct {
 	ProjectsFilePath    string               `yaml:"projectsFilePath" default:"projects.yaml"`
 	StatementFilePath   string               `yaml:"statementFilePath" default:"bank.yaml"`
 	FileName            string               `yaml:"-"`
-	projectFolder       string               `yaml:"-"`
+	partionedFolder     string               `yaml:"-"`
 }
 
 // NewProjectModeAcc acc takes a flat file acc configuration file and returns the
@@ -44,13 +46,13 @@ func (a Acc) NewProjectModeAcc(repoPath string) Acc {
 	return Acc{
 		Company:       a.Company,
 		JournalConfig: a.JournalConfig,
-		ProjectMode:   true,
+		PartionedMode: true,
 		FileName:      filepath.Join(repoPath, DefaultConfigFile),
 	}
 }
 
 // NewSchema creates a new acc project in the given folder path.
-func NewSchema(folderPath, logo string, doSave, interactive bool) schema.Schema {
+func NewSchema(folderPath, logo string, doSave, interactive, partMode bool) schema.Schema {
 	var cmp schema.Company
 	var jrc schema.JournalConfig
 	if interactive {
@@ -63,7 +65,7 @@ func NewSchema(folderPath, logo string, doSave, interactive bool) schema.Schema 
 	acc := Acc{
 		Company:             cmp,
 		JournalConfig:       jrc,
-		ProjectMode:         false,
+		PartionedMode:       partMode,
 		ExpensesFilePath:    schema.DefaultExpensesFile,
 		InvoicesFilePath:    schema.DefaultInvoicesFile,
 		MiscRecordsFilePath: schema.DefaultMiscRecordsFile,
@@ -76,17 +78,34 @@ func NewSchema(folderPath, logo string, doSave, interactive bool) schema.Schema 
 	inv := schema.NewInvoices(!interactive)
 	mrc := schema.NewMiscRecords()
 	prt := schema.NewParties(!interactive)
-	pry := schema.NewProjects()
+	prj := schema.NewProjects()
 	stm := schema.NewBankStatement(!interactive)
 
-	if doSave {
+	if doSave && !partMode {
 		acc.Save(filepath.Join(folderPath, DefaultConfigFile))
 		exp.Save(nil, filepath.Join(folderPath, schema.DefaultExpensesFile))
 		inv.Save(filepath.Join(folderPath, schema.DefaultInvoicesFile))
 		mrc.Save(filepath.Join(folderPath, schema.DefaultMiscRecordsFile))
 		prt.Save(filepath.Join(folderPath, schema.DefaultPartiesFile))
-		pry.Save(filepath.Join(folderPath, schema.DefaultProjectsFile))
+		prj.Save(filepath.Join(folderPath, schema.DefaultProjectsFile))
 		stm.Save(filepath.Join(folderPath, schema.DefaultStatementFile))
+	} else if doSave && partMode {
+		acc = acc.NewProjectModeAcc(folderPath)
+		acc.partionedFolder = folderPath
+		s := schema.Schema{
+			Company:             cmp,
+			Expenses:            exp,
+			Invoices:            inv,
+			JournalConfig:       jrc,
+			MiscRecords:         mrc,
+			Parties:             prt,
+			Projects:            prj,
+			Statement:           stm,
+			AppendExpenseSuffix: acc.AppendExpensesSuffix,
+			AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
+		}
+		acc.Save(acc.FileName)
+		project.Save(s, folderPath)
 	}
 
 	return schema.Schema{
@@ -96,11 +115,10 @@ func NewSchema(folderPath, logo string, doSave, interactive bool) schema.Schema 
 		JournalConfig:       jrc,
 		MiscRecords:         mrc,
 		Parties:             prt,
-		Projects:            pry,
+		Projects:            prj,
 		Statement:           stm,
 		AppendExpenseSuffix: acc.AppendExpensesSuffix,
 		AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
-		SaveFunc:            acc.SaveSchema,
 	}
 }
 
@@ -114,7 +132,15 @@ func OpenAcc(path string) Acc {
 
 // OpenSchema reads first the Acc file and then tries to open all linked files.
 func OpenSchema(path string) schema.Schema {
+	wd, err := os.Getwd()
+	if err != nil {
+		logrus.Fatal("working directory not found: ", err)
+	}
 	acc := OpenAcc(path)
+	if acc.PartionedMode {
+		partionedPath := filepath.Dir(filepath.Clean(filepath.Join(wd, path)))
+		return project.Open(partionedPath, acc.Company, acc.JournalConfig, acc.SaveSchema)
+	}
 	return schema.Schema{
 		Company:             acc.Company,
 		Expenses:            schema.OpenExpenses(acc.ExpensesFilePath),
@@ -137,7 +163,12 @@ func (a Acc) Save(path string) {
 }
 
 func (a Acc) SaveSchema(s schema.Schema) {
-	a.SaveSchemaToFolder(s, a.projectFolder)
+	if a.PartionedMode {
+		a.Save(a.FileName)
+		s.SaveFunc(s)
+		return
+	}
+	a.SaveSchemaToFolder(s, a.partionedFolder)
 }
 
 // SaveProjectToFolder saves all files linked in the Acc config to the given folder.

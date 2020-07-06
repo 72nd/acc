@@ -130,6 +130,7 @@ func main() {
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							s := config.OpenSchema(inputPath)
+							fmt.Println("kjöl")
 							if c.Bool("default") {
 								s.Expenses = append(s.Expenses, schema.NewExpenseWithUuid())
 							} else {
@@ -550,7 +551,7 @@ func main() {
 					if !c.Bool("default") {
 						fmt.Println(aurora.BrightMagenta("assistant for new acc project, use --default for non interactive use"))
 					}
-					config.NewSchema(outputPath, c.String("logo"), true, !c.Bool("default"))
+					config.NewSchema(outputPath, c.String("logo"), true, !c.Bool("default"), c.Bool("partioned-mode"))
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -574,9 +575,9 @@ func main() {
 						Usage:   "path to the folder where the Acc project files should be written",
 					},
 					&cli.BoolFlag{
-						Name:    "project-mode",
+						Name:    "partioned-mode",
 						Aliases: []string{"p"},
-						Usage:   "enable project mode",
+						Usage:   "enable partioned mode",
 					},
 				},
 			},

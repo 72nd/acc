@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"crypto/sha1"
 	"fmt"
+	"io/ioutil"
 	"regexp"
 	"strconv"
 	"time"
@@ -9,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/util"
+	"gopkg.in/yaml.v3"
 )
 
 type Schema struct {
@@ -23,6 +26,7 @@ type Schema struct {
 	AppendExpenseSuffix func(suffix string, overwrite bool)
 	AppendInvoiceSuffix func(suffix string, overwrite bool)
 	SaveFunc            func(s Schema)
+	FileHashes          map[string]string
 }
 
 func (s Schema) Save() {
@@ -119,9 +123,38 @@ func GetUuid() string {
 	return uuid.Must(uuid.NewRandom()).String()
 }
 
-// Comparable objects can contain a hash of their initial file state.
-// This is used in the project mode to prevent unnecessary file writes.
-type Comparable interface {
-	GetHash() string
-	SetHash(hash string)
+// OpenYaml does the same as util.OpenYaml but returns the hash of the file.
+func OpenYamlHashed(data interface{}, path, dataType string) string {
+	if path == "" {
+		logrus.Fatalf("error reading %s file: given path is empty", dataType)
+	}
+	raw, err := ioutil.ReadFile(path)
+	if err != nil {
+		logrus.Fatalf("error reading %s file \"%s\": %s", dataType, path, err)
+	}
+	if err := yaml.Unmarshal(raw, &data); err != nil {
+		logrus.Fatalf("error converting (unmarshalling) %s data of file \"%s\" %s", dataType, path, err)
+	}
+	return hash(raw)
+}
+
+func SaveYamlOnChange(data interface{}, path, dataType, oldHash string) {
+	var raw []byte
+	var err error
+	raw, err = yaml.Marshal(data)
+	if err != nil {
+		logrus.Fatalf("error converting (marshalling) %s data for file \"%s\" to YAML: %s", dataType, path, err)
+	}
+	if hash(raw) == oldHash {
+		return
+	}
+	if err := ioutil.WriteFile(path, raw, 0644); err != nil {
+		logrus.Fatalf("error writing %s file \"%s\" %s", dataType, path, err)
+	}
+}
+
+func hash(data []byte) string {
+	h := sha1.New()
+	h.Write(data)
+	return string(h.Sum(nil))
 }
