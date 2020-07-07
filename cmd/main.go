@@ -130,7 +130,6 @@ func main() {
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							s := config.OpenSchema(inputPath)
-							fmt.Println("kjöl")
 							if c.Bool("default") {
 								s.Expenses = append(s.Expenses, schema.NewExpenseWithUuid())
 							} else {
