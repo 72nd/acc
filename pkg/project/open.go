@@ -22,74 +22,104 @@ import (
 
 type StrTuple []string
 
+type SafeContainer struct {
+	wg       sync.WaitGroup
+	cst      []schema.Party
+	cstMux   sync.Mutex
+	emp      []schema.Party
+	empMux   sync.Mutex
+	exp      []schema.Expense
+	expMux   sync.Mutex
+	prj      ProjectFiles
+	prjMux   sync.Mutex
+	files    map[string]string
+	filesMux sync.Mutex
+}
+
+func (c *SafeContainer) Wait() {
+	c.wg.Wait()
+}
+
+func (c *SafeContainer) AddCst(cst []schema.Party) {
+	c.wg.Add(1)
+	go func() {
+		c.cstMux.Lock()
+		c.cst = append(c.cst, cst...)
+		c.cstMux.Unlock()
+		c.wg.Done()
+	}()
+}
+
+func (c *SafeContainer) AddEmp(emp []schema.Party) {
+	c.wg.Add(1)
+	go func() {
+		c.empMux.Lock()
+		c.emp = append(c.emp, emp...)
+		c.empMux.Unlock()
+		c.wg.Done()
+	}()
+}
+
+func (c *SafeContainer) AddExp(exp schema.Expenses) {
+	c.wg.Add(1)
+	go func() {
+		c.expMux.Lock()
+		c.exp = append(c.exp, exp...)
+		c.expMux.Unlock()
+		c.wg.Done()
+	}()
+}
+
+func (c *SafeContainer) AddPrj(prj ProjectFiles) {
+	c.wg.Add(1)
+	go func() {
+		c.prjMux.Lock()
+		c.prj = append(c.prj, prj...)
+		c.prjMux.Unlock()
+		c.wg.Done()
+	}()
+}
+
+func (c *SafeContainer) AddFile(file StrTuple) {
+	c.wg.Add(1)
+	go func() {
+		c.filesMux.Lock()
+		c.files[file[0]] = file[1]
+		c.filesMux.Unlock()
+		c.wg.Done()
+	}()
+}
+
 // Open loads the schema for the project mode.
 func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc func(schema.Schema)) schema.Schema {
+	cnt := &SafeContainer{}
 	var wg sync.WaitGroup
-	cstChan := make(chan schema.Party)
-	empChan := make(chan schema.Party)
-	expChan := make(chan schema.Expense)
-	prjChan := make(chan ProjectFile)
-	fileChan := make(chan StrTuple)
 	wg.Add(1)
-	go openCustomersProjects(path, cstChan, prjChan, fileChan, &wg)
+	go openCustomersProjects(path, cnt, &wg)
 	wg.Add(1)
-	go openInternalExpenses(path, expChan, fileChan, &wg)
+	go openInternalExpenses(path, cnt, &wg)
 	wg.Add(1)
-	go openEmployeeFile(path, empChan, fileChan, &wg)
+	go openEmployeeFile(path, cnt, &wg)
+	cnt.Wait()
 	wg.Wait()
-
-	close(cstChan)
-	close(empChan)
-	close(expChan)
-	close(prjChan)
-	close(fileChan)
-
-	cst := make([]schema.Party, len(cstChan))
-	i := 0
-	for c := range cstChan {
-		cst[i] = c
-		i++
-	}
-	emp := make([]schema.Party, len(empChan))
-	i = 0
-	for e := range empChan {
-		emp[i] = e
-		i++
-	}
-	exp := make(schema.Expenses, len(expChan))
-	i = 0
-	for e := range expChan {
-		exp[i] = e
-		i++
-	}
-	prj := make(ProjectFiles, len(prjChan))
-	i = 0
-	for p := range prjChan {
-		prj[i] = p
-		i++
-	}
-	var files map[string]string
-	for f := range fileChan {
-		files[f[0]] = f[1]
-	}
 
 	return schema.Schema{
 		Company:       cmp,
-		Expenses:      append(exp, prj.Expenses()...),
-		Invoices:      prj.Invoices(),
+		Expenses:      append(cnt.exp, cnt.prj.Expenses()...),
+		Invoices:      cnt.prj.Invoices(),
 		JournalConfig: jfg,
 		Parties: schema.Parties{
-			Customers: cst,
-			Employees: emp,
+			Customers: cnt.cst,
+			Employees: cnt.emp,
 		},
-		Projects:   prj.Projects(),
-		FileHashes: files,
+		Projects:   cnt.prj.Projects(),
+		FileHashes: cnt.files,
 		SaveFunc:   saveFunc,
 	}
 }
 
 // openCustomersProjects walks the given projects folder (path) and returns all found customers and projects.
-func openCustomersProjects(path string, cstChan chan schema.Party, prjChan chan ProjectFile, fileChan chan StrTuple, wg *sync.WaitGroup) {
+func openCustomersProjects(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
 	path = filepath.Join(path, "projects")
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		logrus.Fatalf("projects folder in acc repository doesn't exist, expected path: %s", path)
@@ -98,20 +128,20 @@ func openCustomersProjects(path string, cstChan chan schema.Party, prjChan chan 
 
 	for i := range folders {
 		wg.Add(1)
-		go customerWalk(folders[i], cstChan, prjChan, fileChan, wg)
+		go customerWalk(folders[i], cnt, wg)
 	}
 	wg.Done()
 }
 
 // customerWalk goes trough one customer folder and puts the customer and all found projects into channels.
-func customerWalk(path string, cstChan chan schema.Party, prjChan chan ProjectFile, fileChan chan StrTuple, wg *sync.WaitGroup) {
+func customerWalk(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
 	wg.Add(1)
-	go openCustomerFile(path, cstChan, fileChan, wg)
+	go openCustomerFile(path, cnt, wg)
 
 	folders := getFoldersInPath(path)
 	for i := range folders {
 		wg.Add(1)
-		go openProjectFile(folders[i], prjChan, fileChan, wg)
+		go openProjectFile(folders[i], cnt, wg)
 	}
 
 	wg.Done()
@@ -119,36 +149,36 @@ func customerWalk(path string, cstChan chan schema.Party, prjChan chan ProjectFi
 
 // openCustomerFile tries to open the `customer.yaml` file in the given folder path.
 // If the file exists it will be parsed and the customer get added to the customer channel.
-func openCustomerFile(path string, cstChan chan schema.Party, fileChan chan StrTuple, wg *sync.WaitGroup) {
+func openCustomerFile(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
 	cstFile := filepath.Join(path, customerFileName)
 	if _, err := os.Stat(cstFile); os.IsNotExist(err) {
 		logrus.Errorf("the %s file does not exist in %s", customerFileName, path)
 	} else {
 		var cst schema.Party
 		hash := schema.OpenYamlHashed(&cst, cstFile, "customer file")
-		fileChan <- StrTuple{cstFile, hash}
-		cstChan <- cst
+		cnt.AddFile(StrTuple{cstFile, hash})
+		cnt.AddCst([]schema.Party{cst})
 	}
 	wg.Done()
 }
 
 // openProjectFile tries to open the `project.yaml` file in the given folder path.
 // If the file exists it will be parsed and the project get added to the project channel.
-func openProjectFile(path string, prjChan chan ProjectFile, fileChan chan StrTuple, wg *sync.WaitGroup) {
+func openProjectFile(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
 	prjFile := filepath.Join(path, projectFileName)
 	if _, err := os.Stat(prjFile); os.IsNotExist(err) {
 		logrus.Errorf("the %s file does not exist in %s", projectFileName, path)
 	} else {
 		var prj ProjectFile
 		hash := schema.OpenYamlHashed(&prj, prjFile, "project file")
-		fileChan <- StrTuple{prjFile, hash}
-		prjChan <- prj.AbsolutePaths(path)
+		cnt.AddFile(StrTuple{prjFile, hash})
+		cnt.AddPrj(ProjectFiles{prj.AbsolutePaths(path)})
 	}
 	wg.Done()
 }
 
 // openInternalExpenses opens the internal expenses in the `internal` folder.
-func openInternalExpenses(path string, expChan chan schema.Expense, fileChan chan StrTuple, wg *sync.WaitGroup) {
+func openInternalExpenses(path string, container *SafeContainer, wg *sync.WaitGroup) {
 	intFolder := filepath.Join(path, internalFolderName)
 	if _, err := os.Stat(intFolder); os.IsNotExist(err) {
 		logrus.Errorf("the %s folder does not exist in %s", internalFolderName, path)
@@ -163,13 +193,13 @@ func openInternalExpenses(path string, expChan chan schema.Expense, fileChan cha
 	}
 	for i := range files {
 		wg.Add(1)
-		go openExpenseFile(files[i], expChan, fileChan, wg)
+		go openExpenseFile(files[i], container, wg)
 	}
 	wg.Done()
 }
 
 // openExpenseFile opens an expense file by the given path and adds the expenses into to channel.
-func openExpenseFile(path string, expChan chan schema.Expense, fileChan chan StrTuple, wg *sync.WaitGroup) {
+func openExpenseFile(path string, container *SafeContainer, wg *sync.WaitGroup) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		logrus.Errorf("the internal expense file \"%s\" does not exists", path)
 		wg.Done()
@@ -177,14 +207,12 @@ func openExpenseFile(path string, expChan chan schema.Expense, fileChan chan Str
 	}
 	var exp schema.Expenses
 	util.OpenYaml(&exp, path, "internal expenses file")
-	for i := range exp {
-		expChan <- exp[i]
-	}
+	container.AddExp(exp)
 	wg.Done()
 }
 
 // openExpenseFile opens the employee file by the given path and adds the employees into the channel.
-func openEmployeeFile(path string, empChan chan schema.Party, fileChan chan StrTuple, wg *sync.WaitGroup) {
+func openEmployeeFile(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
 	empPath := filepath.Join(path, employeesFileName)
 	if _, err := os.Stat(empPath); os.IsNotExist(err) {
 		logrus.Errorf("the %s file does not exist in %s", employeesFileName, path)
@@ -198,8 +226,6 @@ func openEmployeeFile(path string, empChan chan schema.Party, fileChan chan StrT
 		wg.Done()
 		return
 	}
-	for i := range emp {
-		empChan <- emp[i]
-	}
+	cnt.AddEmp(emp)
 	wg.Done()
 }
