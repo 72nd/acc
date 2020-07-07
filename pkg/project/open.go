@@ -38,43 +38,39 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 	go openEmployeeFile(path, empChan, fileChan, &wg)
 	wg.Wait()
 
+	close(cstChan)
+	close(empChan)
+	close(expChan)
+	close(prjChan)
+	close(fileChan)
+
 	cst := make([]schema.Party, len(cstChan))
 	i := 0
-	if len(cstChan) != 0 {
-		for c := range cstChan {
-			cst[i] = c
-			i++
-		}
+	for c := range cstChan {
+		cst[i] = c
+		i++
 	}
 	emp := make([]schema.Party, len(empChan))
 	i = 0
-	if len(empChan) != 0 {
-		for e := range empChan {
-			emp[i] = e
-			i++
-		}
+	for e := range empChan {
+		emp[i] = e
+		i++
 	}
 	exp := make(schema.Expenses, len(expChan))
 	i = 0
-	if len(expChan) != 0 {
-		for e := range expChan {
-			exp[i] = e
-			i++
-		}
+	for e := range expChan {
+		exp[i] = e
+		i++
 	}
 	prj := make(ProjectFiles, len(prjChan))
 	i = 0
-	if len(prjChan) != 0 {
-		for p := range prjChan {
-			prj[i] = p
-			i++
-		}
+	for p := range prjChan {
+		prj[i] = p
+		i++
 	}
 	var files map[string]string
-	if len(fileChan) != 0 {
-		for f := range fileChan {
-			files[f[0]] = f[1]
-		}
+	for f := range fileChan {
+		files[f[0]] = f[1]
 	}
 
 	return schema.Schema{

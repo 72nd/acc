@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 type OutputMode int

@@ -236,7 +236,7 @@ func main() {
 							ncPath := getReadPathOrExit(c, "nextcloud-folder", "Bimpf Nextcloud project folder")
 							if !fileExist(ncPath) {
 								if c.Bool("ignore") {
-									logrus.Warnf("Nextcloud folder at given path (%s) not found. As --ignore is used, execution will continue.")
+									logrus.Warnf("Nextcloud folder at given path (%s) not found. As --ignore is used, execution will continue.", ncPath)
 								} else {
 									logrus.Fatalf("Nextcloud folder at given path (%s) not found, this will lead to incorrect project files. Use --ignore to continue with the execution.", ncPath)
 								}

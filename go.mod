@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/GeertJohan/go.rice v1.0.0
+	github.com/Rhymond/go-money v1.0.1
 	github.com/creasty/defaults v1.3.0
 	github.com/daaku/go.zipexe v1.0.1 // indirect
 	github.com/google/uuid v1.1.1
@@ -15,6 +16,5 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/urfave/cli/v2 v2.1.1
 	golang.org/x/tools/gopls v0.4.1 // indirect
-	gopkg.in/yaml.v2 v2.2.4
-	gopkg.in/yaml.v3 v3.0.0-20200506231410-2ff61e1afc86
+	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 )

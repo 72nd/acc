@@ -119,6 +119,22 @@ type Completable interface {
 	SetId()
 }
 
+// DateFilterable structs can return a date which defines their date. If a entry contains more than one
+// date, the date of accrual is 
+type DateFilterable interface {
+	GetDate() time.Time
+}
+
+// SortByYear returns a map with the given elements sorted by year.
+func SortByYear (data []DateFilterable) map[int][]DateFilterable {
+	rsl := make(map[int][]DateFilterable)
+	for i := range data {
+		year := data[i].GetDate().Year()
+		rsl[year] = append(rsl[year], data[i])
+	}
+	return rsl
+}
+
 func GetUuid() string {
 	return uuid.Must(uuid.NewRandom()).String()
 }
