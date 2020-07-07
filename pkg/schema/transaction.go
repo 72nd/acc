@@ -325,3 +325,11 @@ func (t Transaction) SearchItem() util.SearchItem {
 		SearchValue: t.Description,
 	}
 }
+
+func (t Transaction) GetDate() *time.Time {
+	date, err := time.Parse(util.DateFormat, t.Date)
+	if err != nil {
+		return nil
+	}
+	return &date
+}

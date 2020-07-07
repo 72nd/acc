@@ -486,26 +486,10 @@ func (e Expense) Match(from *time.Time, to *time.Time, identifier string) (bool,
 	return true, nil
 }
 
-/*
-func (e Expense) CommentNodes(s Schema) Expense {
-	cst, err := s.Parties.CustomerById(e.ObligedCustomerId.Value)
+func (e Expense) GetDate() *time.Time {
+	date, err := time.Parse(util.DateFormat, e.DateOfAccrual)
 	if err != nil {
-		e.ObligedCustomerId.LineComment = "no customer exists for this id"
-	} else {
-		e.ObligedCustomerId.HeadComment = cst.Short()
+		return nil
 	}
-	emp, err := s.Parties.EmployeeById(e.AdvancedThirdPartyId.Value)
-	if err != nil {
-		e.AdvancedThirdPartyId.LineComment = "no employee exists for this id"
-	} else {
-		e.AdvancedThirdPartyId.LineComment = emp.Short()
-	}
-	trn, err := s.Statement.TransactionById(e.SettlementTransactionId.Value)
-	if err != nil {
-		e.SettlementTransactionId.LineComment = "no transaction exists for this id"
-	} else {
-		e.SettlementTransactionId.LineComment = trn.Short()
-	}
-	return e
+	return &date
 }
-*/

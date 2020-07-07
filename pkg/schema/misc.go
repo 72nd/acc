@@ -223,3 +223,11 @@ func (m MiscRecord) Conditions() util.Conditions {
 		},
 	}
 }
+
+func (m MiscRecord) GetDate() *time.Time {
+	date, err := time.Parse(util.DateFormat, m.Date)
+	if err != nil {
+		return nil
+	}
+	return &date
+}

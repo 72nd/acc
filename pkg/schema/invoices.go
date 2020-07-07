@@ -372,3 +372,11 @@ func (i Invoice) SendDateTime() time.Time {
 	}
 	return result
 }
+
+func (i Invoice) GetDate() *time.Time {
+	date, err := time.Parse(util.DateFormat, i.SendDate)
+	if err != nil {
+		return nil
+	}
+	return &date
+}
