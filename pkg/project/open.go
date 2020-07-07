@@ -156,6 +156,11 @@ func openInternalExpenses(path string, expChan chan schema.Expense, fileChan cha
 		return
 	}
 	files := getMatchingFilesInPath(intFolder, regexp.MustCompile(`expenses-2\d\d\d\.yaml`))
+
+	otherExpPath := filepath.Join(intFolder, "expenses-other.yaml")
+	if _, err := os.Stat(otherExpPath); !os.IsNotExist(err) {
+		files = append(files, otherExpPath)
+	}
 	for i := range files {
 		wg.Add(1)
 		go openExpenseFile(files[i], expChan, fileChan, wg)

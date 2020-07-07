@@ -1,6 +1,7 @@
 package project
 
 import (
+	"fmt"
 	"path/filepath"
 	"sync"
 
@@ -107,12 +108,24 @@ func saveInternalExpenses(path string, exp schema.Expenses, hashes map[string]st
 			intExp = append(intExp, exp[i])
 		}
 	}
-	expPath := filepath.Join(path, internalFolderName, "expenses.yaml")
-	schema.SaveYamlOnChange(intExp, expPath, "internal expenses", hashes[expPath])
+	sorted := intExp.SortByYear()
+
+	var expWg sync.WaitGroup
+	for k, v := range sorted {
+		expWg.Add(1)
+		go saveInternalYearExpenses(filepath.Join(path, internalFolderName), k, v, hashes, &expWg)
+	}
+	expWg.Wait()
 	wg.Done()
 }
 
-func saveInternalExpense(path string, exp schema.Expense, hashes map[string]string, wg *sync.WaitGroup) {
+func saveInternalYearExpenses(path string, year int, exp schema.Expenses, hashes map[string]string, wg *sync.WaitGroup) {
+	filename := fmt.Sprintf("expenses-%d.yaml", year)
+	if year == 0 {
+		filename = "expenses-other.yaml"
+	}
+	expPath := filepath.Join(path, filename)
+	schema.SaveYamlOnChange(exp, expPath, "internal expenses", hashes[expPath])
 	wg.Done()
 }
 

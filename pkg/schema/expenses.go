@@ -142,6 +142,19 @@ func (e Expenses) Less(i, j int) bool {
 	return di.Before(dj)
 }
 
+// SortByYear returns a map with the given elements sorted by year.
+func (e Expenses) SortByYear() map[int]Expenses {
+	rsl := make(map[int]Expenses)
+	for i := range e {
+		if e[i].GetDate() == nil {
+			rsl[0] = append(rsl[0], e[i])
+		}
+		year := e[i].GetDate().Year()
+		rsl[year] = append(rsl[year], e[i])
+	}
+	return rsl
+}
+
 /*
 func (e Expenses) CommentNodes(s Schema) Expenses {
 	rsl := make(Expenses, len(e))
@@ -493,3 +506,5 @@ func (e Expense) GetDate() *time.Time {
 	}
 	return &date
 }
+
+
