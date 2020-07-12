@@ -8,6 +8,38 @@ import (
 	"gitlab.com/72th/acc/pkg/schema"
 )
 
+type SaveContainer struct {
+	wg     sync.WaitGroup
+	cst    CustomersToSave
+	cstMux sync.Mutex
+	prj    ProjectFiles
+	prjMux sync.Mutex
+}
+
+func (c *SaveContainer) Wait() {
+	c.wg.Wait()
+}
+
+func (c *SaveContainer) AddCst(cst CustomerToSave) {
+	c.wg.Add(1)
+	go func() {
+		c.cstMux.Lock()
+		c.cst = append(c.cst, cst)
+		c.cstMux.Unlock()
+		c.wg.Done()
+	}()
+}
+
+func (c *SaveContainer) AddPrj(prj ProjectFile) {
+	c.wg.Add(1)
+	go func() {
+		c.prjMux.Lock()
+		c.prj = append(c.prj, prj)
+		c.prjMux.Unlock()
+		c.wg.Done()
+	}()
+}
+
 // Save saves a schema as a folder structure to the given folder (path).
 // This function is only directly called when converting a project to folder mode.
 func Save(s schema.Schema, path string) {
@@ -26,57 +58,50 @@ func Save(s schema.Schema, path string) {
 // customersToSave transforms the schema into the optimized structure to save the customers
 // and their projects in folder mode.
 func customersToSave(s schema.Schema) CustomersToSave {
+	cnt := &SaveContainer{}
+
 	var wg sync.WaitGroup
-	cstChan := make(chan CustomerToSave)
 
 	for i := range s.Parties.Customers {
 		wg.Add(1)
-		go customerToSave(s, s.Parties.Customers[i], cstChan, &wg)
+		go customerToSave(s, s.Parties.Customers[i], cnt, &wg)
 	}
 	wg.Wait()
+	cnt.Wait()
 
-	rsl := make(CustomersToSave, len(cstChan))
-	if len(cstChan) == 0 {
-		return rsl
-	}
-	i := 0
-	for c := range cstChan {
-		rsl[i] = c
+	rsl := make(CustomersToSave, len(cnt.cst))
+	for i := range cnt.cst {
+		rsl[i] = cnt.cst[i]
 	}
 	return rsl
 }
 
 // customerToSave builds the CustomerToSave structure for a given customer Party and
 // adds it to the channel.
-func customerToSave(s schema.Schema, cst schema.Party, cstChan chan CustomerToSave, wg *sync.WaitGroup) {
+func customerToSave(s schema.Schema, cst schema.Party, cnt *SaveContainer, wg *sync.WaitGroup) {
 	var prjWg sync.WaitGroup
-	prjChan := make(chan ProjectFile)
 
 	for i := range s.Projects {
 		prjWg.Add(1)
-		go projectFile(s, s.Projects[i], prjChan, &prjWg)
+		go projectFile(s, s.Projects[i], cnt, &prjWg)
 	}
 	prjWg.Wait()
+	cnt.Wait()
 
-	prjFiles := make(ProjectFiles, len(prjChan))
-	if len(prjChan) == 0 {
-		wg.Done()
-		return
+	prjFiles := make(ProjectFiles, len(cnt.prj))
+	for i := range cnt.prj {
+		prjFiles[i] = cnt.prj[i]
 	}
-	i := 0
-	for p := range prjChan {
-		prjFiles[i] = p
-	}
-	cstChan <- CustomerToSave{
+	cnt.AddCst(CustomerToSave{
 		Customer:     cst,
 		ProjectFiles: prjFiles,
-	}
+	})
 	wg.Done()
 }
 
 // projectFile builds the ProjectFile structure for a given schema.Project and
 // adds it to the channel.
-func projectFile(s schema.Schema, prj schema.Project, prjChan chan ProjectFile, wg *sync.WaitGroup) {
+func projectFile(s schema.Schema, prj schema.Project, cnt *SaveContainer, wg *sync.WaitGroup) {
 	var exp schema.Expenses
 	var inv schema.Invoices
 
@@ -87,11 +112,11 @@ func projectFile(s schema.Schema, prj schema.Project, prjChan chan ProjectFile, 
 		// TODO do this also for invoices.
 	}
 
-	prjChan <- ProjectFile{
+	cnt.AddPrj(ProjectFile{
 		Project:  prj,
 		Expenses: exp,
 		Invoices: inv,
-	}
+	})
 	wg.Done()
 }
 

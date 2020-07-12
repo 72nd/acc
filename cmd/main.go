@@ -399,6 +399,41 @@ func main() {
 				},
 			},
 			{
+				Name:  "distributed",
+				Usage: "distributed mode (aka. folder mode) specific commands",
+				Action: func(c *cli.Context) error {
+					_ = cli.ShowCommandHelp(c, c.Command.Name)
+					return nil
+				},
+				Subcommands: []*cli.Command{
+					{
+						Name:  "convert",
+						Usage: "convert a flat file acc project into a distributed project",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							outputPath := c.String("output")
+							a := config.OpenAcc(inputPath).NewProjectModeAcc(outputPath)
+							s := config.OpenSchema(inputPath)
+							project.Save(s, outputPath)
+							a.Save(a.FileName)
+							return nil
+						},
+						Flags: []cli.Flag{
+							&cli.StringFlag{
+								Name:    "input",
+								Aliases: []string{"i"},
+								Usage:   "acc project file",
+							},
+							&cli.StringFlag{
+								Name:    "output",
+								Aliases: []string{"o"},
+								Usage:   "output folder path",
+							},
+						},
+					},
+				},
+			},
+			{
 				Name:  "filter",
 				Usage: "filter elements by date",
 				Action: func(c *cli.Context) error {
@@ -550,7 +585,7 @@ func main() {
 					if !c.Bool("default") {
 						fmt.Println(aurora.BrightMagenta("assistant for new acc project, use --default for non interactive use"))
 					}
-					config.NewSchema(outputPath, c.String("logo"), true, !c.Bool("default"), c.Bool("partioned-mode"))
+					config.NewSchema(outputPath, c.String("logo"), true, !c.Bool("default"), c.Bool("distributed-mode"))
 					return nil
 				},
 				Flags: []cli.Flag{
@@ -558,6 +593,11 @@ func main() {
 						Name:    "default",
 						Aliases: []string{"d", "default-values"},
 						Usage:   "use default values and do not use interactive input",
+					},
+					&cli.BoolFlag{
+						Name:    "distributed-mode",
+						Aliases: []string{"D"},
+						Usage:   "enable distributed mode",
 					},
 					&cli.BoolFlag{
 						Name:    "force",
@@ -572,46 +612,6 @@ func main() {
 						Name:    "output-folder",
 						Aliases: []string{"output", "o"},
 						Usage:   "path to the folder where the Acc project files should be written",
-					},
-					&cli.BoolFlag{
-						Name:    "partioned-mode",
-						Aliases: []string{"p"},
-						Usage:   "enable partioned mode",
-					},
-				},
-			},
-			{
-				Name:  "project",
-				Usage: "project mode (aka. folder mode) specific commands",
-				Action: func(c *cli.Context) error {
-					_ = cli.ShowCommandHelp(c, c.Command.Name)
-					return nil
-				},
-				Subcommands: []*cli.Command{
-					{
-						Name:  "convert",
-						Usage: "convert a flat file acc project into a folder based project",
-						Action: func(c *cli.Context) error {
-							inputPath := getReadPathOrExit(c, "input", "acc project file")
-							outputPath := c.String("output")
-							a := config.OpenAcc(inputPath).NewProjectModeAcc(outputPath)
-							s := config.OpenSchema(inputPath)
-							project.Save(s, outputPath)
-							a.Save(a.FileName)
-							return nil
-						},
-						Flags: []cli.Flag{
-							&cli.StringFlag{
-								Name:    "input",
-								Aliases: []string{"i"},
-								Usage:   "acc project file",
-							},
-							&cli.StringFlag{
-								Name:    "output",
-								Aliases: []string{"o"},
-								Usage:   "output folder path",
-							},
-						},
 					},
 				},
 			},

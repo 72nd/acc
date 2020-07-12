@@ -1,6 +1,7 @@
 package project
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -22,7 +23,7 @@ import (
 
 type StrTuple []string
 
-type SafeContainer struct {
+type OpenContainer struct {
 	wg       sync.WaitGroup
 	cst      []schema.Party
 	cstMux   sync.Mutex
@@ -36,11 +37,11 @@ type SafeContainer struct {
 	filesMux sync.Mutex
 }
 
-func (c *SafeContainer) Wait() {
+func (c *OpenContainer) Wait() {
 	c.wg.Wait()
 }
 
-func (c *SafeContainer) AddCst(cst []schema.Party) {
+func (c *OpenContainer) AddCst(cst []schema.Party) {
 	c.wg.Add(1)
 	go func() {
 		c.cstMux.Lock()
@@ -50,7 +51,7 @@ func (c *SafeContainer) AddCst(cst []schema.Party) {
 	}()
 }
 
-func (c *SafeContainer) AddEmp(emp []schema.Party) {
+func (c *OpenContainer) AddEmp(emp []schema.Party) {
 	c.wg.Add(1)
 	go func() {
 		c.empMux.Lock()
@@ -60,7 +61,7 @@ func (c *SafeContainer) AddEmp(emp []schema.Party) {
 	}()
 }
 
-func (c *SafeContainer) AddExp(exp schema.Expenses) {
+func (c *OpenContainer) AddExp(exp schema.Expenses) {
 	c.wg.Add(1)
 	go func() {
 		c.expMux.Lock()
@@ -70,7 +71,7 @@ func (c *SafeContainer) AddExp(exp schema.Expenses) {
 	}()
 }
 
-func (c *SafeContainer) AddPrj(prj ProjectFiles) {
+func (c *OpenContainer) AddPrj(prj ProjectFiles) {
 	c.wg.Add(1)
 	go func() {
 		c.prjMux.Lock()
@@ -80,7 +81,7 @@ func (c *SafeContainer) AddPrj(prj ProjectFiles) {
 	}()
 }
 
-func (c *SafeContainer) AddFile(file StrTuple) {
+func (c *OpenContainer) AddFile(file StrTuple) {
 	c.wg.Add(1)
 	go func() {
 		c.filesMux.Lock()
@@ -92,7 +93,7 @@ func (c *SafeContainer) AddFile(file StrTuple) {
 
 // Open loads the schema for the project mode.
 func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc func(schema.Schema)) schema.Schema {
-	cnt := &SafeContainer{}
+	cnt := &OpenContainer{}
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go openCustomersProjects(path, cnt, &wg)
@@ -102,6 +103,7 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 	go openEmployeeFile(path, cnt, &wg)
 	cnt.Wait()
 	wg.Wait()
+	fmt.Println("jaaa")
 
 	return schema.Schema{
 		Company:       cmp,
@@ -119,7 +121,7 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 }
 
 // openCustomersProjects walks the given projects folder (path) and returns all found customers and projects.
-func openCustomersProjects(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
+func openCustomersProjects(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 	path = filepath.Join(path, "projects")
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		logrus.Fatalf("projects folder in acc repository doesn't exist, expected path: %s", path)
@@ -134,7 +136,7 @@ func openCustomersProjects(path string, cnt *SafeContainer, wg *sync.WaitGroup) 
 }
 
 // customerWalk goes trough one customer folder and puts the customer and all found projects into channels.
-func customerWalk(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
+func customerWalk(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 	wg.Add(1)
 	go openCustomerFile(path, cnt, wg)
 
@@ -149,7 +151,7 @@ func customerWalk(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
 
 // openCustomerFile tries to open the `customer.yaml` file in the given folder path.
 // If the file exists it will be parsed and the customer get added to the customer channel.
-func openCustomerFile(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
+func openCustomerFile(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 	cstFile := filepath.Join(path, customerFileName)
 	if _, err := os.Stat(cstFile); os.IsNotExist(err) {
 		logrus.Errorf("the %s file does not exist in %s", customerFileName, path)
@@ -164,7 +166,7 @@ func openCustomerFile(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
 
 // openProjectFile tries to open the `project.yaml` file in the given folder path.
 // If the file exists it will be parsed and the project get added to the project channel.
-func openProjectFile(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
+func openProjectFile(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 	prjFile := filepath.Join(path, projectFileName)
 	if _, err := os.Stat(prjFile); os.IsNotExist(err) {
 		logrus.Errorf("the %s file does not exist in %s", projectFileName, path)
@@ -178,7 +180,7 @@ func openProjectFile(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
 }
 
 // openInternalExpenses opens the internal expenses in the `internal` folder.
-func openInternalExpenses(path string, container *SafeContainer, wg *sync.WaitGroup) {
+func openInternalExpenses(path string, container *OpenContainer, wg *sync.WaitGroup) {
 	intFolder := filepath.Join(path, internalFolderName)
 	if _, err := os.Stat(intFolder); os.IsNotExist(err) {
 		logrus.Errorf("the %s folder does not exist in %s", internalFolderName, path)
@@ -199,7 +201,7 @@ func openInternalExpenses(path string, container *SafeContainer, wg *sync.WaitGr
 }
 
 // openExpenseFile opens an expense file by the given path and adds the expenses into to channel.
-func openExpenseFile(path string, container *SafeContainer, wg *sync.WaitGroup) {
+func openExpenseFile(path string, container *OpenContainer, wg *sync.WaitGroup) {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		logrus.Errorf("the internal expense file \"%s\" does not exists", path)
 		wg.Done()
@@ -212,7 +214,7 @@ func openExpenseFile(path string, container *SafeContainer, wg *sync.WaitGroup) 
 }
 
 // openExpenseFile opens the employee file by the given path and adds the employees into the channel.
-func openEmployeeFile(path string, cnt *SafeContainer, wg *sync.WaitGroup) {
+func openEmployeeFile(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 	empPath := filepath.Join(path, employeesFileName)
 	if _, err := os.Stat(empPath); os.IsNotExist(err) {
 		logrus.Errorf("the %s file does not exist in %s", employeesFileName, path)
