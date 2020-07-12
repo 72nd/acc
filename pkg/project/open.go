@@ -1,7 +1,6 @@
 package project
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -103,7 +102,6 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 	go openEmployeeFile(path, cnt, &wg)
 	cnt.Wait()
 	wg.Wait()
-	fmt.Println("jaaa")
 
 	return schema.Schema{
 		Company:       cmp,

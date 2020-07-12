@@ -165,7 +165,8 @@ func (a Acc) Save(path string) {
 func (a Acc) SaveSchema(s schema.Schema) {
 	if a.PartionedMode {
 		a.Save(a.FileName)
-		s.SaveFunc(s)
+		project.Save(s, a.partionedFolder)
+		// s.SaveFunc(s)
 		return
 	}
 	a.SaveSchemaToFolder(s, a.partionedFolder)
