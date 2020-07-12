@@ -26,7 +26,7 @@ func Save(s schema.Schema, path string) {
 // customersToSave transforms the schema into the optimized structure to save the customers
 // and their projects in folder mode.
 func customersToSave(s schema.Schema) CustomersToSave {
-	var wg sync.WaitGroup
+	var wg sync.WaitGroup 
 	cstChan := make(chan CustomerToSave)
 
 	for i := range s.Parties.Customers {
