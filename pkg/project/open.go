@@ -181,7 +181,6 @@ func openProjectFile(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 		logrus.Errorf("the %s file does not exist in %s", projectFileName, path)
 	} else {
 		var prj ProjectFile
-		// TODO Hier weiter
 		hash := schema.OpenYamlHashed(&prj, prjFile, "project file")
 		cnt.AddFile(StrTuple{prjFile, hash})
 		cnt.AddPrj(ProjectFiles{prj.AbsolutePaths(path)})
