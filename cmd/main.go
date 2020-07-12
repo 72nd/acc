@@ -200,6 +200,24 @@ func main() {
 						Flags: addFlags,
 					},
 					{
+						Name:    "project",
+						Aliases: []string{"prj"},
+						Usage:   "add a project",
+						Action: func(c *cli.Context) error {
+							inputPath := getReadPathOrExit(c, "input", "acc project file")
+							s := config.OpenSchema(inputPath)
+							if c.Bool("default") {
+								s.Projects = append(s.Projects, schema.NewProject())
+							} else {
+								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
+								s.Projects = append(s.Projects, schema.InteractiveNewProject(s))
+							}
+							s.Save()
+							return nil
+						},
+						Flags: addFlags,
+					},
+					{
 						Name:    "transaction",
 						Aliases: []string{"trn"},
 						Usage:   "add a transaction",

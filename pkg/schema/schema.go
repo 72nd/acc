@@ -132,7 +132,7 @@ func OpenYamlHashed(data interface{}, path, dataType string) string {
 	if err != nil {
 		logrus.Fatalf("error reading %s file \"%s\": %s", dataType, path, err)
 	}
-	if err := yaml.Unmarshal(raw, &data); err != nil {
+	if err := yaml.Unmarshal(raw, data); err != nil {
 		logrus.Fatalf("error converting (unmarshalling) %s data of file \"%s\" %s", dataType, path, err)
 	}
 	return hash(raw)

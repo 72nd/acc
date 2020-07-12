@@ -101,7 +101,7 @@ func NewProject() Project {
 }
 
 // InteractiveNewProject returns a new Project based on the user input.
-func InteractiveNewProject(s Schema, asset string) Project {
+func InteractiveNewProject(s Schema) Project {
 	var prj Project
 	prj.Id = GetUuid()
 	prj.Identifier = util.AskString(

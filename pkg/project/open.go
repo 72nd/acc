@@ -40,11 +40,11 @@ func (c *OpenContainer) Wait() {
 	c.wg.Wait()
 }
 
-func (c *OpenContainer) AddCst(cst []schema.Party) {
+func (c *OpenContainer) AddCst(cst schema.Party) {
 	c.wg.Add(1)
 	go func() {
 		c.cstMux.Lock()
-		c.cst = append(c.cst, cst...)
+		c.cst = append(c.cst, cst)
 		c.cstMux.Unlock()
 		c.wg.Done()
 	}()
@@ -93,6 +93,8 @@ func (c *OpenContainer) AddFile(file StrTuple) {
 // Open loads the schema for the project mode.
 func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc func(schema.Schema)) schema.Schema {
 	cnt := &OpenContainer{}
+	cnt.files = make(map[string]string)
+
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go openCustomersProjects(path, cnt, &wg)
@@ -157,7 +159,16 @@ func openCustomerFile(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 		var cst schema.Party
 		hash := schema.OpenYamlHashed(&cst, cstFile, "customer file")
 		cnt.AddFile(StrTuple{cstFile, hash})
-		cnt.AddCst([]schema.Party{cst})
+		/*
+		raw, err := ioutil.ReadFile(cstFile)
+		if err != nil {
+			logrus.Fatal(err)
+		}
+		if err := yaml.Unmarshal(raw, &cst); err != nil {
+			logrus.Fatal(err)
+		}
+		*/
+		cnt.AddCst(cst)
 	}
 	wg.Done()
 }
@@ -170,6 +181,7 @@ func openProjectFile(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 		logrus.Errorf("the %s file does not exist in %s", projectFileName, path)
 	} else {
 		var prj ProjectFile
+		// TODO Hier weiter
 		hash := schema.OpenYamlHashed(&prj, prjFile, "project file")
 		cnt.AddFile(StrTuple{prjFile, hash})
 		cnt.AddPrj(ProjectFiles{prj.AbsolutePaths(path)})

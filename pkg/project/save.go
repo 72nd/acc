@@ -127,7 +127,21 @@ func saveCustomer(path string, cst CustomerToSave, hashes map[string]string, wg 
 	createNonExistingDir(cstFolder)
 
 	cstFile := filepath.Join(cstFolder, customerFileName)
-	schema.SaveYamlOnChange(cst, cstFile, "customer", hashes[cstFile])
+	schema.SaveYamlOnChange(cst.Customer, cstFile, "customer", hashes[cstFile])
+
+	for i := range cst.ProjectFiles {
+		wg.Add(1)
+		go saveProject(cstFolder, cst.ProjectFiles[i], hashes, wg)
+	}
+	wg.Done()
+}
+
+func saveProject(path string, prj ProjectFile, hashes map[string]string, wg *sync.WaitGroup) {
+	prjFolder := filepath.Join(path, folderName(prj.Project.Name))
+	createNonExistingDir(prjFolder)
+
+	prjFile := filepath.Join(prjFolder, projectFileName)
+	schema.SaveYamlOnChange(prj, prjFile, "project", hashes[prjFolder])
 	wg.Done()
 }
 
