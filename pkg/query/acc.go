@@ -24,6 +24,10 @@ var AccQueryables = Queryables{
 		Type: schema.Invoice{},
 	},
 	{
+		Name: "misc-record",
+		Type: schema.MiscRecord{},
+	},
+	{
 		Name: "project",
 		Type: schema.Project{},
 	},
@@ -43,6 +47,8 @@ func accElementsFromQueryable(s schema.Schema, q Queryable) []Element {
 		return NewElements(s.Expenses)
 	case "invoice":
 		return NewElements(s.Invoices)
+	case "misc-record":
+		return NewElements(s.MiscRecords)
 	case "project":
 		return NewElements(s.Projects)
 	case "transaction":
