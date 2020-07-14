@@ -197,8 +197,10 @@ type Expense struct {
 	PayedWithDebit bool `yaml:"payedWithDebit" default:"false"`
 	// Internal states whether this expense is for an internal purpose or not.
 	Internal bool `yaml:"internal" default:"true"`
-	// ProjectName refers to the associated project of the expense.
+	// ProjectName refers to the associated project of the expense. Depreciated.
 	ProjectName string `yaml:"projectName" default:""`
+	// ProjectId refers to the associated project.
+	ProjectId string `yaml:"projectId" default:""`
 }
 
 // NewExpense returns a new Expense element with the default values.
@@ -294,10 +296,12 @@ func InteractiveNewExpense(s *Schema, asset string) Expense {
 		"Internal",
 		"Has this expense an internal prupose?",
 		false)
-	exp.ProjectName = util.AskString(
-		"Project Name",
-		"Name of the associated project",
-		"")
+	if !exp.Internal {
+		exp.ProjectId = util.AskStringFromSearch(
+			"Project",
+			"Associated Project",
+			s.Projects.SearchItems())
+	}
 	return exp
 }
 
@@ -506,5 +510,3 @@ func (e Expense) GetDate() *time.Time {
 	}
 	return &date
 }
-
-

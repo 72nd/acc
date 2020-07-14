@@ -142,8 +142,10 @@ type Invoice struct {
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
 	SettlementTransactionId string `yaml:"settlementTransactionId" default:"" query:"transaction"`
-	// ProjectName refers to the associated project of the expense.
+	// ProjectName refers to the associated project of the expense. Depreciated.
 	ProjectName string `yaml:"projectName" default:""`
+	// ProjectId refers to the associated project.
+	ProjectId string `yaml:"projectId" default:""`
 }
 
 // NewInvoice returns a new Acc element with the default values.
@@ -203,6 +205,11 @@ func InteractiveNewInvoice(s Schema, asset string) Invoice {
 		"Project Name",
 		"Name of the associated project",
 		"")
+	inv.ProjectId = util.AskStringFromSearch(
+		"Project",
+		"Associated Project",
+		s.Projects.SearchItems())
+
 	return inv
 }
 

@@ -18,6 +18,7 @@ import (
  * - Generate ProjectFiles from Project
  * - Save all the stuff
  * - Import from flat file
+ * - Internal Expenses
  */
 
 type StrTuple []string
@@ -105,6 +106,7 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 	cnt.Wait()
 	wg.Wait()
 
+	// TODO do this also for invoices.
 	return schema.Schema{
 		Company:       cmp,
 		Expenses:      append(cnt.exp, cnt.prj.Expenses()...),
@@ -159,15 +161,6 @@ func openCustomerFile(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 		var cst schema.Party
 		hash := schema.OpenYamlHashed(&cst, cstFile, "customer file")
 		cnt.AddFile(StrTuple{cstFile, hash})
-		/*
-		raw, err := ioutil.ReadFile(cstFile)
-		if err != nil {
-			logrus.Fatal(err)
-		}
-		if err := yaml.Unmarshal(raw, &cst); err != nil {
-			logrus.Fatal(err)
-		}
-		*/
 		cnt.AddCst(cst)
 	}
 	wg.Done()
@@ -231,8 +224,8 @@ func openEmployeeFile(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
 		return
 	}
 	var emp []schema.Party
-	_ = schema.OpenYamlHashed(&emp, empPath, "employee file")
-	// fileChan <- StrTuple{empPath, hash}
+	hash := schema.OpenYamlHashed(&emp, empPath, "employee file")
+	cnt.AddFile(StrTuple{empPath, hash})
 	if len(emp) == 0 {
 		wg.Done()
 		return

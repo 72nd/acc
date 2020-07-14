@@ -98,10 +98,14 @@ func projectFile(s schema.Schema, prj schema.Project, cnt *SaveContainer, wg *sy
 	var inv schema.Invoices
 
 	for i := range s.Expenses {
-		if s.Expenses[i].ProjectName == prj.Name { // TODO change this to Id
+		if s.Expenses[i].ProjectId == prj.Id {
 			exp = append(exp, s.Expenses[i])
 		}
-		// TODO do this also for invoices.
+	}
+	for i := range s.Invoices {
+		if s.Invoices[i].ProjectId == prj.Id {
+			inv = append(inv, s.Invoices[i])
+		}
 	}
 
 	cnt.AddPrj(ProjectFile{
