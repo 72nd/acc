@@ -119,7 +119,9 @@ Exports expenses and invoices as an annotated business records for taxes and act
 Check your data.
 
 
-## Workflow
+## Workflows
+
+### Workflow with Bimpf
 
 1. Import from Bimpf
 	- Dump Bimpf data as JSON.
@@ -137,7 +139,7 @@ Check your data.
 4. Validate the result with `acc validate -i acc.yaml`.
 5. Bank statement:
 	- Import the bank statement with `acc camt -i acc.yaml -s camt.xml`.
-	- Complete with `acc complete expenses`.
+	- Complete with `acc complete expenses -i acc.yaml`.
 	- Validate with `acc validate -i acc.yaml`.
 6. Repopulate expenses and invoices with `acc complete repopulate -i acc.yaml`.
 7. Complete transactions with `acc complete transactions -i acc.yaml`
@@ -149,3 +151,15 @@ Check your data.
 	- Book all necessary reserve assets.
 	- Finalize your journal.
 	- 
+
+
+### Simple theater project
+
+1. Prepare:
+	- Collect all receipts of expenses in single folder (e.g. `raw/`).
+2. Create new project `acc new`.
+3. Add all people which payed some expense in advance for the project as employee `acc add employee -i acc.yaml`.
+4. Add all expenses with `acc add expense -i acc.yaml -a raw/receipt.pdf`.
+5. Import or create all bank transactions for the project. Pay attention you only add transactions which have some connection to the theater production.
+6. Complete the expenses with `acc complete expenses -i acc.yaml`.
+7. Repopulate the expenses with `acc complete repopulate -i acc.yaml`.
