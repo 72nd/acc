@@ -106,7 +106,6 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 	cnt.Wait()
 	wg.Wait()
 
-	// TODO do this also for invoices.
 	return schema.Schema{
 		Company:       cmp,
 		Expenses:      append(cnt.exp, cnt.prj.Expenses()...),
@@ -124,7 +123,7 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 
 // openCustomersProjects walks the given projects folder (path) and returns all found customers and projects.
 func openCustomersProjects(path string, cnt *OpenContainer, wg *sync.WaitGroup) {
-	path = filepath.Join(path, "projects")
+	path = filepath.Join(path, projectFolderName)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		logrus.Fatalf("projects folder in acc repository doesn't exist, expected path: %s", path)
 	}

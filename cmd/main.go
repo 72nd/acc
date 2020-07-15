@@ -419,6 +419,7 @@ func main() {
 			{
 				Name:  "distributed",
 				Usage: "distributed mode (aka. folder mode) specific commands",
+				Aliases: []string{"dist"},
 				Action: func(c *cli.Context) error {
 					_ = cli.ShowCommandHelp(c, c.Command.Name)
 					return nil

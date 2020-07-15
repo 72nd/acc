@@ -44,7 +44,7 @@ func (c *SaveContainer) AddPrj(prj ProjectFile) {
 // This function is only directly called when converting a project to folder mode.
 func Save(s schema.Schema, path string) {
 	var wg sync.WaitGroup
-	cst := customersToSave(s)
+	cst := customersToSave(s, filepath.Join(path, projectFolderName))
 
 	wg.Add(1)
 	go saveCustomers(path, cst, s.FileHashes, &wg)
@@ -57,13 +57,14 @@ func Save(s schema.Schema, path string) {
 
 // customersToSave transforms the schema into the optimized structure to save the customers
 // and their projects in folder mode.
-func customersToSave(s schema.Schema) CustomersToSave {
+func customersToSave(s schema.Schema, path string) CustomersToSave {
 	var wg sync.WaitGroup
 	cnt := &SaveContainer{}
 
 	for i := range s.Parties.Customers {
 		wg.Add(1)
-		go customerToSave(s, s.Parties.Customers[i], cnt, &wg)
+		cstFolder := filepath.Join(path, folderName(s.Parties.Customers[i].Name))
+		go customerToSave(s, s.Parties.Customers[i], cnt, cstFolder, &wg)
 	}
 	wg.Wait()
 	cnt.Wait()
@@ -73,13 +74,14 @@ func customersToSave(s schema.Schema) CustomersToSave {
 
 // customerToSave builds the CustomerToSave structure for a given customer Party and
 // adds it to the channel.
-func customerToSave(s schema.Schema, cst schema.Party, cnt *SaveContainer, wg *sync.WaitGroup) {
+func customerToSave(s schema.Schema, cst schema.Party, cnt *SaveContainer, path string, wg *sync.WaitGroup) {
 	var prjWg sync.WaitGroup
 	prjCnt := &SaveContainer{}
 
 	for i := range s.Projects {
 		prjWg.Add(1)
-		go projectFile(s, s.Projects[i], prjCnt, &prjWg)
+		prjFolder := filepath.Join(path, folderName(s.Projects[i].Name))
+		go projectFile(s, s.Projects[i], prjCnt, prjFolder, &prjWg)
 	}
 	prjWg.Wait()
 	prjCnt.Wait()
@@ -93,13 +95,17 @@ func customerToSave(s schema.Schema, cst schema.Party, cnt *SaveContainer, wg *s
 
 // projectFile builds the ProjectFile structure for a given schema.Project and
 // adds it to the channel.
-func projectFile(s schema.Schema, prj schema.Project, cnt *SaveContainer, wg *sync.WaitGroup) {
+func projectFile(s schema.Schema, prj schema.Project, cnt *SaveContainer, path string, wg *sync.WaitGroup) {
 	var exp schema.Expenses
 	var inv schema.Invoices
 
 	for i := range s.Expenses {
+		fmt.Println(s.Expenses[i])
 		if s.Expenses[i].ProjectId == prj.Id {
-			exp = append(exp, s.Expenses[i])
+			e := s.Expenses[i]
+			e.Path = relativeAssetPath(path, e.Path)
+			fmt.Println(e.Path)
+			exp = append(exp, e)
 		}
 	}
 	for i := range s.Invoices {
