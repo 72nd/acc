@@ -60,18 +60,18 @@ func InteractiveNewTransaction(s Statement) Transaction {
 		"Some information about the transaction",
 		"",
 	)
-	trn.TransactionType = util.TransactionType(util.AskIntFromListSearch(
+	trn.TransactionType = util.TransactionType(util.AskIntFromList(
 		"Transaction Type",
 		"",
 		util.SearchItems{
 			util.SearchItem{
 				Name:        "Incoming transaction",
-				Value:       "0",
+				Value:       int(util.DebitTransaction),
 				SearchValue: "1 Incoming Transaction",
 			},
 			util.SearchItem{
 				Name:        "Outgoing transaction",
-				Value:       "2",
+				Value:       int(util.CreditTransaction),
 				SearchValue: "2 Outgoing Transaction",
 			},
 		}))

@@ -107,7 +107,7 @@ func AskIntFromList(name, desc string, searchItems SearchItems) int {
 	}
 	value, ok := searchItems[index-1].Value.(int)
 	if !ok {
-		logrus.Fatalf("value %+v in search item with index %d is not an int", searchItems[index], index)
+		logrus.Fatalf("value %+v in search item with index %d is not an int", searchItems[index-1], index)
 	}
 	return value
 }
@@ -220,5 +220,3 @@ func AskForStategy() Strategy {
 	}
 	return AcceptStrategy
 }
-
-
