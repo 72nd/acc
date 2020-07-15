@@ -100,7 +100,7 @@ func InteractiveNewTransaction(s Statement) Transaction {
 	return trn
 }
 
-func (t Transaction) AssistedCompletion(s Schema, doAll, autoMode, askSkip bool) Transaction {
+func (t Transaction) AssistedCompletion(s Schema, doAll, autoMode, askSkip, documentsOnly bool) Transaction {
 	tmp := t
 	if autoMode {
 		t.JournalMode = AutoJournalMode
@@ -119,57 +119,58 @@ func (t Transaction) AssistedCompletion(s Schema, doAll, autoMode, askSkip bool)
 			return t
 		}
 	}
-	identifier := SuggestNextIdentifier(s.Statement.GetIdentifiables(), DefaultTransactionPrefix)
-	if t.Id == "" {
-		t.SetId()
-	}
-	if t.Identifier == "" {
-		t.Identifier = util.AskString(
-			"Identifier",
-			"Unique human readable identifier",
-			identifier)
-	}
-	t.Description = util.AskString(
-		"Description",
-		"Description of the transaction",
-		t.Description)
-	t.JournalMode = JournalMode(util.AskIntFromList(
-		"Journal Mode",
-		"choose how journal entry will be generated for this transaction",
-		util.SearchItems{
-			{
-				Name:  "Manual Mode",
-				Value: int(ManualJournalMode),
-			},
-			{
-				Name:  "Auto Mode",
-				Value: int(AutoJournalMode),
-			}}))
-	fmt.Println(t.JournalMode)
-	if t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode {
-		parties := append(s.Parties.CustomersSearchItems(), s.Parties.EmployeesSearchItems()...)
-		suggestion, err := t.parseAssociatedParty(t.Description, s.Parties)
-		if err == nil && util.AskForConformation(fmt.Sprintf("Use \"%s\" as associeted third party?", suggestion.String())) {
-			t.AssociatedPartyId = suggestion.GetId()
-		} else {
-			var pty interface{}
-			t.AssociatedPartyId, pty = util.AskStringFromSearchWithNew(
-				"Associated Party",
-				"customer/employee which is originator/recipient of the transaction",
-				parties,
-				InteractiveNewGenericParty,
-				s)
-			if pty != nil {
-				value, ok := pty.(Party)
-				if !ok {
-					logrus.Fatal("returned party has invalid type")
+	if !documentsOnly {
+		if t.Id == "" {
+			t.SetId()
+		}
+		identifier := SuggestNextIdentifier(s.Statement.GetIdentifiables(), DefaultTransactionPrefix)
+		if t.Identifier == "" {
+			t.Identifier = util.AskString(
+				"Identifier",
+				"Unique human readable identifier",
+				identifier)
+		}
+		t.Description = util.AskString(
+			"Description",
+			"Description of the transaction",
+			t.Description)
+		t.JournalMode = JournalMode(util.AskIntFromList(
+			"Journal Mode",
+			"choose how journal entry will be generated for this transaction",
+			util.SearchItems{
+				{
+					Name:  "Manual Mode",
+					Value: int(ManualJournalMode),
+				},
+				{
+					Name:  "Auto Mode",
+					Value: int(AutoJournalMode),
+				}}))
+		if t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode {
+			parties := append(s.Parties.CustomersSearchItems(), s.Parties.EmployeesSearchItems()...)
+			suggestion, err := t.parseAssociatedParty(t.Description, s.Parties)
+			if err == nil && util.AskForConformation(fmt.Sprintf("Use \"%s\" as associeted third party?", suggestion.String())) {
+				t.AssociatedPartyId = suggestion.GetId()
+			} else {
+				var pty interface{}
+				t.AssociatedPartyId, pty = util.AskStringFromSearchWithNew(
+					"Associated Party",
+					"customer/employee which is originator/recipient of the transaction",
+					parties,
+					InteractiveNewGenericParty,
+					s)
+				if pty != nil {
+					value, ok := pty.(Party)
+					if !ok {
+						logrus.Fatal("returned party has invalid type")
+					}
+					if value.PartyType == CustomerType {
+						s.Parties.Customers = append(s.Parties.Customers, value)
+					} else if value.PartyType == EmployeeType {
+						s.Parties.Employees = append(s.Parties.Employees, value)
+					}
+					t.AssociatedPartyId = value.Id
 				}
-				if value.PartyType == CustomerType {
-					s.Parties.Customers = append(s.Parties.Customers, value)
-				} else if value.PartyType == EmployeeType {
-					s.Parties.Employees = append(s.Parties.Employees, value)
-				}
-				t.AssociatedPartyId = value.Id
 			}
 		}
 	}
@@ -188,7 +189,7 @@ func (t Transaction) AssistedCompletion(s Schema, doAll, autoMode, askSkip bool)
 	strategy := util.AskForStategy()
 	switch strategy {
 	case util.RedoStrategy:
-		t.AssistedCompletion(s, doAll, autoMode, askSkip)
+		t.AssistedCompletion(s, doAll, autoMode, askSkip, documentsOnly)
 	case util.SkipStrategy:
 		return tmp
 	}

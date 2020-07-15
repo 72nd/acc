@@ -5,11 +5,11 @@
 
 - [ ] First Run with 2019 Taxes
 - [ ] Documentation in Readme done
-- [ ] Filter function
-- [ ] Project Mode
-- [ ] Shorts for commands 
+- [x] Filter function
+- [ ] Project Mode _(almost done)_
+- [x] Shorts for commands 
 - [ ] Code Documentation
-- [ ] YAML Schemas
+- [ ] Misc Documents in complete Transactions
 
 
 ## Installation
@@ -161,5 +161,5 @@ Check your data.
 3. Add all people which payed some expense in advance for the project as employee `acc add employee -i acc.yaml`.
 4. Add all expenses with `acc add expense -i acc.yaml -a raw/receipt.pdf`.
 5. Import or create all bank transactions for the project. Pay attention you only add transactions which have some connection to the theater production.
-6. Complete the expenses with `acc complete expenses -i acc.yaml`.
+6. Complete the transactions with `acc complete transactions -i acc.yaml -d` using the document-only mode (only associated documents will be completed).
 7. Repopulate the expenses with `acc complete repopulate -i acc.yaml`.

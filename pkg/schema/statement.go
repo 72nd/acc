@@ -113,7 +113,7 @@ func (t Statement) TransactionSearchItems() util.SearchItems {
 	return result
 }
 
-func (t *Statement) AssistedCompletion(s Schema, doAll, autoSave, autoMode, askSkip bool) {
+func (t *Statement) AssistedCompletion(s Schema, doAll, autoSave, autoMode, askSkip, documentsOnly bool) {
 	first := true
 	for i := range t.Transactions {
 		if !first {
@@ -121,7 +121,7 @@ func (t *Statement) AssistedCompletion(s Schema, doAll, autoSave, autoMode, askS
 		} else {
 			first = false
 		}
-		t.Transactions[i] = t.Transactions[i].AssistedCompletion(s, doAll, autoMode, askSkip)
+		t.Transactions[i] = t.Transactions[i].AssistedCompletion(s, doAll, autoMode, askSkip, documentsOnly)
 		if autoSave {
 			s.Save()
 		}

@@ -405,20 +405,23 @@ func main() {
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							s := config.OpenSchema(inputPath)
-							s.Statement.AssistedCompletion(s, c.Bool("force"), c.Bool("auto-save"), c.Bool("auto-mode"), c.Bool("ask-skip"))
+							s.Statement.AssistedCompletion(s, c.Bool("force"), c.Bool("auto-save"), c.Bool("auto-mode"), c.Bool("ask-skip"), c.Bool("documents-only"))
 							s.Save()
 							return nil
 						},
 						Flags: append(completeFlags, &cli.BoolFlag{
 							Name:  "auto-mode",
 							Usage: "set all transactions to auto mode, so third party has to be reviewed",
-						}),
+						}, &cli.BoolFlag{
+							Name:    "documents-only",
+							Aliases: []string{"d"},
+							Usage:   "only complete the associated documents"}),
 					},
 				},
 			},
 			{
-				Name:  "distributed",
-				Usage: "distributed mode (aka. folder mode) specific commands",
+				Name:    "distributed",
+				Usage:   "distributed mode (aka. folder mode) specific commands",
 				Aliases: []string{"dist"},
 				Action: func(c *cli.Context) error {
 					_ = cli.ShowCommandHelp(c, c.Command.Name)
