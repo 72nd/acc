@@ -1,4 +1,4 @@
-package camt
+package iso20022
 
 import (
 	"encoding/xml"

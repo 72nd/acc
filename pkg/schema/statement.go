@@ -130,7 +130,6 @@ func (t *Statement) AssistedCompletion(s Schema, doAll, autoSave, autoMode, askS
 
 func (t Statement) TransactionForDocument(id string) (*Transaction, error) {
 	for i := range t.Transactions {
-		fmt.Println(t.Transactions[i].AssociatedDocumentId)
 		if t.Transactions[i].AssociatedDocumentId == id {
 			return &t.Transactions[i], nil
 		}
