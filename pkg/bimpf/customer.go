@@ -3,8 +3,8 @@ package bimpf
 import (
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/schema"
-	"gitlab.com/72th/acc/pkg/util"
+	"gitlab.com/72nd/acc/pkg/schema"
+	"gitlab.com/72nd/acc/pkg/util"
 	"path"
 	"regexp"
 	"strconv"

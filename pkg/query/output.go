@@ -6,8 +6,8 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/schema"
-	"gitlab.com/72th/acc/pkg/util"
+	"gitlab.com/72nd/acc/pkg/schema"
+	"gitlab.com/72nd/acc/pkg/util"
 	"gopkg.in/yaml.v3"
 )
 

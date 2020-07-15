@@ -1,7 +1,7 @@
 package distributed
 
 import (
-	"gitlab.com/72th/acc/pkg/schema"
+	"gitlab.com/72nd/acc/pkg/schema"
 )
 
 // CustomersToSave is a slice of CustomerToSave's.

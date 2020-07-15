@@ -6,7 +6,7 @@ import (
 
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/util"
+	"gitlab.com/72nd/acc/pkg/util"
 )
 
 const DefaultStatementFile = "bank-statement.yaml"

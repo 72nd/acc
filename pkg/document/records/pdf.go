@@ -6,7 +6,7 @@ import (
 	"github.com/phpdave11/gofpdi"
 	"github.com/signintech/gopdf"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/document/utils"
+	"gitlab.com/72nd/acc/pkg/document/utils"
 	"image"
 	"io/ioutil"
 	"os"

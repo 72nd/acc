@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/util"
+	"gitlab.com/72nd/acc/pkg/util"
 	"gopkg.in/yaml.v3"
 )
 

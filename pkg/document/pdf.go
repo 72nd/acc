@@ -5,7 +5,7 @@ import (
 	"github.com/signintech/gopdf"
 	"github.com/signintech/gopdf/fontmaker/core"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/document/utils"
+	"gitlab.com/72nd/acc/pkg/document/utils"
 	"strings"
 )
 
