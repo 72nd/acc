@@ -343,14 +343,16 @@ func (e Expense) AssistedCompletion(s *Schema, doAll, autoSave, openAttachment, 
 			e.ExpenseCategory = value.Name
 		}
 	}
-	e.PayedWithDebit = util.AskBool(
-		"Payed with Debit",
-		"Was this expense directly payed via the main account debit card?",
-		false)
-	e.Internal = util.AskBool(
-		"Internal",
-		"Has this expense an internal prupose?",
-		false)
+	/* Why should we do this?
+		e.PayedWithDebit = util.AskBool(
+			"Payed with Debit",
+			"Was this expense directly payed via the main account debit card?",
+			false)
+		e.Internal = util.AskBool(
+			"Internal",
+			"Has this expense an internal prupose?",
+			false)
+	*/
 
 	strategy := util.AskForStategy()
 	switch strategy {
@@ -468,8 +470,8 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   "expense category is not set (ExpenseCategory is empty)",
 		},
 		{
-			Condition: e.ProjectName == "",
-			Message:   "project name is not set (ProjectName is empty)",
+			Condition: !e.Internal && e.ProjectId == "",
+			Message:   "altrough not an internal expense, project id is not set (ProjectId is empty)",
 		},
 	}
 }
@@ -510,4 +512,3 @@ func (e Expense) GetDate() *time.Time {
 	}
 	return &date
 }
-
