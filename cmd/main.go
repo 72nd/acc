@@ -13,10 +13,10 @@ import (
 	"gitlab.com/72th/acc/pkg/bimpf"
 	"gitlab.com/72th/acc/pkg/camt"
 	"gitlab.com/72th/acc/pkg/config"
+	"gitlab.com/72th/acc/pkg/distributed"
 	"gitlab.com/72th/acc/pkg/document/invoices"
 	"gitlab.com/72th/acc/pkg/document/records"
 	"gitlab.com/72th/acc/pkg/ledger"
-	"gitlab.com/72th/acc/pkg/project"
 	"gitlab.com/72th/acc/pkg/query"
 	"gitlab.com/72th/acc/pkg/schema"
 )
@@ -433,7 +433,7 @@ func main() {
 							outputPath := c.String("output")
 							a := config.OpenAcc(inputPath).NewProjectModeAcc(outputPath)
 							s := config.OpenSchema(inputPath)
-							project.Save(s, outputPath)
+							distributed.Save(s, outputPath)
 							a.Save(a.FileName)
 							return nil
 						},

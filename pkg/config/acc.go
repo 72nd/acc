@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72th/acc/pkg/project"
+	"gitlab.com/72th/acc/pkg/distributed"
 	"gitlab.com/72th/acc/pkg/schema"
 	"gitlab.com/72th/acc/pkg/util"
 )
@@ -105,7 +105,7 @@ func NewSchema(folderPath, logo string, doSave, interactive, partMode bool) sche
 			AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
 		}
 		acc.Save(acc.FileName)
-		project.Save(s, folderPath)
+		distributed.Save(s, folderPath)
 	}
 
 	return schema.Schema{
@@ -139,7 +139,7 @@ func OpenSchema(path string) schema.Schema {
 	acc := OpenAcc(path)
 	if acc.PartionedMode {
 		partionedPath := filepath.Dir(filepath.Clean(filepath.Join(wd, path)))
-		return project.Open(partionedPath, acc.Company, acc.JournalConfig, acc.SaveSchema)
+		return distributed.Open(partionedPath, acc.Company, acc.JournalConfig, acc.SaveSchema)
 	}
 	return schema.Schema{
 		Company:             acc.Company,
@@ -165,7 +165,7 @@ func (a Acc) Save(path string) {
 func (a Acc) SaveSchema(s schema.Schema) {
 	if a.PartionedMode {
 		a.Save(a.FileName)
-		project.Save(s, a.partionedFolder)
+		distributed.Save(s, a.partionedFolder)
 		// s.SaveFunc(s)
 		return
 	}
