@@ -39,9 +39,12 @@ The basic idea of Acc is to collect data about your business and then generating
 
 ### Types of data/records
 
-- **config** Commonly saved in `acc.yaml`
-- **expense**
-- **invoice**
+**config** Commonly named `acc.yaml` contains all the basic data about a Acc project (learn morn about this below in the «Modes» section) as well as all the definitions for the automatic account records generation. This file is also the entry point for the application. While using Acc you always have to state this file with the `-i` flag (exception: generation of a new Acc project with `acc new`).
+
+**expense** Expenses represent an event, where the company has to pay some money. This can be the receiving of a bill (eg. tax bill) or paying a purchase directly with the companies debit card. But also the advancing employee scenario can be handled. Sometimes an employee has to pay something with his/her own money. Acc provides functionality to keep track of such advanced expenses and also generating payment order files (ISO 20022 pain.001) for easy transferring your debts. 
+
+**invoice** Represents an invoice you've sent to a customer. Acc also contains an experimental feature to render simple invoice letters as a PDF.
+
 - **misc-record**
 - **party**
 - **project**
@@ -49,7 +52,7 @@ The basic idea of Acc is to collect data about your business and then generating
 - **transaction**
 
 
-For reference:
+This diagram shows all possible interconnections between the different types. If this confuses you, just ignore it for now (as this diagram is mainly for reference).
 
 ![Data Model](misc/data-model.svg)
 
