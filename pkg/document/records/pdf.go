@@ -240,4 +240,3 @@ func fitImage(path string, containerWidth, containerHeight int) gopdf.Rect {
 	}
 	return gopdf.Rect{W: cWidth, H: iHeight * cWidth / iWidth}
 }
-

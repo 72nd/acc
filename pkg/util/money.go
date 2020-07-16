@@ -30,10 +30,10 @@ func (m *Money) UnmarshalYAML(value *yaml.Node) error {
 	if err != nil {
 		return fmt.Errorf("couldn't parse \"%s\" as a amount as it contains not only numbers", value.Value)
 	}
-	if part2 / 100 > 0 {
+	if part2/100 > 0 {
 		return fmt.Errorf("couldn't parse \"%s\" as a amount, as only two digits are allowed after the point", value.Value)
 	}
-	amount := part1 * 100 + part2
+	amount := part1*100 + part2
 	m.Money = money.New(amount, "CHF")
 	return nil
 }

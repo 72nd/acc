@@ -163,4 +163,3 @@ func date(data string) string {
 	}
 	return date.Format("02.01.2006")
 }
-

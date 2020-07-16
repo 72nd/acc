@@ -110,5 +110,3 @@ func relativeAssetPath(absolute, asset string) string {
 	}
 	return rsl
 }
-
-

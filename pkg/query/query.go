@@ -41,8 +41,8 @@ func (q Queryables) PPKeys(mode OutputMode) {
 	kys := q.keys()
 	fmt.Println(fmt.Sprintf("%s%s%s", aurora.BrightMagenta(aurora.Bold("Keys")), aurora.BrightMagenta(" for "), aurora.BrightMagenta(q.String())))
 	out := Output{
-		Header: []string{"Name Key", "Element Type(s)"},
-		Element:   kys.Data(),
+		Header:  []string{"Name Key", "Element Type(s)"},
+		Element: kys.Data(),
 	}
 	out.PPKeyValue(nil, mode, false)
 }
@@ -96,7 +96,7 @@ func (k Keys) Data() []KeyValue {
 	rsl := make([]KeyValue, len(k))
 	for i := range k {
 		rsl[i] = KeyValue{
-			Key: k[i].Name,
+			Key:   k[i].Name,
 			Value: k[i].Queryables.String()}
 	}
 	return rsl

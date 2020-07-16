@@ -112,10 +112,10 @@ func InteractiveNewProject(s Schema) Project {
 		"Name",
 		"Name of the project",
 		"Aktion neue soziale Marktwirtschaft")
-		prj.CustomerId = util.AskStringFromSearch(
-			"Associated customer",
-			"Customer which the project is associated",
-			s.Parties.CustomersSearchItems())
+	prj.CustomerId = util.AskStringFromSearch(
+		"Associated customer",
+		"Customer which the project is associated",
+		s.Parties.CustomersSearchItems())
 	return prj
 }
 

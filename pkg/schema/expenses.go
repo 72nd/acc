@@ -344,14 +344,14 @@ func (e Expense) AssistedCompletion(s *Schema, doAll, autoSave, openAttachment, 
 		}
 	}
 	/* Why should we do this?
-		e.PayedWithDebit = util.AskBool(
-			"Payed with Debit",
-			"Was this expense directly payed via the main account debit card?",
-			false)
-		e.Internal = util.AskBool(
-			"Internal",
-			"Has this expense an internal prupose?",
-			false)
+	e.PayedWithDebit = util.AskBool(
+		"Payed with Debit",
+		"Was this expense directly payed via the main account debit card?",
+		false)
+	e.Internal = util.AskBool(
+		"Internal",
+		"Has this expense an internal prupose?",
+		false)
 	*/
 
 	strategy := util.AskForStategy()

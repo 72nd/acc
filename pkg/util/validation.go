@@ -149,7 +149,8 @@ func FileExist(path string) bool {
 }
 
 func ValidDate(format, date string) bool {
-	_, err := time.Parse(format, date); if err != nil {
+	_, err := time.Parse(format, date)
+	if err != nil {
 		return false
 	}
 	return true

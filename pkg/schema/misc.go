@@ -128,10 +128,10 @@ func InteractiveNewMiscRecord(s Schema, asset string) MiscRecord {
 			"Asset",
 			"Path to asset file (use --asset to set with flag)",
 			"")
-	mrc.Date = util.AskDate(
-		"Date",
-		"Receiving date of the record",
-		time.Now())
+		mrc.Date = util.AskDate(
+			"Date",
+			"Receiving date of the record",
+			time.Now())
 	} else {
 		mrc.Path = asset
 	}
