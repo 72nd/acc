@@ -10,6 +10,10 @@
 - [x] Shorts for commands 
 - [ ] Code Documentation
 - [ ] Misc Documents in complete Transactions
+- [ ] pain.001 for payment generation
+	- [ ] Add IBAN to employee (data field, interactive add, assisted completion, validation)
+	- [ ] Rewrite `sba-pay` as library for go
+	- [ ] Add functionality to iso20022 package
 
 
 ## Installation
