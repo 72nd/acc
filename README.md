@@ -32,18 +32,60 @@ sudo apt install wmctrl
 
 To start with Acc, it's important to understand some fundamental concepts and ideas which shape the handling of the software.
 
-
-### General Idea
-
-The basic idea of Acc is to collect data about your business and then generating a number of different outputs from these.
+The basic idea of Acc is to collect data about your business and then generating a number of different outputs from these. This diagram should give you an idea about some possibilities of Acc:
 
 ![Example flow of data](misc/flow-of-data.svg)
 
 
 ### Types of data/records
 
+- **config** Commonly saved in `acc.yaml`
+- **expense**
+- **invoice**
+- **misc-record**
+- **party**
+- **project**
+- **statement**
+- **transaction**
+
+
+For reference:
+
+![Data Model](misc/data-model.svg)
+
 
 ### Modes
+
+Flat mode:
+
+```
+.
+├── acc.yaml
+├── bank-statement.yaml
+├── expenses.yaml
+├── invoices.yaml
+├── misc.yaml
+├── parties.yaml
+└── projects.yaml
+
+```
+
+Distributed mode:
+
+```
+.
+├── acc.yaml
+├── employees.yaml
+├── internal
+│   └── expenses-2019.yaml
+└── projects
+    └── max-mustermann
+        ├── building-a-space-rocket
+        │   └── project.yaml
+        └── customer.yaml
+
+```
+
 
 
 ## Usage and Functions
