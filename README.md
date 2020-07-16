@@ -1,4 +1,4 @@
-# acc ![License MIT](https://img.shields.io/github/license/72nd/acc)
+# acc
 
 First planned as a simple tool chain for easing the work with the plain text accounting software [hledger](https://hledger.org/), acc evolved into some sort of plain-text ERP system. It's capable of keeping track of your customers, employees, expenses and invoices as well as importing bank statements (via ISO 20022 camt). Acc can generate most of your hledger account records based on this data. Also it's possible to export all business records (expenses etc.) with their respective receipt as a PDF for further archiving. There is also a quit powerful query functionality for easy finding of records. For adding new data, a interactive prompt can be used (you also can just edit the YAML files by yourself).
 
@@ -20,11 +20,30 @@ _Current status:_ The project is under active use and development in the [Genoss
 	- [ ] Add functionality to iso20022 package
 
 
+
 ## Installation
 
 ```shell script
 sudo apt install wmctrl
 ```
+
+
+## Basic Concepts
+
+To start with Acc, it's important to understand some fundamental concepts and ideas which shape the handling of the software.
+
+
+### General Idea
+
+The basic idea of Acc is to collect data about your business and then generating a number of different outputs from these.
+
+![Example flow of data](misc/flow-of-data.svg)
+
+
+### Types of data/records
+
+
+### Modes
 
 
 ## Usage and Functions
