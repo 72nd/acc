@@ -2,7 +2,7 @@
 
 First planned as a simple tool chain for easing the work with the plain text accounting software [hledger](https://hledger.org/), acc evolved into some sort of plain-text ERP system. It's capable of keeping track of your customers, employees, expenses and invoices as well as importing bank statements (via ISO 20022 camt). Acc can generate most of your hledger account records based on this data. Also it's possible to export all business records (expenses etc.) with their respective receipt as a PDF for further archiving. There is also a quit powerful query functionality for easy finding of records. For adding new data, a interactive prompt can be used (you also can just edit the YAML files by yourself).
 
-_Current status:_ The project is under active use and development in the [Genossenschaft Solutionsbüro](https://buero.io) and Acc evolves along our needs. Almost all core features are implemented and we use this software in your everyday work. The biggest throwback in the moment are the missing tests and a bad code documentation (I'm working on it). Also a manual (or at least a detailed and long README) is missing at this point.
+_Current status:_ The project is under active use and development at the [Genossenschaft Solutionsbüro](https://buero.io) and Acc evolves along our needs. Almost all core features are implemented and we use this software in your everyday work. The biggest throwback in the moment are the missing tests and a bad code documentation (I'm working on it). Also a manual (or at least a detailed and long README) is missing at this point.
 
 ## Todo
 
@@ -24,7 +24,10 @@ _Current status:_ The project is under active use and development in the [Genoss
 ## Installation
 
 ```shell script
-sudo apt install wmctrl
+# For experimental features:
+sudo apt install wmctrl xdg-mime xprop
+
+# Export embedded PDF's in records
 ```
 
 
@@ -32,7 +35,7 @@ sudo apt install wmctrl
 
 To start with Acc, it's important to understand some fundamental concepts and ideas which shape the handling of the software.
 
-The basic idea of Acc is to collect data about your business and then generating a number of different outputs from these. This diagram should give you an idea about some possibilities of Acc:
+The idea of Acc is to collect data about your business and then generating a number of different outputs from these. This diagram should give you an idea about some possibilities of Acc:
 
 ![Example flow of data](misc/flow-of-data.svg)
 
@@ -43,11 +46,14 @@ The basic idea of Acc is to collect data about your business and then generating
 
 **expense** Expenses represent an event, where the company has to pay some money. This can be the receiving of a bill (eg. tax bill) or paying a purchase directly with the companies debit card. But also the advancing employee scenario can be handled. Sometimes an employee has to pay something with his/her own money. Acc provides functionality to keep track of such advanced expenses and also generating payment order files (ISO 20022 pain.001) for easy transferring your debts. 
 
-**invoice** Represents an invoice you've sent to a customer. Acc also contains an experimental feature to render simple invoice letters as a PDF.
+**invoice** Represents an invoice you've sent to a customer. Acc also contains an experimental feature to render simple invoice letters as PDFs.
 
-- **misc-record**
-- **party**
-- **project**
+**misc-record** Sometimes there are other documents which have to be archived or are the cause for some transaction on the bank account (example: the final account of the health insurance which states a refund). As this documents don't fit into the other categories, there is this misc category.
+
+**party** Either a customer or an employee containing the usual information (name, street etc.). Most of the other documents or records are somehow associated with one or multiple parties (ex: projects belong to a customer, an invoice was sent to a customer, a expense was advanced by a employee). Learn more about this interconnections in the diagram below.
+
+**project** If you use Acc for a more complex scenario it makes sense to group expenses and invoices per customer project. Expenses and invoices can be linked to a project. Each project has a associated customer. By using _distributed mode_ you can also group your files in project folders (learn more about below). The use of projects is optional, for simple cases you don't have to use them.
+
 - **statement**
 - **transaction**
 
@@ -93,6 +99,8 @@ Distributed mode:
 
 ## Usage and Functions
 
+You can always add the `--help` flag to all commands to learn more about a certain (sub) command.
+
 ### add
 
 Add new elements (customer, employee, expense, expense-category, invoice or transaction) to your acc project. If you don't want to use the interactive prompt, use the `--default` flag. Some of the elements contain paths to files by using the `--asset` flag you can specify this paths in advance and thus use the tab-completion of your shell.
@@ -103,9 +111,11 @@ acc add invoice -i acc.yaml --asset /path/to/sent-invoice.pdf
 ```
 
 
-### bimpf
+### bimpf 
 
-Hint: You can dump the data of [Bimpf](https://gitlab.com/solutionsbuero/bimpf) with the following command on the server: 
+This command allows to import JSON dumps of our old administration software [Bimpf](https://gitlab.com/solutionsbuero/bimpf), you'll probably never need this :)
+
+Hint: Dump with the following commands on the server: 
 
 ```shell script
 git clone https://gitlab.com/solutionsbuero/bimpf.git
@@ -147,7 +157,7 @@ Interactive complete expenses, invoices and transactions. Runs trough all elemen
 - `force` Normally only not valid or completed elements will be prompted for completion. Using this flag all elements will be prompted for completion. Caution: You can loose data.
 - `--input` as usual the path to the `acc.yaml` file.
 - `--open-attachement` _Experimentally feature!_ Open (and most of the time) close the associated file in the default application. Will only work on Linux with `xdg-mime`, `xprop` installed and the application desktop files located under `/usr/share/applications/`. 
-- `--retain-focus` _Experimentally and hacky feature!_ Tries to regain focus of the terminal acc runs in. Will only work on certain Linux installations if `wmctrl` is installed.
+- `--retain-focus` _Hacky feature!_ Tries to regain focus of the terminal acc runs in. Will only work on certain Linux installations if `wmctrl` is installed.
 
 The `acc complete repopulate` on the other hand can be used to link expenses and invoices to transactions which already are linked to the expense/invoice.
 
@@ -222,7 +232,6 @@ Check your data.
 	- Amortize the positions you're legally obliged/allowed to.
 	- Book all necessary reserve assets.
 	- Finalize your journal.
-	- 
 
 
 ### Simple theater project
