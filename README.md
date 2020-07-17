@@ -4,6 +4,8 @@ First planned as a simple tool chain for easing the work with the plain text acc
 
 _Current status:_ The project is under active use and development at the [Genossenschaft Solutionsbüro](https://buero.io) and Acc evolves along our needs. Almost all core features are implemented and we use this software in your everyday work. The biggest throwback in the moment are the missing tests and a bad code documentation (I'm working on it). Also a manual (or at least a detailed and long README) is missing at this point.
 
+![Screenshots](misc/screenshots.png)
+
 ## Todo
 
 - [ ] First Run with 2019 Taxes
@@ -54,8 +56,9 @@ The idea of Acc is to collect data about your business and then generating a num
 
 **project** If you use Acc for a more complex scenario it makes sense to group expenses and invoices per customer project. Expenses and invoices can be linked to a project. Each project has a associated customer. By using _distributed mode_ you can also group your files in project folders (learn more about below). The use of projects is optional, for simple cases you don't have to use them.
 
-- **statement**
-- **transaction**
+**statement**
+
+**transaction**
 
 
 This diagram shows all possible interconnections between the different types. If this confuses you, just ignore it for now (as this diagram is mainly for reference).
