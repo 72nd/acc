@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1024"
-   height="1024"
-   viewBox="0 0 270.93332 270.93332"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 209.99999 296.99999"
    version="1.1"
    id="svg8"
    sodipodi:docname="icon-text.svg"
@@ -28,9 +28,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.65518966"
-     inkscape:cx="237.19546"
-     inkscape:cy="283.96738"
+     inkscape:zoom="0.37008832"
+     inkscape:cx="-465.05847"
+     inkscape:cy="194.06766"
      inkscape:document-units="px"
      inkscape:current-layer="layer5"
      showgrid="false"
@@ -42,11 +42,11 @@
      inkscape:object-nodes="true"
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:window-width="2488"
-     inkscape:window-height="1300"
+     inkscape:window-height="1044"
      inkscape:window-x="52"
-     inkscape:window-y="95"
+     inkscape:window-y="351"
      inkscape:window-maximized="0"
-     units="px"
+     units="mm"
      inkscape:snap-intersection-paths="true" />
   <metadata
      id="metadata5">
@@ -65,7 +65,8 @@
      id="layer4"
      inkscape:label="First"
      style="display:none"
-     sodipodi:insensitive="true">
+     sodipodi:insensitive="true"
+     transform="translate(0,26.066665)">
     <g
        inkscape:groupmode="layer"
        id="layer2"
@@ -346,7 +347,8 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="Second"
-     style="display:inline">
+     style="display:inline"
+     transform="translate(0,26.066665)">
     <rect
        style="opacity:1;vector-effect:none;fill:#0a3a4d;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:5.29166651;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke"
        id="rect2083"
@@ -354,7 +356,8 @@
        height="270.93332"
        x="0.80765414"
        y="1.4398098e-07"
-       ry="40.786533" />
+       ry="40.786533"
+       rx="40.786533" />
     <path
        sodipodi:nodetypes="cccccccccccccccccccccc"
        inkscape:connector-curvature="0"
