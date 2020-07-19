@@ -412,7 +412,7 @@ func (e Expense) Type() string {
 
 // String returns a human readable representation of the element.
 func (e Expense) String() string {
-	return fmt.Sprintf("%s (%s): %.2f for %s", e.Name, e.Identifier, e.Amount, e.ProjectName)
+	return fmt.Sprintf("%s (%s): %s for %s", e.Name, e.Identifier, e.Amount.Display(), e.ProjectName)
 }
 
 // Short returns a short representation of the element.

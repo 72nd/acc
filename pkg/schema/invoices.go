@@ -318,7 +318,7 @@ func (i Invoice) Type() string {
 
 // String returns a human readable representation of the element.
 func (i Invoice) String() string {
-	return fmt.Sprintf("%s (%s): %.2f", i.Name, i.Identifier, i.Amount)
+	return fmt.Sprintf("%s (%s): %s", i.Name, i.Identifier, i.Amount.Display())
 }
 
 // Short returns a short representation of the element.

@@ -259,9 +259,9 @@ func (Transaction) Type() string {
 // String returns a human readable representation of the element.
 func (t Transaction) String() string {
 	if t.TransactionType == util.CreditTransaction {
-		return fmt.Sprintf("%s: received %.2f at %s", t.Identifier, t.Amount, t.Date)
+		return fmt.Sprintf("%s: received %s at %s", t.Identifier, t.Amount.Display(), t.Date)
 	}
-	return fmt.Sprintf("%s: paid %.2f at %s", t.Identifier, t.Amount, t.Date)
+	return fmt.Sprintf("%s: paid %s at %s", t.Identifier, t.Amount.Display(), t.Date)
 }
 
 // Short returns a short representation of the element.
