@@ -224,6 +224,7 @@ func (m MiscRecord) Conditions() util.Conditions {
 	}
 }
 
+// GetDate returns the date of the misc-records as a time.Time struct.
 func (m MiscRecord) GetDate() *time.Time {
 	date, err := time.Parse(util.DateFormat, m.Date)
 	if err != nil {

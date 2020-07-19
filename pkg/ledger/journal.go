@@ -81,6 +81,7 @@ func JournalFromAcc(s schema.Schema, year int) Journal {
 	return rsl
 }
 
+// SaveHLedgerFile saves the given Journal as a hledger journal at the given path.
 func (j Journal) SaveHLedgerFile(path string) {
 	ledger := j.HLedger()
 	if err := ioutil.WriteFile(path, []byte(ledger), 0644); err != nil {
@@ -88,6 +89,7 @@ func (j Journal) SaveHLedgerFile(path string) {
 	}
 }
 
+// HLedger retruns the hledger styled journal as a string.
 func (j Journal) HLedger() string {
 	result := j.HLedgerHeader()
 	sort.Sort(j)
@@ -97,6 +99,7 @@ func (j Journal) HLedger() string {
 	return result
 }
 
+// HLedgerHeader generates the header of the hledger journal as a string.
 func (j Journal) HLedgerHeader() string {
 	var result string
 	first := true
@@ -111,18 +114,22 @@ func (j Journal) HLedgerHeader() string {
 	return fmt.Sprintf("\n%s", result)
 }
 
+// Len returns the number of journal entries. Used for sorting.
 func (j Journal) Len() int {
 	return len(j.Entries)
 }
 
+// Swap swaps to journal entries at the given indexes. Used for sorting.
 func (j Journal) Swap(i, k int) {
 	j.Entries[i], j.Entries[k] = j.Entries[k], j.Entries[i]
 }
 
+// Less states whether the entry at index i is less as the entry at index k. Used for sorting.
 func (j Journal) Less(i, k int) bool {
 	return j.Entries[i].Date.Before(j.Entries[k].Date)
 }
 
+// Comment reassembles a comment which can be generated based on the state of this struct.
 type Comment struct {
 	Mode     string
 	Element  string
@@ -130,6 +137,7 @@ type Comment struct {
 	Errors   []error
 }
 
+// NewComment returns a new Comment.
 func NewComment(mode, element string) Comment {
 	return Comment{
 		Mode:     mode,
@@ -139,6 +147,8 @@ func NewComment(mode, element string) Comment {
 	}
 }
 
+// NewManualComment returns a new Comment with the request to the user to manually correct
+// the given journal entry.
 func NewManualComment(mode, element string) Comment {
 	cmt := NewComment(mode, element)
 	cmt.DoManual = true
@@ -154,6 +164,7 @@ func (c *Comment) add(err error) {
 	c.Errors = append(c.Errors, err)
 }
 
+// String returns generates the comment for the journal based on the state of the struct.
 func (c Comment) String() string {
 	if c.DoManual {
 		return "TODO: manual correction needed"
@@ -172,6 +183,8 @@ func (c Comment) String() string {
 	return result
 }
 
+// EntryStatus reassembles the three states a transaction can have in hledger.
+// This information isn't necessary but is here implemented for future usage.
 type EntryStatus int
 
 const (
@@ -180,6 +193,7 @@ const (
 	ClearedStatus
 )
 
+// TrnEle renders the representation of the state in a hledger journal.
 func (s EntryStatus) TrnEle() string {
 	switch s {
 	case UnmarkedStatus:
@@ -193,6 +207,7 @@ func (s EntryStatus) TrnEle() string {
 	return "UNDEFINED"
 }
 
+// Entry is a single journal entry.
 type Entry struct {
 	TransactionType util.TransactionType
 	Date            time.Time
@@ -211,6 +226,7 @@ const trnTpl = `
     {{.Account2}}{{.Space2}}{{.Amount2}}
 `
 
+// Transaction renders the hledger transaction for the given entry.
 func (e Entry) Transaction() string {
 	data := struct {
 		Date        string
