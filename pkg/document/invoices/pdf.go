@@ -11,11 +11,13 @@ import (
 	"time"
 )
 
+// InvoiceDocument is a Doc report which generates a invoice-letter.
 type InvoiceDocument struct {
 	document.Doc
 	place string
 }
 
+// NewInvoiceDocument returns a new InvoiceDocument.
 func NewInvoiceDocument(fontSize int, place string) InvoiceDocument {
 	return InvoiceDocument{
 		Doc:   document.NewDoc(fontSize, 1.2),
@@ -23,6 +25,7 @@ func NewInvoiceDocument(fontSize int, place string) InvoiceDocument {
 	}
 }
 
+// Generate generates a PDF for a given InvoiceDocument and returns it as a gopdf.GoPdf element.
 func (d *InvoiceDocument) Generate(company schema.Company, invoice schema.Invoice, customer schema.Party) gopdf.GoPdf {
 	d.Doc.Pdf.AddPage()
 	d.Doc.Pdf.SetLineWidth(0.1)

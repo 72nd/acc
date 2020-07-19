@@ -1,3 +1,4 @@
+// The document package provides the functionality to export reports and documents as PDF.
 package document
 
 import (
@@ -9,6 +10,7 @@ import (
 	"strings"
 )
 
+// Doc is the basic structure for a PDF file.
 type Doc struct {
 	fontSize        int
 	defaultFontSize int
@@ -20,6 +22,7 @@ type Doc struct {
 	Pdf             gopdf.GoPdf
 }
 
+// NewDoc returns a new Doc.
 func NewDoc(fontSize int, lineSpread float64) Doc {
 	pdf := gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4, Unit: gopdf.Unit_MM})
@@ -48,6 +51,8 @@ func NewDoc(fontSize int, lineSpread float64) Doc {
 	return doc
 }
 
+// SetPosition encapsulates the SetX and SetY methods of gopdf. New elements will be added
+// at the currently set position.
 func (d *Doc) SetPosition(x, y float64) {
 	d.Pdf.SetX(x)
 	d.currentX = x
@@ -55,6 +60,7 @@ func (d *Doc) SetPosition(x, y float64) {
 	d.currentY = y
 }
 
+// SetFontSize sets the font size for all elements added after.
 func (d *Doc) SetFontSize(size int) {
 	d.fontSize = size
 	if err := d.Pdf.SetFont("lato", "", size); err != nil {
@@ -62,10 +68,12 @@ func (d *Doc) SetFontSize(size int) {
 	}
 }
 
+// DefaultFontSize resets the font size to the initial default.
 func (d *Doc) DefaultFontSize() {
 	d.SetFontSize(d.defaultFontSize)
 }
 
+// SetFontStyle changes the font style (italic, bold...) for elements added afterwards.
 func (d *Doc) SetFontStyle(style string) {
 	if err := d.Pdf.SetFont("lato", style, d.fontSize); err != nil {
 		logrus.Fatal("error while changing Pdf font style: ", err)
@@ -73,10 +81,12 @@ func (d *Doc) SetFontStyle(style string) {
 	d.fontStyle = style
 }
 
+// DefaultFontStyle resets the font style to normal style.
 func (d *Doc) DefaultFontStyle() {
 	d.SetFontStyle("")
 }
 
+// AddText adds a text field at the given position.
 func (d *Doc) AddText(x, y float64, content string) {
 	d.SetPosition(x, y)
 	if err := d.Pdf.Cell(nil, content); err != nil {
@@ -84,6 +94,7 @@ func (d *Doc) AddText(x, y float64, content string) {
 	}
 }
 
+// AddFormattedText adds a text field at the given position with individual size and style.
 func (d *Doc) AddFormattedText(x, y float64, content string, size int, style string) {
 	d.SetFontSize(size)
 	d.SetFontStyle(style)
@@ -92,6 +103,8 @@ func (d *Doc) AddFormattedText(x, y float64, content string, size int, style str
 	d.DefaultFontStyle()
 }
 
+// AddMultilineText adds a text field with multiple lines of text. The lines are
+// divided by the new-line character `\n`.
 func (d *Doc) AddMultilineText(x, y float64, content string) {
 	data := strings.Split(content, "\n")
 	for i := range data {
@@ -100,6 +113,8 @@ func (d *Doc) AddMultilineText(x, y float64, content string) {
 	}
 }
 
+// AddFormattedMultilineText has the same functionality as AddMultilineText but
+// with a individual font-size and style.
 func (d *Doc) AddFormattedMultilineText(x, y float64, content string, size int, style string) {
 	d.SetFontSize(size)
 	d.SetFontStyle(style)
@@ -112,6 +127,7 @@ func (d *Doc) AddFormattedMultilineText(x, y float64, content string, size int, 
 	d.DefaultFontStyle()
 }
 
+// LineHeight calculates and returns the line height.
 func (d Doc) LineHeight() float64 {
 	return d.capValue * float64(d.fontSize) / 2000.0 * d.lineSpread
 }

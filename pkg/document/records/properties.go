@@ -1,5 +1,6 @@
 package records
 
+// Properties are the data needed to create a record document.
 type Properties struct {
 	Type       string
 	Identifier string

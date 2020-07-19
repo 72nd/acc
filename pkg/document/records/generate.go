@@ -14,6 +14,10 @@ import (
 	"github.com/72nd/acc/pkg/util"
 )
 
+// GenerateExpensesRec generates an record document for all expenses in the given schema.
+// The PDFs will then be saved into the given destination folder. DownConvert (converting
+// all PDF's to a PostScript file and back) should be done always  as gopdf will have
+// otherwise problems embedding most PDFs.
 func GenerateExpensesRec(s schema.Schema, dstFolder string, doOverwrite, downConvert bool) {
 	sort.Sort(s.Expenses)
 	nFiles := len(s.Expenses)
@@ -32,6 +36,7 @@ func GenerateExpensesRec(s schema.Schema, dstFolder string, doOverwrite, downCon
 	wg.Wait()
 }
 
+// GenerateExpenseRec generates and saves the record PDF for a given expense.
 func GenerateExpenseRec(s schema.Schema, exp schema.Expense, dstPath string, downConvert bool, wg *sync.WaitGroup) {
 	emp := "no 3rd party"
 	if exp.AdvancedByThirdParty {
@@ -52,6 +57,10 @@ func GenerateExpenseRec(s schema.Schema, exp schema.Expense, dstPath string, dow
 	wg.Done()
 }
 
+// GenerateInvoicesRec generates an record document for all invoices in the given schema.
+// The PDFs will then be saved into the given destination folder. DownConvert (converting
+// all PDF's to a PostScript file and back) should be done always  as gopdf will have
+// otherwise problems embedding most PDFs.
 func GenerateInvoicesRec(s schema.Schema, dstPath string, doOverwrite, downConvert bool) {
 	sort.Sort(s.Invoices)
 	nFiles := len(s.Invoices)
@@ -70,6 +79,7 @@ func GenerateInvoicesRec(s schema.Schema, dstPath string, doOverwrite, downConve
 	wg.Wait()
 }
 
+// GenerateInvoiceRec generates and saves the record PDF for a given invoice.
 func GenerateInvoiceRec(s schema.Schema, inv schema.Invoice, dstPath string, downConvert bool, wg *sync.WaitGroup) {
 	props := Properties{
 		Type:       "Invoice",
@@ -85,6 +95,10 @@ func GenerateInvoiceRec(s schema.Schema, inv schema.Invoice, dstPath string, dow
 	wg.Done()
 }
 
+// GenerateMiscsRec generates an record document for all misc-records in the given schema.
+// The PDFs will then be saved into the given destination folder. DownConvert (converting
+// all PDF's to a PostScript file and back) should be done always  as gopdf will have
+// otherwise problems embedding most PDFs.
 func GenerateMiscsRec(s schema.Schema, dstPath string, doOverwrite, downConvert bool) {
 	nFiles := len(s.MiscRecords)
 
@@ -103,6 +117,7 @@ func GenerateMiscsRec(s schema.Schema, dstPath string, doOverwrite, downConvert 
 	wg.Wait()
 }
 
+// GenerateMiscRec generates and saves the record PDF for a given misc-record.
 func GenerateMiscRec(s schema.Schema, mrc schema.MiscRecord, dstPath string, downConvert bool, wg *sync.WaitGroup) {
 	props := Properties{
 		Type:       "Miscellaneous Record",

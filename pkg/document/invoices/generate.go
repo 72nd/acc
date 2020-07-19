@@ -8,6 +8,9 @@ import (
 	"path"
 )
 
+// GenerateAllInvoices takes the schema and the place (the city where the invoice is generated) and
+// generates an invoice-letter for all invoices in the schema and save it to the given destination
+// folder.
 func GenerateAllInvoices(s schema.Schema, dstFolder, place string, doOverwrite bool) {
 	nFiles := len(s.Invoices)
 	for i := range s.Invoices {
@@ -27,6 +30,8 @@ func GenerateAllInvoices(s schema.Schema, dstFolder, place string, doOverwrite b
 	}
 }
 
+// GenerateInvoice generates an invoice for a given invoice record. Place is the city where the
+// invoice is generated.
 func GenerateInvoice(company schema.Company, invoice schema.Invoice, customer schema.Party, place, dstPath string) {
 	doc := NewInvoiceDocument(12, place)
 	save(doc.Generate(company, invoice, customer), dstPath)

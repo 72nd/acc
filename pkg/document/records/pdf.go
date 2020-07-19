@@ -15,6 +15,7 @@ import (
 	"regexp"
 )
 
+// PdfVersion states the used PDF version.
 type PdfVersion int
 
 const (
@@ -25,6 +26,7 @@ const (
 	v17
 )
 
+// ScrType states whether a given asset is a PDF or a PNG.
 type ScrType int
 
 const (
@@ -32,6 +34,7 @@ const (
 	PNG
 )
 
+// Pdf is the PDF document structure for report PDFs.
 type Pdf struct {
 	SrcPath             string
 	ScrType             ScrType
@@ -41,6 +44,7 @@ type Pdf struct {
 	pdf                 gopdf.GoPdf
 }
 
+// NewPdf returns a new PDF.
 func NewPdf(srcPath, dstPath string) *Pdf {
 	scrType := PDF
 	if path.Ext(srcPath) == ".png" {
@@ -53,6 +57,7 @@ func NewPdf(srcPath, dstPath string) *Pdf {
 	}
 }
 
+// Generate generates and saves the file for a given Pdf element.
 func (p *Pdf) Generate(props Properties, downConvert bool) {
 	if p.ScrType == PDF && downConvert {
 		p.useConvertedVersion = true
