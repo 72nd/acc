@@ -97,7 +97,7 @@ func (e Expense) Convert(pathPrefix, obligedCustomerId, project string, parties 
 	exp := schema.Expense{
 		Identifier:              e.SbId,
 		Name:                    e.Name,
-		Amount:                  e.Amount,
+		Amount:                  util.NewMoneyFromFloat(e.Amount, "CHF"),
 		Path:                    path.Join(pathPrefix, e.Path),
 		DateOfAccrual:           e.DateOfAccrual,
 		Billable:                e.Billable,

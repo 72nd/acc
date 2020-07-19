@@ -217,7 +217,7 @@ type Entry struct {
 	Comment         Comment
 	Account1        string
 	Account2        string
-	Amount          float64
+	Amount          util.Money
 }
 
 const trnTpl = `
@@ -286,16 +286,15 @@ func (e Entry) trnAmount(invers bool) string {
 	if invers {
 		sign = "-"
 	}
-	whole := int64(e.Amount)
-	if e.Amount == float64(whole) {
-		return fmt.Sprintf("CHF%s%d", sign, whole)
+	if ok, _ := e.Amount.Equals(e.Amount.Round()); ok {
+		return fmt.Sprintf("CHF%s%d", sign, e.Amount.Amount()/100)
 	}
-	return fmt.Sprintf("CHF%s%.2f", sign, e.Amount)
+	return fmt.Sprintf("CHF%s%s", sign, e.Amount.Value())
 }
 
-func compareAmounts(a float64, b float64) error {
-	if util.CompareFloats(a, b) {
+func compareAmounts(a util.Money, b util.Money) error {
+	if ok, _ := a.Equals(b.Money); ok {
 		return nil
 	}
-	return fmt.Errorf("the two involved amounts don't match: %.3f vs %.3f", a, b)
+	return fmt.Errorf("the two involved amounts don't match: %s vs %s", a.Display(), b.Display())
 }

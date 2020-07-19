@@ -93,7 +93,7 @@ func entriesForCompanyPaidExpenses(s schema.Schema, exp schema.Expense) []Entry 
 			data)
 	}
 	var acc2 string
-	if exp.PayedWithDebit {
+	if exp.PaidWithDebit {
 		acc2 = s.JournalConfig.BankAccount
 	} else {
 		acc2 = s.JournalConfig.PayableAccount

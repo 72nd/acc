@@ -103,7 +103,7 @@ func (d Document) ConvertAsInvoice(pathPrefix, customerId, projectName string, p
 	inv := schema.Invoice{
 		Identifier:              d.SbId,
 		Name:                    d.Name,
-		Amount:                  -1,
+		Amount:                  util.NewMoney(-1, "CHF"),
 		Path:                    path.Join(pathPrefix, d.Path),
 		CustomerId:              customerId,
 		SendDate:                d.SendDate,

@@ -47,10 +47,10 @@ func GenerateExpenseRec(s schema.Schema, exp schema.Expense, dstPath string, dow
 		Identifier: exp.Identifier,
 		DstName:    exp.Identifier,
 		Line1:      fmt.Sprintf("id: %s", na(exp.Id)),
-		Line2:      fmt.Sprintf("name: %s // amount: %s", na(exp.Name), sfr(exp.Amount)),
+		Line2:      fmt.Sprintf("name: %s // amount: %s", na(exp.Name), exp.Amount.Display()),
 		Line3:      fmt.Sprintf("accrual at: %s // expense category: %s // internal: %t", date(exp.DateOfAccrual), na(exp.ExpenseCategory), exp.Internal),
 		Line4:      fmt.Sprintf("settlement at: %s // advanced by 3th: %s // 3rd party: %s", date(exp.DateOfSettlement), na(exp.AdvancedByThirdParty), emp),
-		Line5:      fmt.Sprintf("customer: %s // paid with debit: %s", na(s.Parties.CustomerStringById(exp.ObligedCustomerId)), na(exp.PayedWithDebit)),
+		Line5:      fmt.Sprintf("customer: %s // paid with debit: %s", na(s.Parties.CustomerStringById(exp.ObligedCustomerId)), na(exp.PaidWithDebit)),
 	}
 	pdf := NewPdf(exp.Path, dstPath)
 	pdf.Generate(props, downConvert)
@@ -86,7 +86,7 @@ func GenerateInvoiceRec(s schema.Schema, inv schema.Invoice, dstPath string, dow
 		Identifier: inv.Identifier,
 		DstName:    inv.Identifier,
 		Line1:      fmt.Sprintf("id: %s", na(inv.Id)),
-		Line2:      fmt.Sprintf("name: %s // amount: %s", na(inv.Name), sfr(inv.Amount)),
+		Line2:      fmt.Sprintf("name: %s // amount: %s", na(inv.Name), inv.Amount.Display()),
 		Line3:      fmt.Sprintf("send at: %s // settlement: at %s", date(inv.SendDate), date(inv.DateOfSettlement)),
 		Line4:      fmt.Sprintf("customer: %s", s.Parties.CustomerStringById(inv.CustomerId)),
 	}
@@ -162,10 +162,6 @@ func na(data interface{}) string {
 		return strconv.FormatFloat(data.(float64), 'E', 2, 64)
 	}
 	return "not implemented"
-}
-
-func sfr(amount float64) string {
-	return fmt.Sprintf("SFr. %.2f", amount)
 }
 
 func date(data string) string {

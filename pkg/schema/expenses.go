@@ -174,7 +174,7 @@ type Expense struct {
 	// Name describes meaningful the kind of the Expense.
 	Name string `yaml:"name" default:"Expense Name"`
 	// Amount states the amount of the Expense.
-	Amount float64 `yaml:"amount" default:"10.00" query:"amount"`
+	Amount util.Money `yaml:"amount" default:"" query:"amount"`
 	// Path is the full path to the business record document.
 	Path string `yaml:"path" default:"/path/to/expense.pdf" query:"path"`
 	// DateOfAccrual represents the day the obligation emerged.
@@ -210,6 +210,7 @@ func NewExpense() Expense {
 	if err := defaults.Set(&exp); err != nil {
 		logrus.Fatal("error setting defaults: ", err)
 	}
+	exp.Amount = util.NewMoney(1000, "CHF")
 	return exp
 }
 
@@ -230,10 +231,11 @@ func InteractiveNewExpense(s *Schema, asset string) Expense {
 		"Name",
 		"Name of the expense",
 		"HAL 9000")
-	exp.Amount = util.AskFloat(
+	exp.Amount = util.AskMoney(
 		"Amount",
 		"How much did you spend?",
-		23.42)
+		util.NewMoney(2342, s.Currency),
+		s.Currency)
 	if asset == "" {
 		exp.Path = util.AskString(
 			"Asset",
@@ -438,7 +440,7 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   "human readable identifier not set (Identifier is empty)",
 		},
 		{
-			Condition: e.Amount == 0.0,
+			Condition: e.Amount.Amount() == 0,
 			Message:   "amount is not set (Amount is 0.0)",
 		},
 		{

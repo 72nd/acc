@@ -129,7 +129,7 @@ type Invoice struct {
 	// Name describes meaningful the kind of the Expense.
 	Name string `yaml:"name" default:"Expense Name"`
 	// Amount states the amount of the Expense.
-	Amount float64 `yaml:"amount" default:"10.00" query:"amount"`
+	Amount util.Money `yaml:"amount" default:"-" query:"amount"`
 	// Path is the full path to the voucher utils.
 	Path string `yaml:"path" default:"/path/to/file.utils" query:"path"`
 	// Revoked invoices are disabled an no longer taken into account.
@@ -154,6 +154,7 @@ func NewInvoice() Invoice {
 	if err := defaults.Set(&inv); err != nil {
 		logrus.Fatal("error setting defaults: ", err)
 	}
+	inv.Amount = util.NewMoney(1000, "CHF")
 	return inv
 }
 
@@ -173,10 +174,11 @@ func InteractiveNewInvoice(s Schema, asset string) Invoice {
 		"Name",
 		"Name of the invoice",
 		"Invoice for clingfilm")
-	inv.Amount = util.AskFloat(
+	inv.Amount = util.AskMoney(
 		"Amount",
 		"How much is the outstanding balance",
-		23.42)
+		util.NewMoney(2342, s.Currency),
+		s.Currency)
 	if asset == "" {
 		inv.Path = util.AskString(
 			"Asset",
@@ -225,11 +227,12 @@ func (i Invoice) AssistedCompletion(s Schema, doAll, openAttachment, retainFocus
 		ext.Open()
 	}
 	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize invoice:")), aurora.BrightMagenta(i.String()))
-	if i.Amount <= 0.0 {
-		i.Amount = util.AskFloat(
+	if i.Amount.Amount() <= 0 {
+		i.Amount = util.AskMoney(
 			"Amount",
 			"How much is the outstanding balance",
-			0.0)
+			util.NewMoney(0, s.Currency),
+			s.Currency)
 	}
 
 	strategy := util.AskForStategy()
@@ -342,7 +345,7 @@ func (i Invoice) Conditions() util.Conditions {
 			Message:   "human readable identifier not set (Identifier is empty)",
 		},
 		{
-			Condition: i.Amount <= 0.0,
+			Condition: i.Amount.Amount() <= 0,
 			Message:   "amount is not set (Amount is 0.0)",
 		},
 		{

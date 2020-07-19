@@ -45,7 +45,7 @@ func ApplyTemplate(name, tpl string, data interface{}) string {
 
 func DateRangeFromYear(year int) (from, to time.Time) {
 	if year < 1 {
-		logrus.Fatalf("acc doesn't support years before the common era (given: \"%s\")", year)
+		logrus.Fatalf("acc doesn't support years before the common era (given: \"%d\")", year)
 	}
 	from = time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
 	to = time.Date(year, time.December, 31, 0, 0, 0, 0, time.UTC)

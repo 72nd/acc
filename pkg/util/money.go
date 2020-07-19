@@ -35,7 +35,7 @@ func NewMonyFromParse(value string) (Money, error) {
 	if err != nil {
 		return Money{}, fmt.Errorf("couldn't parse \"%s\" as number (int64)", rsl[3])
 	}
-	amount := part1 * 100 + part2
+	amount := part1*100 + part2
 
 	return Money{money.New(amount, rsl[1])}, nil
 }
@@ -60,6 +60,14 @@ func NewMonyFromDotNotation(value, code string) (Money, error) {
 	return NewMoney(amount, code), nil
 }
 
+// NewMoneyFromFloat returns a new Money object from the given string.
+// As floating point numbers are not a good idea for money this shouldn't
+// be used. This method is only here for the Bimpf import.
+func NewMoneyFromFloat(value float64, currency string) Money {
+	amount := int64(value * 100)
+	return NewMoney(amount, currency)
+}
+
 func (m *Money) UnmarshalYAML(value *yaml.Node) error {
 	money, err := NewMonyFromParse(value.Value)
 	if err != nil {
@@ -69,8 +77,15 @@ func (m *Money) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-func (m Money) MarshalYAML() (interface{}, error) {
+func (m Money) Value() string {
 	part1 := m.Amount() / 100
-	part2 := m.Amount() - part1 * 100
-	return fmt.Sprintf("%s %d.%d", m.Currency().Code, part1, part2), nil
+	part2 := m.Amount() - part1*100
+	if part2 < 10 {
+	return fmt.Sprintf("%d.0%d", part1, part2)
+	}
+	return fmt.Sprintf("%d.%d", part1, part2)
+}
+
+func (m Money) MarshalYAML() (interface{}, error) {
+	return fmt.Sprintf("%s %s", m.Currency().Code, m.Value()), nil
 }

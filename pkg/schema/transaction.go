@@ -25,7 +25,7 @@ const (
 type Transaction struct {
 	Id                   string               `yaml:"id" default:""`
 	Identifier           string               `yaml:"identifier" default:""`
-	Amount               float64              `yaml:"amount" default:"10.00" query:"amount"`
+	Amount               util.Money           `yaml:"amount" default:"-" query:"amount"`
 	Description          string               `yaml:"description" default:""`
 	TransactionType      util.TransactionType `yaml:"transactionType" default:"0"`
 	AssociatedPartyId    string               `yaml:"associatedPartyId" default:"" query:"customer,employee"`
@@ -39,6 +39,7 @@ func NewTransaction() Transaction {
 	if err := defaults.Set(&trn); err != nil {
 		logrus.Fatal(err)
 	}
+	trn.Amount = util.NewMoney(1000, "CHF")
 	return trn
 }
 
@@ -48,7 +49,7 @@ func NewTransactionWithUuid() Transaction {
 	return trn
 }
 
-func InteractiveNewTransaction(s Statement) Transaction {
+func InteractiveNewTransaction(s Statement, currency string) Transaction {
 	trn := NewTransactionWithUuid()
 	trn.Identifier = util.AskString(
 		"Value",
@@ -78,12 +79,12 @@ func InteractiveNewTransaction(s Statement) Transaction {
 	trn.Date = util.AskDate(
 		"Date",
 		"Transaction date",
-		time.Now(),
-	)
-	trn.Amount = util.AskFloat(
+		time.Now())
+	trn.Amount = util.AskMoney(
 		"Amount",
 		"",
-		23.42,
+		util.NewMoney(2342, currency),
+		currency,
 	)
 	trn.JournalMode = JournalMode(util.AskIntFromList(
 		"Journal Mode",
@@ -307,7 +308,7 @@ func (t Transaction) Conditions() util.Conditions {
 			Level:     util.BeforeMergeFlaw,
 		},
 		{
-			Condition: t.Amount <= 0,
+			Condition: t.Amount.Amount() <= 0,
 			Message:   "amount is not set",
 			Level:     util.BeforeMergeFlaw,
 		},
