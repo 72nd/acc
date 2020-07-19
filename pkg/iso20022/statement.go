@@ -1,3 +1,5 @@
+// Package for ISO 20022 related functionalities. In other words in- and exporting transactions
+// from or to the bank.
 package iso20022
 
 import (
