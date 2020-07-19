@@ -71,7 +71,9 @@ Mainly for reference: This diagram shows all possible interconnections between t
 
 ### Modes
 
-Flat mode:
+Acc has two different ways of saving all the data: _flat_ and _distributed_ mode. Both modes using YAML files but differ in the way of arranging the data in the file system.
+
+**flat mode** In flat mode there is one YAML file per record type. Typically all files are in the same folder and the `acc.yaml` file contains the paths to all other files. This is the default mode and fits small projects (like a single theater production) well. A flat mode file structure will look something like this:
 
 ```
 .
@@ -85,7 +87,7 @@ Flat mode:
 
 ```
 
-Distributed mode:
+**distributed mode** The distributed mode on the other hand organizes the records according to their customer and project using not only files but also a folder structure.  The aim is to use Acc for multiple projects, customers and over the curse of multiple years. A distributed Acc project consists of a base folder, containing the `acc.yaml` and `employees.yaml` files and the folders `internal` (containing all records which are internal and thus not associated with any customer and/or project) and `projects`. The `projects` folder contains a directory for each customer. Each customer folder on the other hand contains a `customer.yaml` (with the data for this customer) and a folder for each project associated with this customer. Invoices and expenses linked to a project are stored in a `project.yaml` file present in each and every project folder. Please note: This mode is much more opinionated on how to store and arrange the data.
 
 ```
 .
