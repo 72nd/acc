@@ -1,8 +1,8 @@
+# acc
+
  <p align="center">
   <img width="128" height="128" src="misc/icon-text.png">
 </p>
-
-# acc
 
 First planned as a simple tool chain for easing the work with the plain text accounting software [hledger](https://hledger.org/), acc evolved into some sort of plain-text ERP system. It's capable of keeping track of your customers, employees, expenses and invoices as well as importing bank statements (via ISO 20022 camt). Acc can generate most of your hledger account records based on this data. Also it's possible to export all business records (expenses etc.) with their respective receipt as a PDF for further archiving. There is also a quit powerful query functionality for easy finding of records. For adding new data, a interactive prompt can be used (you also can just edit the YAML files by yourself).
 
@@ -50,7 +50,7 @@ The idea of Acc is to collect data about your business and then generating a num
 
 **config** Commonly named `acc.yaml` contains all the basic data about a Acc project (learn morn about this below in the «Modes» section) as well as all the definitions for the automatic account records generation. This file is also the entry point for the application. While using Acc you always have to state this file with the `-i` flag (exception: generation of a new Acc project with `acc new`).
 
-**expense** Expenses represent an event, where the company has to pay some money. This can be the receiving of a bill (eg. tax bill) or paying a purchase directly with the companies debit card. But also the advancing employee scenario can be handled. Sometimes an employee has to pay something with his/her own money. Acc provides functionality to keep track of such advanced expenses and also generating payment order files (ISO 20022 pain.001) for easy transferring your debts. 
+**expense** Expenses represent an event, where the company has to pay some money. This can be the receiving of a bill (eg. tax bill) or paying a purchase directly with the companies debit card. But also the advancing employee scenario can be handled. Sometimes an employee has to pay something with his/her own money. Acc provides functionality to keep track of such advanced expenses and also generating payment order files ([ISO 20022](https://en.wikipedia.org/wiki/ISO_20022) pain.001) for easy transferring your debts. 
 
 **invoice** Represents an invoice you've sent to a customer. Acc also contains an experimental feature to render simple invoice letters as PDFs.
 
@@ -60,12 +60,11 @@ The idea of Acc is to collect data about your business and then generating a num
 
 **project** If you use Acc for a more complex scenario it makes sense to group expenses and invoices per customer project. Expenses and invoices can be linked to a project. Each project has a associated customer. By using _distributed mode_ you can also group your files in project folders (learn more about below). The use of projects is optional, for simple cases you don't have to use them.
 
-**statement**
+**statement** A bank statement contains bank account transactions for a certain period of time. In the future a Acc project should be able to have multiple statements separated by a period (month, year).
 
-**transaction**
+**transaction** A transaction describes the receiving or payment of a amount on your bank account. Some data types (like invoices and expenses) can be associated with one or multiple transactions. This way you can keep track of the payment of your invoices and transfer outstanding advanced employee balances. Acc can import this transactions directly from your bank account via ISO 20022 pain.001. You can learn more on how to link records to (imported) transactions in the _complete_ sub-command section.
 
-
-This diagram shows all possible interconnections between the different types. If this confuses you, just ignore it for now (as this diagram is mainly for reference).
+Mainly for reference: This diagram shows all possible interconnections between the different types. If this confuses you, just ignore it for now.
 
 ![Data Model](misc/data-model.svg)
 
