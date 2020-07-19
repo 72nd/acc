@@ -15,7 +15,8 @@ import (
 // DefaultConfigFile states the default name of the config/project file.
 const DefaultConfigFile = "acc.yaml"
 
-// DefaultProjectFiles 
+// DefaultProjectFiles contains the default names of all the project files of flat mode.
+// This is used to check if a Acc project is present in a given folder.
 var DefaultProjectFiles = []string{
 	DefaultConfigFile,
 	schema.DefaultExpensesFile,

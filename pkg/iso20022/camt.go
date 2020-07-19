@@ -8,13 +8,16 @@ import (
 	"github.com/72nd/acc/pkg/util"
 )
 
+// DateLayout states the default date layout used by the ISO 20022 standard.
 const DateLayout = "2006-01-02"
 
+// Document is the root node  of a bank statement.
 type Document struct {
 	XMLName xml.Name `xml:"Document"`
 	Entries []Entry  `xml:"BkToCstmrStmt>Stmt>Ntry"`
 }
 
+// AccTransactions pareses the Transactions of a given file and returns it as Transaction structs.
 func (d Document) AccTransactions() []schema.Transaction {
 	var result []schema.Transaction
 	for i := range d.Entries {
@@ -23,6 +26,7 @@ func (d Document) AccTransactions() []schema.Transaction {
 	return result
 }
 
+// Entry is a ISO 20022 entry. 
 type Entry struct {
 	XMLName xml.Name `xml:"Ntry"`
 	// Amount of transaction.
@@ -38,6 +42,7 @@ type Entry struct {
 	Transactions             []Transaction `xml:"NtryDtls>TxDtls"`
 }
 
+// AccTransactions returns the transactions of a given entry.
 func (e Entry) AccTransactions() []schema.Transaction {
 	result := make([]schema.Transaction, len(e.Transactions))
 	for i := range e.Transactions {
@@ -46,6 +51,7 @@ func (e Entry) AccTransactions() []schema.Transaction {
 	return result
 }
 
+// Transaction reassembles a ISO 20022 transaction.
 type Transaction struct {
 	XMLName              xml.Name `xml:"TxDtls"`
 	Amount               float64  `xml:"Amt"`
@@ -58,6 +64,7 @@ type Transaction struct {
 	BankName             string   `xml:"RltdAgts>CdtrAgt>FinInstnId>Nm"`
 }
 
+// AccTransaction converts an ISO 20022 transaction into a Acc bank account transaction.
 func (t Transaction) AccTransaction(date string) schema.Transaction {
 	trnType := util.CreditTransaction
 	if t.CreditDebitIndicator == "DBIT" {
@@ -74,6 +81,7 @@ func (t Transaction) AccTransaction(date string) schema.Transaction {
 	return trn
 }
 
+// String returns a human readable string of a given Transaction.
 func (t Transaction) String() string {
 	typeStr := fmt.Sprintf("Received %.2f.- from %s", t.Amount, t.Debitor)
 	if t.CreditDebitIndicator == "DBIT" {
@@ -87,6 +95,7 @@ func (t Transaction) String() string {
 	return fmt.Sprintf("%s%s", typeStr, description)
 }
 
+// Party reassembles a ISO 20022 party.
 type Party struct {
 	Name           string `xml:"Nm"`
 	AddressLine    string `xml:"PstlAdr>AdrLine"`
@@ -97,6 +106,7 @@ type Party struct {
 	Country        string `xml:"PstlAdr>Ctry"`
 }
 
+// String returns a human readable string of a given party.
 func (p Party) String() string {
 	result := p.Name
 	var address string
