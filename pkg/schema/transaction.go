@@ -260,10 +260,10 @@ func (t Transaction) String() string {
 	if t.TransactionType == util.CreditTransaction {
 		return fmt.Sprintf("%s: received %.2f at %s", t.Identifier, t.Amount, t.Date)
 	}
-	return fmt.Sprintf("%s: payed %.2f at %s", t.Identifier, t.Amount, t.Date)
+	return fmt.Sprintf("%s: paid %.2f at %s", t.Identifier, t.Amount, t.Date)
 }
 
-// Short returns a short represenation of the element.
+// Short returns a short representation of the element.
 func (t Transaction) Short() string {
 	return fmt.Sprintf("%s", t.Id)
 }

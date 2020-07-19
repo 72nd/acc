@@ -193,8 +193,8 @@ type Expense struct {
 	SettlementTransactionId string `yaml:"settlementTransactionId" default:"" query:"transaction"`
 	// ExpenseCategory gives additional info for the categorization of the expense in the journal.
 	ExpenseCategory string `yaml:"expenseCategory" default:""`
-	// Debit Payment states whether the expense was directly payed with the main account debithether the expense was directly payed with the main account debit card.
-	PayedWithDebit bool `yaml:"payedWithDebit" default:"false"`
+	// Debit Payment states whether the expense was directly paid with the main account debithether the expense was directly paid with the main account debit card.
+	PaidWithDebit bool `yaml:"paidWithDebit" default:"false"`
 	// Internal states whether this expense is for an internal purpose or not.
 	Internal bool `yaml:"internal" default:"true"`
 	// ProjectName refers to the associated project of the expense. Depreciated.
@@ -288,9 +288,9 @@ func InteractiveNewExpense(s *Schema, asset string) Expense {
 		s.JournalConfig.ExpenseCategories = append(s.JournalConfig.ExpenseCategories, value)
 		exp.ExpenseCategory = value.Name
 	}
-	exp.PayedWithDebit = util.AskBool(
-		"Payed with Debit",
-		"Was this expense directly payed via the main account debit card?",
+	exp.PaidWithDebit = util.AskBool(
+		"Paid with Debit",
+		"Was this expense directly paid via the main account debit card?",
 		false)
 	exp.Internal = util.AskBool(
 		"Internal",
@@ -344,9 +344,9 @@ func (e Expense) AssistedCompletion(s *Schema, doAll, autoSave, openAttachment, 
 		}
 	}
 	/* Why should we do this?
-	e.PayedWithDebit = util.AskBool(
-		"Payed with Debit",
-		"Was this expense directly payed via the main account debit card?",
+	e.PaidWithDebit = util.AskBool(
+		"Paid with Debit",
+		"Was this expense directly paid via the main account debit card?",
 		false)
 	e.Internal = util.AskBool(
 		"Internal",
@@ -413,7 +413,7 @@ func (e Expense) String() string {
 	return fmt.Sprintf("%s (%s): %.2f for %s", e.Name, e.Identifier, e.Amount, e.ProjectName)
 }
 
-// Short returns a short represenation of the element.
+// Short returns a short representation of the element.
 func (e Expense) Short() string {
 	return fmt.Sprintf("%s (%s)", e.Name, e.Identifier)
 }

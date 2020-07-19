@@ -78,7 +78,7 @@ func entriesForCompanyPaidExpenses(s schema.Schema, exp schema.Expense) []Entry 
 			"Identifier": exp.Identifier,
 		}
 		desc = util.ApplyTemplate(
-			"internal expense occurence description",
+			"internal expense occurrence description",
 			s.JournalConfig.InternalExpenseOccurenceDescription,
 			data)
 	} else {
@@ -88,7 +88,7 @@ func entriesForCompanyPaidExpenses(s schema.Schema, exp schema.Expense) []Entry 
 			"Project":    exp.ProjectName,
 		}
 		desc = util.ApplyTemplate(
-			"production expense occurence description",
+			"production expense occurrence description",
 			s.JournalConfig.ProductionExpenseOccurenceDescription,
 			data)
 	}

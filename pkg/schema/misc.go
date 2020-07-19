@@ -180,7 +180,7 @@ func (m MiscRecord) String() string {
 	return fmt.Sprintf("misc record %s (%s)", m.Name, m.Identifier)
 }
 
-// Short returns a short represenation of the element.
+// Short returns a short representation of the element.
 func (m MiscRecord) Short() string {
 	return fmt.Sprintf("%s (%s)", m.Name, m.Identifier)
 }

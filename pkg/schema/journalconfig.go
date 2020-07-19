@@ -186,7 +186,7 @@ func (e ExpenseCategories) Validate() util.ValidateResults {
 }
 
 type ExpenseCategory struct {
-	Name    string `yaml:"name" default:"Matrial Costs"`
+	Name    string `yaml:"name" default:"Material Costs"`
 	Account string `yaml:"account" default:"expenses:Betrieblicher Aufwand:Materialaufwand"`
 }
 

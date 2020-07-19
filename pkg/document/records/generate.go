@@ -50,7 +50,7 @@ func GenerateExpenseRec(s schema.Schema, exp schema.Expense, dstPath string, dow
 		Line2:      fmt.Sprintf("name: %s // amount: %s", na(exp.Name), sfr(exp.Amount)),
 		Line3:      fmt.Sprintf("accrual at: %s // expense category: %s // internal: %t", date(exp.DateOfAccrual), na(exp.ExpenseCategory), exp.Internal),
 		Line4:      fmt.Sprintf("settlement at: %s // advanced by 3th: %s // 3rd party: %s", date(exp.DateOfSettlement), na(exp.AdvancedByThirdParty), emp),
-		Line5:      fmt.Sprintf("customer: %s // payed with debit: %s", na(s.Parties.CustomerStringById(exp.ObligedCustomerId)), na(exp.PayedWithDebit)),
+		Line5:      fmt.Sprintf("customer: %s // paid with debit: %s", na(s.Parties.CustomerStringById(exp.ObligedCustomerId)), na(exp.PayedWithDebit)),
 	}
 	pdf := NewPdf(exp.Path, dstPath)
 	pdf.Generate(props, downConvert)

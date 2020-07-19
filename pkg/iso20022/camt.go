@@ -85,7 +85,7 @@ func (t Transaction) AccTransaction(date string) schema.Transaction {
 func (t Transaction) String() string {
 	typeStr := fmt.Sprintf("Received %.2f.- from %s", t.Amount, t.Debitor)
 	if t.CreditDebitIndicator == "DBIT" {
-		typeStr = fmt.Sprintf("Payed %.2f.- to %s", t.Amount, t.Creditor)
+		typeStr = fmt.Sprintf("Paid %.2f.- to %s", t.Amount, t.Creditor)
 	}
 
 	var description string

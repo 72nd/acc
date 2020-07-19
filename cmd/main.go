@@ -158,7 +158,7 @@ func main() {
 							return nil
 						},
 						Flags: append(addFlags, &cli.BoolFlag{
-							Name:    "mulitple",
+							Name:    "multiple",
 							Aliases: []string{"m"},
 							Usage:   "add multiple expende categories in one go",
 						}),
@@ -504,7 +504,7 @@ func main() {
 					},
 					&cli.StringFlag{
 						Name:  "types",
-						Usage: "types to be filtered seperated by comma (customers,employee,expenses,invoices)",
+						Usage: "types to be filtered separated by comma (customers,employee,expenses,invoices)",
 					},
 				},
 			},
@@ -668,7 +668,7 @@ func main() {
 							&cli.StringFlag{
 								Name:    "types",
 								Aliases: []string{"t"},
-								Usage:   "types to be filtered seperated by comma, use 'acc query types' to get possibilities",
+								Usage:   "types to be filtered separated by comma, use 'acc query types' to get possibilities",
 							},
 							&cli.BoolFlag{
 								Name:  "yaml",
@@ -695,7 +695,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "date",
 						Aliases: []string{"d"},
-						Usage:   "filter keys by date ranges key:from:to as `REGEX:YYYY-MM-DD:YYYY-MM-DD` multiple can be seperated by comma",
+						Usage:   "filter keys by date ranges key:from:to as `REGEX:YYYY-MM-DD:YYYY-MM-DD` multiple can be separated by comma",
 					},
 					&cli.StringFlag{
 						Name:    "input",
@@ -705,7 +705,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "match",
 						Aliases: []string{"r"},
-						Usage:   "match key:value compbinations with `REGEX:REGEX` multiple can be seperated by comma",
+						Usage:   "match key:value compbinations with `REGEX:REGEX` multiple can be separated by comma",
 					},
 					&cli.BoolFlag{
 						Name:    "no-render",
@@ -729,7 +729,7 @@ func main() {
 					&cli.StringFlag{
 						Name:    "types",
 						Aliases: []string{"t"},
-						Usage:   "types to be filtered seperated by comma, use 'acc query types' to get possibilities",
+						Usage:   "types to be filtered separated by comma, use 'acc query types' to get possibilities",
 					},
 					&cli.BoolFlag{
 						Name:  "yaml",

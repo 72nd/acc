@@ -151,7 +151,7 @@ func (p Project) String() string {
 	return fmt.Sprintf("project %s (%s)", p.Name, p.Identifier)
 }
 
-// Short returns a short represenation of the element.
+// Short returns a short representation of the element.
 func (p Project) Short() string {
 	return fmt.Sprintf("%s (%s)", p.Name, p.Identifier)
 }
