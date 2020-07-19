@@ -19,7 +19,7 @@ func NewMoney(amount int64, code string) Money {
 }
 
 func NewMonyFromParse(value string) (Money, error) {
-	re := regexp.MustCompile(`^([A-z]{3})\s(\d*)\.(\d{2})$`)
+	re := regexp.MustCompile(`^(\d*)\.(\d{2})\s([A-z]{3})$`)
 	if !re.MatchString(value) {
 		return Money{}, fmt.Errorf("given string \"%s\" doesn't match format \"USD 00000.00\"", value)
 	}
@@ -27,17 +27,17 @@ func NewMonyFromParse(value string) (Money, error) {
 	if len(rsl) != 4 {
 		return Money{}, fmt.Errorf("regex submatch of string \"%s\" returned array with length != 4", value)
 	}
-	part1, err := strconv.ParseInt(rsl[2], 10, 64)
+	part1, err := strconv.ParseInt(rsl[1], 10, 64)
+	if err != nil {
+		return Money{}, fmt.Errorf("couldn't parse \"%s\" as number (int64)", rsl[1])
+	}
+	part2, err := strconv.ParseInt(rsl[2], 10, 64)
 	if err != nil {
 		return Money{}, fmt.Errorf("couldn't parse \"%s\" as number (int64)", rsl[2])
 	}
-	part2, err := strconv.ParseInt(rsl[3], 10, 64)
-	if err != nil {
-		return Money{}, fmt.Errorf("couldn't parse \"%s\" as number (int64)", rsl[3])
-	}
 	amount := part1*100 + part2
 
-	return Money{money.New(amount, rsl[1])}, nil
+	return Money{money.New(amount, rsl[3])}, nil
 }
 
 func NewMonyFromDotNotation(value, code string) (Money, error) {
@@ -87,5 +87,9 @@ func (m Money) Value() string {
 }
 
 func (m Money) MarshalYAML() (interface{}, error) {
-	return fmt.Sprintf("%s %s", m.Currency().Code, m.Value()), nil
+	return m.Display(), nil
+}
+
+func (m Money) String() string {
+	return m.Display()
 }
