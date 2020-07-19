@@ -159,6 +159,19 @@ func AskFloat(name, desc string, defaultValue float64) float64 {
 	return value
 }
 
+func AskMoney(name, desc string, defaultValue Money, currency string) Money {
+	input := simplePrompt(name, "money", desc, defaultValue.Display())
+	if input == "" {
+		return defaultValue
+	}
+	value, err := NewMonyFromDotNotation(input, "CHF")
+	if err != nil {
+		logrus.Warn(err)
+		return AskMoney(name, desc, defaultValue, currency)
+	}
+	return value
+}
+
 func AskDate(name, desc string, defaultValue time.Time) string {
 	possibleLayouts := []string{
 		GermanLayout,
