@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -17,29 +18,59 @@ func NewMoney(amount int64, code string) Money {
 	return Money{money.New(amount, code)}
 }
 
-func (m *Money) UnmarshalYAML(value *yaml.Node) error {
-	parts := strings.Split(value.Value, ".")
+func NewMonyFromParse(value string) (Money, error) {
+	re := regexp.MustCompile(`^([A-z]{3})\s(\d*)\.(\d{2})$`)
+	if !re.MatchString(value) {
+		return Money{}, fmt.Errorf("given string \"%s\" doesn't match format \"USD 00000.00\"", value)
+	}
+	rsl := re.FindStringSubmatch(value)
+	if len(rsl) != 4 {
+		return Money{}, fmt.Errorf("regex submatch of string \"%s\" returned array with length != 4", value)
+	}
+	part1, err := strconv.ParseInt(rsl[2], 10, 64)
+	if err != nil {
+		return Money{}, fmt.Errorf("couldn't parse \"%s\" as number (int64)", rsl[2])
+	}
+	part2, err := strconv.ParseInt(rsl[3], 10, 64)
+	if err != nil {
+		return Money{}, fmt.Errorf("couldn't parse \"%s\" as number (int64)", rsl[3])
+	}
+	amount := part1 * 100 + part2
+
+	return Money{money.New(amount, rsl[1])}, nil
+}
+
+func NewMonyFromDotNotation(value, code string) (Money, error) {
+	parts := strings.Split(value, ".")
 	if len(parts) != 2 {
-		return fmt.Errorf("couldn't parse \"%s\" as a amount, format xxxx.xx", value.Value)
+		return Money{}, fmt.Errorf("couldn't parse \"%s\" as a amount, format xxxx.xx", value)
 	}
 	part1, err := strconv.ParseInt(parts[0], 10, 64)
 	if err != nil {
-		return fmt.Errorf("couldn't parse \"%s\" as a amount as it contains not only numbers", value.Value)
+		return Money{}, fmt.Errorf("couldn't parse \"%s\" as a amount as it contains not only numbers", value)
 	}
 	part2, err := strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
-		return fmt.Errorf("couldn't parse \"%s\" as a amount as it contains not only numbers", value.Value)
+		return Money{}, fmt.Errorf("couldn't parse \"%s\" as a amount as it contains not only numbers", value)
 	}
 	if part2/100 > 0 {
-		return fmt.Errorf("couldn't parse \"%s\" as a amount, as only two digits are allowed after the point", value.Value)
+		return Money{}, fmt.Errorf("couldn't parse \"%s\" as a amount, as only two digits are allowed after the point", value)
 	}
 	amount := part1*100 + part2
-	m.Money = money.New(amount, "CHF")
+	return NewMoney(amount, code), nil
+}
+
+func (m *Money) UnmarshalYAML(value *yaml.Node) error {
+	money, err := NewMonyFromParse(value.Value)
+	if err != nil {
+		return err
+	}
+	m.Money = money.Money
 	return nil
 }
 
 func (m Money) MarshalYAML() (interface{}, error) {
-	return map[string]string{
-		"amount":   strconv.FormatInt(m.Amount(), 10),
-		"currency": m.Currency().Code}, nil
+	part1 := m.Amount() / 100
+	part2 := m.Amount() - part1 * 100
+	return fmt.Sprintf("%s %d.%d", m.Currency().Code, part1, part2), nil
 }
