@@ -21,8 +21,11 @@ import (
  * - Internal Expenses
  */
 
+// StrTuple represents a tuple of two strings.
 type StrTuple []string
 
+// OpenContainer encapsulates all data slices which have to be open in a concurrency-safe manner.
+// Multiple go-routines can add data to the same collection without having to wait.
 type OpenContainer struct {
 	wg       sync.WaitGroup
 	cst      []schema.Party
@@ -37,10 +40,13 @@ type OpenContainer struct {
 	filesMux sync.Mutex
 }
 
+// Wait has to be called when the data of the container should be read. The function will wait
+// until all pending writes are done.
 func (c *OpenContainer) Wait() {
 	c.wg.Wait()
 }
 
+// AddCst adds a customer to the customer slice.
 func (c *OpenContainer) AddCst(cst schema.Party) {
 	c.wg.Add(1)
 	go func() {
@@ -51,6 +57,7 @@ func (c *OpenContainer) AddCst(cst schema.Party) {
 	}()
 }
 
+// AddEmp adds a employee to the employee slice.
 func (c *OpenContainer) AddEmp(emp []schema.Party) {
 	c.wg.Add(1)
 	go func() {
@@ -61,6 +68,7 @@ func (c *OpenContainer) AddEmp(emp []schema.Party) {
 	}()
 }
 
+// AddExp adds a expense to the expense slice.
 func (c *OpenContainer) AddExp(exp schema.Expenses) {
 	c.wg.Add(1)
 	go func() {
@@ -71,6 +79,7 @@ func (c *OpenContainer) AddExp(exp schema.Expenses) {
 	}()
 }
 
+// AddPrj adds a project file to the project file slice.
 func (c *OpenContainer) AddPrj(prj ProjectFiles) {
 	c.wg.Add(1)
 	go func() {
@@ -81,6 +90,7 @@ func (c *OpenContainer) AddPrj(prj ProjectFiles) {
 	}()
 }
 
+// AddFile adds a Tuple containing the path and the hash of it's content to the files map.
 func (c *OpenContainer) AddFile(file StrTuple) {
 	c.wg.Add(1)
 	go func() {

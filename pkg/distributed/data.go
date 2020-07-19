@@ -1,3 +1,6 @@
+// the distributed package contains all the functionality for the distributed mode
+// (learn more about this in the README). This is mainly the reading and writing of
+// the data using as much concurrency as possible.
 package distributed
 
 import (

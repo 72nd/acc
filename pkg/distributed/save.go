@@ -8,6 +8,7 @@ import (
 	"github.com/72nd/acc/pkg/schema"
 )
 
+// SaveContainer encapsulates all data which have to be written in a concurrency-safe manner.
 type SaveContainer struct {
 	wg     sync.WaitGroup
 	cst    CustomersToSave
@@ -16,10 +17,13 @@ type SaveContainer struct {
 	prjMux sync.Mutex
 }
 
+// Wait has to be called when the data of the container should be read. The function will wait
+// until all pending writes are done.
 func (c *SaveContainer) Wait() {
 	c.wg.Wait()
 }
 
+// AddCst adds a customer to the customer slice.
 func (c *SaveContainer) AddCst(cst CustomerToSave) {
 	c.wg.Add(1)
 	go func() {
@@ -30,6 +34,7 @@ func (c *SaveContainer) AddCst(cst CustomerToSave) {
 	}()
 }
 
+// AddProj adds a project file to the project file slice.
 func (c *SaveContainer) AddPrj(prj ProjectFile) {
 	c.wg.Add(1)
 	go func() {
