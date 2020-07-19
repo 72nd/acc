@@ -1,5 +1,5 @@
  <p align="center">
-  <img width="128" height="128" src="misc/logo-text.png">
+  <img width="128" height="128" src="misc/icon-text.png">
 </p>
 
 # acc
