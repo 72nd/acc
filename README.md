@@ -1,3 +1,7 @@
+ <p align="center">
+  <img width="128" height="128" src="misc/logo-text.png">
+</p>
+
 # acc
 
 First planned as a simple tool chain for easing the work with the plain text accounting software [hledger](https://hledger.org/), acc evolved into some sort of plain-text ERP system. It's capable of keeping track of your customers, employees, expenses and invoices as well as importing bank statements (via ISO 20022 camt). Acc can generate most of your hledger account records based on this data. Also it's possible to export all business records (expenses etc.) with their respective receipt as a PDF for further archiving. There is also a quit powerful query functionality for easy finding of records. For adding new data, a interactive prompt can be used (you also can just edit the YAML files by yourself).
