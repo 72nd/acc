@@ -1,3 +1,4 @@
+// The ledger package provides the functionality of generating hledger journals.
 package ledger
 
 import (
