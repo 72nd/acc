@@ -3,7 +3,6 @@ package query
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/72nd/acc/pkg/schema"
@@ -136,12 +135,6 @@ type KeyValue struct {
 
 func (k KeyValue) RenderValue(s schema.Schema) string {
 	switch k.Field.Tag.Get("query") {
-	case "amount":
-		amount, err := strconv.ParseFloat(k.Value, 64)
-		if err != nil {
-			return k.Value
-		}
-		return fmt.Sprintf("%s %.2f", s.JournalConfig.Currency, amount)
 	case "customer":
 		cst, err := s.Parties.CustomerById(k.Value)
 		if err != nil {
