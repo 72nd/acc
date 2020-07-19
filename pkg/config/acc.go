@@ -32,6 +32,7 @@ type Acc struct {
 	// Company contains the information about the organisation which uses acc.
 	Company             schema.Company       `yaml:"company" default:""`
 	JournalConfig       schema.JournalConfig `yaml:"journalConfig" default:""`
+	Currency            string               `yaml:"currency" default:"CHF"`
 	PartionedMode       bool                 `yaml:"partionedMode" default:"false"`
 	ExpensesFilePath    string               `yaml:"expensesFilePath" default:"expenses.yaml"`
 	InvoicesFilePath    string               `yaml:"invoicesFilePath" default:"invoices.yaml"`
@@ -49,6 +50,7 @@ func (a Acc) NewProjectModeAcc(repoPath string) Acc {
 	return Acc{
 		Company:       a.Company,
 		JournalConfig: a.JournalConfig,
+		Currency:      "CHF",
 		PartionedMode: true,
 		FileName:      filepath.Join(repoPath, DefaultConfigFile),
 	}
@@ -69,6 +71,7 @@ func NewSchema(folderPath, logo string, doSave, interactive, partMode bool) sche
 		Company:             cmp,
 		JournalConfig:       jrc,
 		PartionedMode:       partMode,
+		Currency:            "CHF",
 		ExpensesFilePath:    schema.DefaultExpensesFile,
 		InvoicesFilePath:    schema.DefaultInvoicesFile,
 		MiscRecordsFilePath: schema.DefaultMiscRecordsFile,
@@ -100,6 +103,7 @@ func NewSchema(folderPath, logo string, doSave, interactive, partMode bool) sche
 			Expenses:            exp,
 			Invoices:            inv,
 			JournalConfig:       jrc,
+			Currency:            acc.Currency,
 			MiscRecords:         mrc,
 			Parties:             prt,
 			Projects:            prj,
@@ -149,6 +153,7 @@ func OpenSchema(path string) schema.Schema {
 		Expenses:            schema.OpenExpenses(acc.ExpensesFilePath),
 		Invoices:            schema.OpenInvoices(acc.InvoicesFilePath),
 		JournalConfig:       acc.JournalConfig,
+		Currency:            acc.Currency,
 		MiscRecords:         schema.OpenMiscRecords(acc.MiscRecordsFilePath),
 		Parties:             schema.OpenParties(acc.PartiesFilePath),
 		Projects:            schema.OpenProjects(acc.ProjectsFilePath),

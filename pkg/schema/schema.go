@@ -19,6 +19,7 @@ type Schema struct {
 	Expenses            Expenses
 	Invoices            Invoices
 	JournalConfig       JournalConfig
+	Currency            string
 	MiscRecords         MiscRecords
 	Parties             Parties
 	Projects            Projects
