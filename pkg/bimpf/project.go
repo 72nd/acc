@@ -2,8 +2,8 @@ package bimpf
 
 import (
 	"fmt"
-	"gitlab.com/72nd/acc/pkg/schema"
-	"gitlab.com/72nd/acc/pkg/util"
+	"github.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/util"
 	"path"
 )
 
@@ -81,7 +81,7 @@ func (p Project) Validate() []util.ValidateResult {
 	return append(results, util.Check(p))
 }
 
-// Doc reassembles the structure of a Doc in a Bimpf json dump file.
+// Document reassembles the structure of a Doc in a Bimpf json dump file.
 type Document struct {
 	Id           int    `json:"id"`
 	SbId         string `json:"sb_id"`

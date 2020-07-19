@@ -3,8 +3,8 @@ package ledger
 import (
 	"fmt"
 
-	"gitlab.com/72nd/acc/pkg/schema"
-	"gitlab.com/72nd/acc/pkg/util"
+	"github.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/util"
 )
 
 // EntriesForTransaction returns the journal entries for a given schema.Transaction.

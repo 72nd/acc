@@ -7,18 +7,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/72nd/acc/pkg/bimpf"
+	"github.com/72nd/acc/pkg/config"
+	"github.com/72nd/acc/pkg/distributed"
+	"github.com/72nd/acc/pkg/document/invoices"
+	"github.com/72nd/acc/pkg/document/records"
+	"github.com/72nd/acc/pkg/iso20022"
+	"github.com/72nd/acc/pkg/ledger"
+	"github.com/72nd/acc/pkg/query"
+	"github.com/72nd/acc/pkg/schema"
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
-	"gitlab.com/72nd/acc/pkg/bimpf"
-	"gitlab.com/72nd/acc/pkg/camt"
-	"gitlab.com/72nd/acc/pkg/config"
-	"gitlab.com/72nd/acc/pkg/distributed"
-	"gitlab.com/72nd/acc/pkg/document/invoices"
-	"gitlab.com/72nd/acc/pkg/document/records"
-	"gitlab.com/72nd/acc/pkg/ledger"
-	"gitlab.com/72nd/acc/pkg/query"
-	"gitlab.com/72nd/acc/pkg/schema"
 )
 
 func main() {
@@ -328,7 +328,7 @@ func main() {
 				Usage: "import bank-to-customer statement (camt.053.001.04)",
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
-					btcStatement := camt.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
+					btcStatement := iso20022.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
 					s := config.OpenSchema(inputPath)
 					s.Statement.AddTransaction(btcStatement.Transactions())
 					s.Save()

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"gitlab.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/schema"
 )
 
 type SaveContainer struct {

@@ -3,7 +3,7 @@ package invoices
 import (
 	"fmt"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/schema"
 	"os"
 	"path"
 )

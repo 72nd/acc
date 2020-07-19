@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/schema"
 )
 
 type BankToCustomerStatement struct {

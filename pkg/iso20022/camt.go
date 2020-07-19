@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 
-	"gitlab.com/72nd/acc/pkg/schema"
-	"gitlab.com/72nd/acc/pkg/util"
+	"github.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/util"
 )
 
 const DateLayout = "2006-01-02"

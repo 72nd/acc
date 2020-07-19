@@ -1,4 +1,4 @@
-module gitlab.com/72nd/acc
+module github.com/72nd/acc
 
 go 1.13
 
@@ -14,6 +14,5 @@ require (
 	github.com/signintech/gopdf v0.9.5
 	github.com/sirupsen/logrus v1.4.2
 	github.com/urfave/cli/v2 v2.1.1
-	gitlab.com/72th/acc v0.0.0-20200715211109-e0eed54bbb30
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 )

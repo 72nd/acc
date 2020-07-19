@@ -5,7 +5,7 @@ import (
 
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72nd/acc/pkg/util"
+	"github.com/72nd/acc/pkg/util"
 )
 
 const DefaultProjectsFile = "projects.yaml"

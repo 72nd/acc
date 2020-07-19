@@ -9,7 +9,7 @@ import (
 	"github.com/creasty/defaults"
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72nd/acc/pkg/util"
+	"github.com/72nd/acc/pkg/util"
 )
 
 const DefaultExpensesFile = "expenses.yaml"

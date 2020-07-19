@@ -2,8 +2,8 @@ package bimpf
 
 import (
 	"fmt"
-	"gitlab.com/72nd/acc/pkg/schema"
-	"gitlab.com/72nd/acc/pkg/util"
+	"github.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/util"
 )
 
 type Employees []Employee

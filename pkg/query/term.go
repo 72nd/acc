@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72nd/acc/pkg/util"
+	"github.com/72nd/acc/pkg/util"
 )
 
 type SearchTerms []SearchTerm

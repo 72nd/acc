@@ -20,8 +20,8 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72nd/acc/pkg/schema"
-	"gitlab.com/72nd/acc/pkg/util"
+	"github.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/util"
 )
 
 // HLedgerDateFormat defines the default date format as required by hledger.

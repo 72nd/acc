@@ -7,13 +7,15 @@ import (
 	"strings"
 
 	"github.com/sirupsen/logrus"
-	"gitlab.com/72nd/acc/pkg/distributed"
-	"gitlab.com/72nd/acc/pkg/schema"
-	"gitlab.com/72nd/acc/pkg/util"
+	"github.com/72nd/acc/pkg/distributed"
+	"github.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/util"
 )
 
+// DefaultConfigFile states the default name of the config/project file.
 const DefaultConfigFile = "acc.yaml"
 
+// DefaultProjectFiles 
 var DefaultProjectFiles = []string{
 	DefaultConfigFile,
 	schema.DefaultExpensesFile,
