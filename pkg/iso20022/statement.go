@@ -14,10 +14,11 @@ import (
 // BankToCustomerStatement contains the path to a ISO 20022 camt XML file.
 type BankToCustomerStatement struct {
 	CamtPath string
+	Currency string
 }
 
 // NewBankToCustomerStatement returns a new BankToCustomerStatement with the given path.
-func NewBankToCustomerStatement(path string) BankToCustomerStatement {
+func NewBankToCustomerStatement(path, currency string) BankToCustomerStatement {
 	return BankToCustomerStatement{
 		CamtPath: path,
 	}
@@ -34,6 +35,6 @@ func (s BankToCustomerStatement) Transactions() []schema.Transaction {
 	if err := xml.Unmarshal(raw, &doc); err != nil {
 		logrus.Fatalf("error unmarshalling %s: %s", s.CamtPath, err)
 	}
-	trn := doc.AccTransactions()
+	trn := doc.AccTransactions(s.Currency)
 	return trn
 }

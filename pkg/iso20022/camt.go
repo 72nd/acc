@@ -6,6 +6,7 @@ import (
 
 	"github.com/72nd/acc/pkg/schema"
 	"github.com/72nd/acc/pkg/util"
+	"github.com/sirupsen/logrus"
 )
 
 // DateLayout states the default date layout used by the ISO 20022 standard.
@@ -18,10 +19,10 @@ type Document struct {
 }
 
 // AccTransactions pareses the Transactions of a given file and returns it as Transaction structs.
-func (d Document) AccTransactions() []schema.Transaction {
+func (d Document) AccTransactions(currency string) []schema.Transaction {
 	var result []schema.Transaction
 	for i := range d.Entries {
-		result = append(result, d.Entries[i].AccTransactions()...)
+		result = append(result, d.Entries[i].AccTransactions(currency)...)
 	}
 	return result
 }
@@ -43,10 +44,10 @@ type Entry struct {
 }
 
 // AccTransactions returns the transactions of a given entry.
-func (e Entry) AccTransactions() []schema.Transaction {
+func (e Entry) AccTransactions(currency string) []schema.Transaction {
 	result := make([]schema.Transaction, len(e.Transactions))
 	for i := range e.Transactions {
-		result[i] = e.Transactions[i].AccTransaction(e.BookingData)
+		result[i] = e.Transactions[i].AccTransaction(e.BookingData, currency)
 	}
 	return result
 }
@@ -54,7 +55,7 @@ func (e Entry) AccTransactions() []schema.Transaction {
 // Transaction reassembles a ISO 20022 transaction.
 type Transaction struct {
 	XMLName              xml.Name `xml:"TxDtls"`
-	Amount               float64  `xml:"Amt"`
+	Amount               string   `xml:"Amt"`
 	Description          string   `xml:"RmtInf>Ustrd"`
 	CreditDebitIndicator string   `xml:"CdtDbtInd"` // `CRDT` or `DBIT`.
 	Creditor             Party    `xml:"RltdPties>Cdtr"`
@@ -65,17 +66,21 @@ type Transaction struct {
 }
 
 // AccTransaction converts an ISO 20022 transaction into a Acc bank account transaction.
-func (t Transaction) AccTransaction(date string) schema.Transaction {
+func (t Transaction) AccTransaction(date, currency string) schema.Transaction {
 	trnType := util.CreditTransaction
 	if t.CreditDebitIndicator == "DBIT" {
 		trnType = util.DebitTransaction
+	}
+	amount, err := util.NewMonyFromDotNotation(t.Amount, currency)
+	if err != nil {
+		logrus.Fatal(err)
 	}
 	trn := schema.Transaction{
 		Description:       t.String(),
 		TransactionType:   trnType,
 		AssociatedPartyId: "",
 		Date:              date,
-		Amount:            t.Amount,
+		Amount:            amount,
 	}
 	trn.SetId()
 	return trn

@@ -228,7 +228,7 @@ func main() {
 								s.Statement.Transactions = append(s.Statement.Transactions, schema.NewTransactionWithUuid())
 							} else {
 								fmt.Println(aurora.BrightMagenta("Use the --default flag to suppress interactive mode and use defaults."))
-								s.Statement.Transactions = append(s.Statement.Transactions, schema.InteractiveNewTransaction(s.Statement))
+								s.Statement.Transactions = append(s.Statement.Transactions, schema.InteractiveNewTransaction(s.Statement, s.Currency))
 							}
 							s.Save()
 							return nil
@@ -328,13 +328,19 @@ func main() {
 				Usage: "import bank-to-customer statement (camt.053.001.04)",
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
-					btcStatement := iso20022.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"))
+					btcStatement := iso20022.NewBankToCustomerStatement(getReadPathOrExit(c, "statement", "camt xml file"), c.String("currency"))
 					s := config.OpenSchema(inputPath)
 					s.Statement.AddTransaction(btcStatement.Transactions())
 					s.Save()
 					return nil
 				},
 				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name: "currency",
+						Aliases: []string{"c"},
+						Usage: "three letter currency code used in the bank statement",
+						DefaultText: "CHF",
+					},
 					&cli.StringFlag{
 						Name:    "input",
 						Aliases: []string{"i"},
