@@ -21,7 +21,7 @@ _Current status:_ The project is under active use and development at the [Genoss
 * [Usage and Functions](#usage-and-functions)
     + [add](#add)
     + [bimpf](#bimpf)
-* [camt](#camt)
+	* [camt](#camt)
 	+ [complete](#complete)
 	+ [distributed](#distributed)
 	+ [filter](#filter)
@@ -174,7 +174,7 @@ acc bimpf validate -i bimpf.json report.txt
 ```
 
 
-## camt
+### camt
 
 Import bank statements from a ISO 20022 camt.001 xml into your acc project.
 
