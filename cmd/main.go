@@ -336,9 +336,9 @@ func main() {
 				},
 				Flags: []cli.Flag{
 					&cli.StringFlag{
-						Name: "currency",
-						Aliases: []string{"c"},
-						Usage: "three letter currency code used in the bank statement",
+						Name:        "currency",
+						Aliases:     []string{"c"},
+						Usage:       "three letter currency code used in the bank statement",
 						DefaultText: "CHF",
 					},
 					&cli.StringFlag{

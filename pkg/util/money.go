@@ -81,7 +81,7 @@ func (m Money) Value() string {
 	part1 := m.Amount() / 100
 	part2 := m.Amount() - part1*100
 	if part2 < 10 {
-	return fmt.Sprintf("%d.0%d", part1, part2)
+		return fmt.Sprintf("%d.0%d", part1, part2)
 	}
 	return fmt.Sprintf("%d.%d", part1, part2)
 }

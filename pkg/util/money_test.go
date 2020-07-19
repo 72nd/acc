@@ -53,7 +53,7 @@ func TestMarshalYAML(t *testing.T) {
 	b, _ := yaml.Marshal(TestStruct{given})
 	t.Log(string(b))
 	/*
-	if string(b) != expected {
-		t.Errorf("should be \"%s\" but is \"%s\"", expected, string(b))
-	} */
+		if string(b) != expected {
+			t.Errorf("should be \"%s\" but is \"%s\"", expected, string(b))
+		} */
 }
