@@ -5,11 +5,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/72nd/acc/pkg/util"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
-	"github.com/72nd/acc/pkg/util"
 )
 
 const DefaultInvoicesFile = "invoices.yaml"

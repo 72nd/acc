@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/72nd/acc/pkg/util"
+	"github.com/sirupsen/logrus"
 )
 
 type SearchTerms []SearchTerm

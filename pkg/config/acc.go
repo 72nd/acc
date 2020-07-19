@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	"github.com/72nd/acc/pkg/distributed"
 	"github.com/72nd/acc/pkg/schema"
 	"github.com/72nd/acc/pkg/util"
+	"github.com/sirupsen/logrus"
 )
 
 // DefaultConfigFile states the default name of the config/project file.

@@ -26,7 +26,7 @@ func (d Document) AccTransactions() []schema.Transaction {
 	return result
 }
 
-// Entry is a ISO 20022 entry. 
+// Entry is a ISO 20022 entry.
 type Entry struct {
 	XMLName xml.Name `xml:"Ntry"`
 	// Amount of transaction.

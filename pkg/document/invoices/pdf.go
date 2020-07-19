@@ -2,10 +2,10 @@ package invoices
 
 import (
 	"fmt"
-	"github.com/signintech/gopdf"
-	"github.com/sirupsen/logrus"
 	"github.com/72nd/acc/pkg/document"
 	"github.com/72nd/acc/pkg/schema"
+	"github.com/signintech/gopdf"
+	"github.com/sirupsen/logrus"
 	"math"
 	"os"
 	"time"

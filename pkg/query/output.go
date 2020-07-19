@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/olekukonko/tablewriter"
-	"github.com/sirupsen/logrus"
 	"github.com/72nd/acc/pkg/schema"
 	"github.com/72nd/acc/pkg/util"
+	"github.com/olekukonko/tablewriter"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 )
 

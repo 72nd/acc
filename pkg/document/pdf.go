@@ -3,10 +3,10 @@ package document
 
 import (
 	"bytes"
+	"github.com/72nd/acc/pkg/document/utils"
 	"github.com/signintech/gopdf"
 	"github.com/signintech/gopdf/fontmaker/core"
 	"github.com/sirupsen/logrus"
-	"github.com/72nd/acc/pkg/document/utils"
 	"strings"
 )
 

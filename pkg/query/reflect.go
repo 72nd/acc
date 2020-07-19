@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sirupsen/logrus"
 	"github.com/72nd/acc/pkg/schema"
+	"github.com/sirupsen/logrus"
 )
 
 type ElementGroup []Element

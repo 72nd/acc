@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"io/ioutil"
 
-	"github.com/sirupsen/logrus"
 	"github.com/72nd/acc/pkg/config"
 	"github.com/72nd/acc/pkg/schema"
 	"github.com/72nd/acc/pkg/util"
+	"github.com/sirupsen/logrus"
 )
 
 // Dump reassembles the structure of a Bimpf json dump file.

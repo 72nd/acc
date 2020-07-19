@@ -1,3 +1,5 @@
+// The query package provides the functionality to query records.
+// By using reflections the package is structure-agnostic.
 package query
 
 import (

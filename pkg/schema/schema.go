@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/72nd/acc/pkg/util"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"github.com/72nd/acc/pkg/util"
 	"gopkg.in/yaml.v3"
 )
 

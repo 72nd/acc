@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/72nd/acc/pkg/util"
 	"github.com/creasty/defaults"
 	"github.com/sirupsen/logrus"
-	"github.com/72nd/acc/pkg/util"
 )
 
 const DefaultStatementFile = "bank-statement.yaml"

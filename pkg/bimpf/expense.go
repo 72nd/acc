@@ -5,9 +5,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/sirupsen/logrus"
 	"github.com/72nd/acc/pkg/schema"
 	"github.com/72nd/acc/pkg/util"
+	"github.com/sirupsen/logrus"
 )
 
 // Expense reassembles the structure of a Expense in a Bimpf json dump file.

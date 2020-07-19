@@ -7,8 +7,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/sirupsen/logrus"
 	"github.com/72nd/acc/pkg/schema"
+	"github.com/sirupsen/logrus"
 )
 
 // BankToCustomerStatement contains the path to a ISO 20022 camt XML file.
