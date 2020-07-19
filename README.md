@@ -10,6 +10,32 @@ _Current status:_ The project is under active use and development at the [Genoss
 
 ![Screenshots](misc/screenshots.png)
 
+
+## Table of contents
+
+* [Todo](#todo)
+* [Installation](#installation)
+* [Basic Concepts](#basic-concepts)
+    + [Types of data/records](#types-of-data-records)
+    + [Modes](#modes)
+* [Usage and Functions](#usage-and-functions)
+    + [add](#add)
+    + [bimpf](#bimpf)
+* [camt](#camt)
+	+ [complete](#complete)
+	+ [distributed](#distributed)
+	+ [filter](#filter)
+	+ [invoices](#invoices)
+	+ [ledger](#ledger)
+	+ [new](#new)
+	+ [query](#query)
+	+ [records](#records)
+	+ [validate](#validate)
+* [Workflows](#workflows)
+	+ [Workflow with Bimpf](#workflow-with-bimpf)
+	+ [Simple theater project](#simple-theater-project)
+
+
 ## Todo
 
 - [ ] First Run with 2019 Taxes
@@ -168,6 +194,12 @@ Interactive complete expenses, invoices and transactions. Runs trough all elemen
 - `--retain-focus` _Hacky feature!_ Tries to regain focus of the terminal acc runs in. Will only work on certain Linux installations if `wmctrl` is installed.
 
 The `acc complete repopulate` on the other hand can be used to link expenses and invoices to transactions which already are linked to the expense/invoice.
+
+
+
+### distributed
+
+Distributed mode specific commands.
 
 
 ### filter
