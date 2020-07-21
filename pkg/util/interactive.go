@@ -164,7 +164,7 @@ func AskMoney(name, desc string, defaultValue Money, currency string) Money {
 	if input == "" {
 		return defaultValue
 	}
-	value, err := NewMonyFromDotNotation(input, "CHF")
+	value, err := NewMonyFromDotNotation(input, currency)
 	if err != nil {
 		logrus.Warn(err)
 		return AskMoney(name, desc, defaultValue, currency)

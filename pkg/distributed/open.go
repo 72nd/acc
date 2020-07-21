@@ -147,7 +147,7 @@ func (c *OpenContainer) AddFile(file StrTuple) {
 }
 
 // Open loads the schema for the distributed mode.
-func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc func(schema.Schema)) schema.Schema {
+func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc func(schema.Schema), currency string) schema.Schema {
 	cnt := &OpenContainer{}
 	cnt.files = make(map[string]string)
 
@@ -167,6 +167,7 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 	cnt.Wait()
 
 	return schema.Schema{
+		Currency: currency,
 		Company:       cmp,
 		Expenses:      append(cnt.exp, cnt.prj.Expenses()...),
 		Invoices:      cnt.prj.Invoices(),
