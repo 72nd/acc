@@ -84,6 +84,9 @@ func customerToSave(s schema.Schema, cst schema.Party, cnt *SaveContainer, path 
 	prjCnt := &SaveContainer{}
 
 	for i := range s.Projects {
+		if s.Projects[i].CustomerId != cst.Id {
+			continue
+		}
 		prjWg.Add(1)
 		prjFolder := filepath.Join(path, folderName(s.Projects[i].Name))
 		go projectFile(s, s.Projects[i], prjCnt, prjFolder, &prjWg)

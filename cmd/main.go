@@ -440,7 +440,7 @@ func main() {
 						Action: func(c *cli.Context) error {
 							inputPath := getReadPathOrExit(c, "input", "acc project file")
 							outputPath := c.String("output")
-							a := config.OpenAcc(inputPath).NewProjectModeAcc(outputPath)
+							a := config.OpenAcc(inputPath).NewDistributedModeAcc(outputPath)
 							s := config.OpenSchema(inputPath)
 							distributed.Save(s, outputPath)
 							a.Save(a.FileName)

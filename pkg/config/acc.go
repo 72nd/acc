@@ -44,9 +44,9 @@ type Acc struct {
 	partionedFolder     string               `yaml:"-"`
 }
 
-// NewProjectModeAcc acc takes a flat file acc configuration file and returns the
+// NewDistributedModeAcc acc takes a flat file acc configuration file and returns the
 // new structure for a config file in project (aka. folder) mode.
-func (a Acc) NewProjectModeAcc(repoPath string) Acc {
+func (a Acc) NewDistributedModeAcc(repoPath string) Acc {
 	return Acc{
 		Company:       a.Company,
 		JournalConfig: a.JournalConfig,
@@ -57,7 +57,7 @@ func (a Acc) NewProjectModeAcc(repoPath string) Acc {
 }
 
 // NewSchema creates a new acc project in the given folder path.
-func NewSchema(folderPath, logo string, doSave, interactive, partMode bool) schema.Schema {
+func NewSchema(folderPath, logo string, doSave, interactive, distMode bool) schema.Schema {
 	var cmp schema.Company
 	var jrc schema.JournalConfig
 	if interactive {
@@ -70,7 +70,7 @@ func NewSchema(folderPath, logo string, doSave, interactive, partMode bool) sche
 	acc := Acc{
 		Company:             cmp,
 		JournalConfig:       jrc,
-		PartionedMode:       partMode,
+		PartionedMode:       distMode,
 		Currency:            "CHF",
 		ExpensesFilePath:    schema.DefaultExpensesFile,
 		InvoicesFilePath:    schema.DefaultInvoicesFile,
@@ -87,7 +87,7 @@ func NewSchema(folderPath, logo string, doSave, interactive, partMode bool) sche
 	prj := schema.NewProjects()
 	stm := schema.NewBankStatement(!interactive)
 
-	if doSave && !partMode {
+	if doSave && !distMode {
 		acc.Save(filepath.Join(folderPath, DefaultConfigFile))
 		exp.Save(nil, filepath.Join(folderPath, schema.DefaultExpensesFile))
 		inv.Save(filepath.Join(folderPath, schema.DefaultInvoicesFile))
@@ -95,8 +95,8 @@ func NewSchema(folderPath, logo string, doSave, interactive, partMode bool) sche
 		prt.Save(filepath.Join(folderPath, schema.DefaultPartiesFile))
 		prj.Save(filepath.Join(folderPath, schema.DefaultProjectsFile))
 		stm.Save(filepath.Join(folderPath, schema.DefaultStatementFile))
-	} else if doSave && partMode {
-		acc = acc.NewProjectModeAcc(folderPath)
+	} else if doSave && distMode {
+		acc = acc.NewDistributedModeAcc(folderPath)
 		acc.partionedFolder = folderPath
 		s := schema.Schema{
 			Company:             cmp,
