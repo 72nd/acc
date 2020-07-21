@@ -36,7 +36,7 @@ func main() {
 		&cli.StringFlag{
 			Name:    "input",
 			Aliases: []string{"i"},
-			Usage:   "acc project file",
+			Usage:   "acc project `FILE`",
 		},
 	}
 	completeFlags := []cli.Flag{
@@ -606,7 +606,6 @@ func main() {
 			},
 			{
 				Name:    "new",
-				Aliases: []string{"n", "nw", "create"},
 				Usage:   "generates a new acc project with all needed files, use sub-commands to create only a subset",
 				Action: func(c *cli.Context) error {
 					outputPath := getFolderPath(c, "output-folder", c.Bool("force"), true)
