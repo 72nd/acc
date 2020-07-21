@@ -52,7 +52,7 @@ func NewTransactionWithUuid() Transaction {
 func InteractiveNewTransaction(s Statement, currency string) Transaction {
 	trn := NewTransactionWithUuid()
 	trn.Identifier = util.AskString(
-		"Value",
+		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(s.GetIdentifiables(), DefaultTransactionPrefix),
 	)

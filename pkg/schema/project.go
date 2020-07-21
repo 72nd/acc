@@ -105,7 +105,7 @@ func InteractiveNewProject(s Schema) Project {
 	var prj Project
 	prj.Id = GetUuid()
 	prj.Identifier = util.AskString(
-		"Value",
+		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(s.Projects.GetIdentifiables(), DefaultProjectPrefix))
 	prj.Name = util.AskString(

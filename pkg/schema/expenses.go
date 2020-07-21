@@ -224,7 +224,7 @@ func NewExpenseWithUuid() Expense {
 func InteractiveNewExpense(s *Schema, asset string) Expense {
 	exp := NewExpenseWithUuid()
 	exp.Identifier = util.AskString(
-		"Value",
+		"Identifier",
 		"Unique human readable identifier",
 		SuggestNextIdentifier(s.Expenses.GetIdentifiables(), DefaultExpensePrefix))
 	exp.Name = util.AskString(
