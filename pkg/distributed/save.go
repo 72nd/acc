@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/util"
 )
 
 // SaveContainer encapsulates all data which have to be written in a concurrency-safe manner.
@@ -108,17 +109,17 @@ func projectFile(s schema.Schema, prj schema.Project, cnt *SaveContainer, path s
 	var inv schema.Invoices
 
 	for i := range s.Expenses {
-		fmt.Println(s.Expenses[i])
 		if s.Expenses[i].ProjectId == prj.Id {
 			e := s.Expenses[i]
-			e.Path = relativeAssetPath(path, e.Path)
-			fmt.Println(e.Path)
+			e.Path = util.RelativeAssetPath(path, e.Path)
 			exp = append(exp, e)
 		}
 	}
 	for i := range s.Invoices {
 		if s.Invoices[i].ProjectId == prj.Id {
-			inv = append(inv, s.Invoices[i])
+			i := s.Invoices[i]
+			i.Path = util.RelativeAssetPath(path, i.Path)
+			inv = append(inv, i)
 		}
 	}
 

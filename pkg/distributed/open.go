@@ -167,7 +167,7 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 	cnt.Wait()
 
 	return schema.Schema{
-		Currency: currency,
+		Currency:      currency,
 		Company:       cmp,
 		Expenses:      append(cnt.exp, cnt.prj.Expenses()...),
 		Invoices:      cnt.prj.Invoices(),
@@ -179,6 +179,7 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 		Projects:   cnt.prj.Projects(),
 		FileHashes: cnt.files,
 		SaveFunc:   saveFunc,
+		BaseFolder: path,
 	}
 }
 

@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -41,7 +40,6 @@ type Acc struct {
 	ProjectsFilePath    string               `yaml:"projectsFilePath" default:"projects.yaml"`
 	StatementFilePath   string               `yaml:"statementFilePath" default:"bank.yaml"`
 	FileName            string               `yaml:"-"`
-	partionedFolder     string               `yaml:"-"`
 }
 
 // NewDistributedModeAcc acc takes a flat file acc configuration file and returns the
@@ -97,7 +95,6 @@ func NewSchema(folderPath, logo string, doSave, interactive, distMode bool) sche
 		stm.Save(filepath.Join(folderPath, schema.DefaultStatementFile))
 	} else if doSave && distMode {
 		acc = acc.NewDistributedModeAcc(folderPath)
-		acc.partionedFolder = folderPath
 		s := schema.Schema{
 			Company:             cmp,
 			Expenses:            exp,
@@ -112,7 +109,7 @@ func NewSchema(folderPath, logo string, doSave, interactive, distMode bool) sche
 			AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
 		}
 		acc.Save(acc.FileName)
-		distributed.Save(s, folderPath)
+		distributed.Save(s, s.BaseFolder)
 	}
 
 	return schema.Schema{
@@ -139,14 +136,10 @@ func OpenAcc(path string) Acc {
 
 // OpenSchema reads first the Acc file and then tries to open all linked files.
 func OpenSchema(path string) schema.Schema {
-	wd, err := os.Getwd()
-	if err != nil {
-		logrus.Fatal("working directory not found: ", err)
-	}
+	baseFolder := filepath.Dir(util.AbsolutePathWithWD(path))
 	acc := OpenAcc(path)
 	if acc.DistributedMode {
-		partionedPath := filepath.Dir(filepath.Clean(filepath.Join(wd, path)))
-		return distributed.Open(partionedPath, acc.Company, acc.JournalConfig, acc.SaveSchema, acc.Currency)
+		return distributed.Open(baseFolder, acc.Company, acc.JournalConfig, acc.SaveSchema, acc.Currency)
 	}
 	return schema.Schema{
 		Company:             acc.Company,
@@ -160,7 +153,7 @@ func OpenSchema(path string) schema.Schema {
 		Statement:           schema.OpenBankStatement(acc.StatementFilePath),
 		AppendExpenseSuffix: acc.AppendExpensesSuffix,
 		AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
-		SaveFunc:            acc.SaveSchema,
+		BaseFolder:          baseFolder,
 	}
 }
 
@@ -173,25 +166,25 @@ func (a Acc) Save(path string) {
 func (a Acc) SaveSchema(s schema.Schema) {
 	if a.DistributedMode {
 		a.Save(a.FileName)
-		distributed.Save(s, a.partionedFolder)
+		distributed.Save(s, s.BaseFolder)
 		// s.SaveFunc(s)
 		return
 	}
-	a.SaveSchemaToFolder(s, a.partionedFolder)
+	a.SaveSchemaToFolder(s)
 }
 
-// SaveProjectToFolder saves all files linked in the Acc config to the given folder.
-func (a Acc) SaveSchemaToFolder(s schema.Schema, pth string) {
+// SaveProjectToFolder saves all files linked in the Acc config to the base folder defined in the schema.
+func (a Acc) SaveSchemaToFolder(s schema.Schema) {
 	a.Company = s.Company
 	a.JournalConfig = s.JournalConfig
-	a.Save(filepath.Join(pth, a.FileName))
+	a.Save(filepath.Join(s.BaseFolder, a.FileName))
 
-	s.Expenses.Save(&s, filepath.Join(pth, a.ExpensesFilePath))
-	s.Invoices.Save(filepath.Join(pth, a.InvoicesFilePath))
-	s.MiscRecords.Save(filepath.Join(pth, a.MiscRecordsFilePath))
-	s.Parties.Save(filepath.Join(pth, a.PartiesFilePath))
-	s.Projects.Save(filepath.Join(pth, a.ProjectsFilePath))
-	s.Statement.Save(filepath.Join(pth, a.StatementFilePath))
+	s.Expenses.Save(&s, filepath.Join(s.BaseFolder, a.ExpensesFilePath))
+	s.Invoices.Save(filepath.Join(s.BaseFolder, a.InvoicesFilePath))
+	s.MiscRecords.Save(filepath.Join(s.BaseFolder, a.MiscRecordsFilePath))
+	s.Parties.Save(filepath.Join(s.BaseFolder, a.PartiesFilePath))
+	s.Projects.Save(filepath.Join(s.BaseFolder, a.ProjectsFilePath))
+	s.Statement.Save(filepath.Join(s.BaseFolder, a.StatementFilePath))
 }
 
 // Type returns a string with the type name of the element.

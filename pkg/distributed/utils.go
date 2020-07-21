@@ -102,11 +102,3 @@ func createNonExistingDir(path string) {
 	}
 }
 
-func relativeAssetPath(absolute, asset string) string {
-	rsl, err := filepath.Rel(absolute, asset)
-	if err != nil {
-		logrus.Errorf("couldn't determine relative path \"%s\" in respective of \"%s\": %s", asset, absolute, err)
-		return asset
-	}
-	return rsl
-}

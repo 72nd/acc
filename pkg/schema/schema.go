@@ -28,6 +28,7 @@ type Schema struct {
 	AppendInvoiceSuffix func(suffix string, overwrite bool)
 	SaveFunc            func(s Schema)
 	FileHashes          map[string]string
+	BaseFolder          string
 }
 
 func (s Schema) Save() {
