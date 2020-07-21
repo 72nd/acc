@@ -33,7 +33,7 @@ type Acc struct {
 	Company             schema.Company       `yaml:"company" default:""`
 	JournalConfig       schema.JournalConfig `yaml:"journalConfig" default:""`
 	Currency            string               `yaml:"currency" default:"CHF"`
-	PartionedMode       bool                 `yaml:"partionedMode" default:"false"`
+	DistributedMode     bool                 `yaml:"distributedMode" default:"false"`
 	ExpensesFilePath    string               `yaml:"expensesFilePath" default:"expenses.yaml"`
 	InvoicesFilePath    string               `yaml:"invoicesFilePath" default:"invoices.yaml"`
 	MiscRecordsFilePath string               `yaml:"miscRecordsFilePath" default:"misc.yaml"`
@@ -48,11 +48,11 @@ type Acc struct {
 // new structure for a config file in project (aka. folder) mode.
 func (a Acc) NewDistributedModeAcc(repoPath string) Acc {
 	return Acc{
-		Company:       a.Company,
-		JournalConfig: a.JournalConfig,
-		Currency:      "CHF",
-		PartionedMode: true,
-		FileName:      filepath.Join(repoPath, DefaultConfigFile),
+		Company:         a.Company,
+		JournalConfig:   a.JournalConfig,
+		Currency:        "CHF",
+		DistributedMode: true,
+		FileName:        filepath.Join(repoPath, DefaultConfigFile),
 	}
 }
 
@@ -70,7 +70,7 @@ func NewSchema(folderPath, logo string, doSave, interactive, distMode bool) sche
 	acc := Acc{
 		Company:             cmp,
 		JournalConfig:       jrc,
-		PartionedMode:       distMode,
+		DistributedMode:     distMode,
 		Currency:            "CHF",
 		ExpensesFilePath:    schema.DefaultExpensesFile,
 		InvoicesFilePath:    schema.DefaultInvoicesFile,
@@ -144,9 +144,9 @@ func OpenSchema(path string) schema.Schema {
 		logrus.Fatal("working directory not found: ", err)
 	}
 	acc := OpenAcc(path)
-	if acc.PartionedMode {
+	if acc.DistributedMode {
 		partionedPath := filepath.Dir(filepath.Clean(filepath.Join(wd, path)))
-		return distributed.Open(partionedPath, acc.Company, acc.JournalConfig, acc.SaveSchema)
+		return distributed.Open(partionedPath, acc.Company, acc.JournalConfig, acc.SaveSchema, acc.Currency)
 	}
 	return schema.Schema{
 		Company:             acc.Company,
@@ -171,7 +171,7 @@ func (a Acc) Save(path string) {
 }
 
 func (a Acc) SaveSchema(s schema.Schema) {
-	if a.PartionedMode {
+	if a.DistributedMode {
 		a.Save(a.FileName)
 		distributed.Save(s, a.partionedFolder)
 		// s.SaveFunc(s)
