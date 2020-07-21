@@ -45,7 +45,7 @@ _Current status:_ The project is under active use and development at the [Genoss
 - [x] Shorts for commands 
 - [ ] Code Documentation
 - [ ] Misc Documents in complete Transactions
-- [ ] Amounts with Amount type
+- [x] Amounts with Amount type
 - [ ] pain.001 for payment generation
 	- [ ] Add IBAN to employee (data field, interactive add, assisted completion, validation)
 	- [x] Rewrite `sba-pay` as library for go
@@ -55,11 +55,33 @@ _Current status:_ The project is under active use and development at the [Genoss
 
 ## Installation
 
+### Perquisites
+
+First install perquisites (optional step): 
+
 ```shell script
 # For experimental features:
 sudo apt install wmctrl xdg-mime xprop
 
 # Export embedded PDF's in records
+sudo apt install poppler-utils ghostscript
+```
+
+
+### From binary file
+
+There are some pre-compiled binaries in the [release section](https://github.com/72nd/acc/releases/latest). Download the binary for your system, make it executable and make sure that the binary is in the `PATH`.
+
+
+### From source
+
+You can also download the source code and build Acc yourself. Make sure [go is installed](https://golang.org/doc/install).
+
+```shell script
+wget https://github.com/72nd/acc/archive/v.0.4.6.tar.gz
+tar -zxvf v.0.4.6.tar.gz
+cd acc-v.0.4.6
+go build -o acc cmd/main.go
 ```
 
 
