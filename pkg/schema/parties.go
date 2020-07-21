@@ -27,9 +27,18 @@ type Parties struct {
 // NewParties returns a new Parties struct with the one Expense in it.
 func NewParties(useDefault bool) Parties {
 	if useDefault {
+		cst := NewParty()
+		cst.Identifier = "c-1"
+		cst.PartyType = CustomerType
+
+		emp := NewParty()
+		emp.Identifier = "y-1"
+		emp.PartyType = EmployeeType
+		emp.Name = "Working Max"
+
 		return Parties{
-			Employees: []Party{NewParty()},
-			Customers: []Party{NewParty()},
+			Employees: []Party{emp},
+			Customers: []Party{cst},
 		}
 	}
 	return Parties{
