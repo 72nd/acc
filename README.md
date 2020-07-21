@@ -86,6 +86,42 @@ go build -o acc cmd/main.go
 ```
 
 
+### Tab Completion
+
+Acc builds on [urfave's cli framework](https://github.com/urfave/cli/) thus to activate command completion do the following:
+
+#### ZSH
+
+```shell script
+cd path/to/store/autocomplete-script/
+wget https://raw.githubusercontent.com/urfave/cli/master/autocomplete/zsh_autocomplete
+chmod +x zsh_autocomplete
+```
+
+Open your ZSH config file (e.g. `.zshrc`) and add the following lines:
+
+```shell script
+PROG=acc
+_CLI_ZSH_AUTOCOMPLETE_HACK=1
+source path/to/store/autocomplete-script/zsh_autocomplete
+```
+
+
+#### Bash
+
+```shell script
+cd path/to/store/autocomplete-script/
+wget https://raw.githubusercontent.com/urfave/cli/master/autocomplete/bash_autocomplete
+chmod +x bash_autocomplete
+```
+
+Open your bash config file and add this line:
+
+```shell script
+PROG=acc source path/to/store/autocomplete-script/bash_autocomplete
+``` 
+
+
 ## Basic Concepts
 
 To start with Acc, it's important to understand some fundamental concepts and ideas which shape the handling of the software.
