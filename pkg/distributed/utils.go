@@ -101,4 +101,3 @@ func createNonExistingDir(path string) {
 		logrus.Fatal("error while creating folder: ", err)
 	}
 }
-

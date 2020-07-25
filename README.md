@@ -68,6 +68,12 @@ sudo apt install wmctrl xdg-mime xprop
 sudo apt install poppler-utils ghostscript
 ```
 
+### With `go install` 
+
+```shell script
+go install github.com/72nd/acc
+```
+
 
 ### From binary file
 
@@ -79,10 +85,10 @@ There are some pre-compiled binaries in the [release section](https://github.com
 You can also download the source code and build Acc yourself. Make sure [go is installed](https://golang.org/doc/install).
 
 ```shell script
-wget https://github.com/72nd/acc/archive/v.0.4.6.tar.gz
-tar -zxvf v.0.4.6.tar.gz
-cd acc-v.0.4.6
-go build -o acc cmd/main.go
+wget https://github.com/72nd/acc/archive/v.0.4.7.tar.gz
+tar -zxvf v.0.4.7.tar.gz
+cd acc-v.0.4.7
+go build -o acc main.go
 ```
 
 

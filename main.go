@@ -605,8 +605,8 @@ func main() {
 				},
 			},
 			{
-				Name:    "new",
-				Usage:   "generates a new acc project with all needed files, use sub-commands to create only a subset",
+				Name:  "new",
+				Usage: "generates a new acc project with all needed files, use sub-commands to create only a subset",
 				Action: func(c *cli.Context) error {
 					outputPath := getFolderPath(c, "output-folder", c.Bool("force"), true)
 					if !c.Bool("default") {
