@@ -15,11 +15,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Collection is a collection of elements (like Expenses, Parties etc.).
-type Collection interface {
-	SetReferenceDestinations(s Schema)
-}
-
 // Schema is the entirety of all business data for all the functionality of acc.
 type Schema struct {
 	Company             Company
@@ -40,7 +35,13 @@ type Schema struct {
 
 // Save the schema.
 func (s Schema) Save() {
-	s.Expenses.SetReferenceDestinations(s)
+	cst := s.Parties.GetCustomerIdentifiables()
+	emp := s.Parties.GetEmployeeIdentifiables()
+	trn := s.Statement.GetIdentifiables()
+	prj := s.Projects.GetIdentifiables()
+
+	s.Expenses.SetReferenceDestinations(cst, emp, trn, prj)
+	s.Invoices.SetReferenceDestinations(cst, trn, prj)
 	s.SaveFunc(s)
 }
 

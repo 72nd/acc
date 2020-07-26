@@ -116,7 +116,7 @@ func projectFile(s schema.Schema, prj schema.Project, cnt *SaveContainer, path s
 		}
 	}
 	for i := range s.Invoices {
-		if s.Invoices[i].ProjectId == prj.Id {
+		if s.Invoices[i].Project.Match(prj) {
 			i := s.Invoices[i]
 			i.Path = util.RelativeAssetPath(path, i.Path)
 			inv = append(inv, i)

@@ -101,15 +101,14 @@ type Document struct {
 // Amount is set to -1 as Bimpf does not provide such information.
 func (d Document) ConvertAsInvoice(pathPrefix, customerId, projectName string, parties schema.Parties) schema.Invoice {
 	inv := schema.Invoice{
-		Identifier:              d.SbId,
-		Name:                    d.Name,
-		Amount:                  util.NewMoney(-1, "CHF"),
-		Path:                    path.Join(pathPrefix, d.Path),
-		Customer:                schema.NewRef(customerId),
-		SendDate:                d.SendDate,
-		DateOfSettlement:        "",
-		SettlementTransactionId: "",
-		ProjectName:             projectName,
+		Identifier:            d.SbId,
+		Name:                  d.Name,
+		Amount:                util.NewMoney(-1, "CHF"),
+		Path:                  path.Join(pathPrefix, d.Path),
+		Customer:              schema.NewRef(customerId),
+		SendDate:              d.SendDate,
+		DateOfSettlement:      "",
+		SettlementTransaction: schema.NewRef(""),
 	}
 	inv.SetId()
 	return inv

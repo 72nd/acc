@@ -120,6 +120,16 @@ func (i Invoices) Less(j, k int) bool {
 	return dj.Before(dk)
 }
 
+func (i Invoices) SetReferenceDestinations(cst, trn, prj []Identifiable) {
+	for j := range i {
+		i[j].Customer.SetDestination(cst)
+		if i[j].DateOfSettlement != "" {
+			i[j].SettlementTransaction.SetDestination(trn)
+		}
+		i[j].Project.SetDestination(prj)
+	}
+}
+
 // Invoice represents an invoice sent to a customer for some services.
 type Invoice struct {
 	// Id is the internal unique identifier of the Expense.
@@ -140,12 +150,10 @@ type Invoice struct {
 	SendDate string `yaml:"sendDate" default:"2019-12-20"`
 	// DateOfSettlement states the date the customer paid the outstanding amount.
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
-	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
-	SettlementTransactionId string `yaml:"settlementTransactionId" default:"" query:"transaction"`
-	// ProjectName refers to the associated project of the expense. Depreciated.
-	ProjectName string `yaml:"projectName" default:""`
-	// ProjectId refers to the associated project.
-	ProjectId string `yaml:"projectId" default:""`
+	// SettlementTransaction refers to a possible bank transaction which settled the Expense for the company.
+	SettlementTransaction Ref `yaml:"settlementTransactionId" default:"" query:"transaction"`
+	// Project refers to the associated project.
+	Project Ref `yaml:"projectId" default:""`
 }
 
 // NewInvoice returns a new Acc element with the default values.
@@ -199,18 +207,14 @@ func InteractiveNewInvoice(s Schema, asset string) Invoice {
 		"Date of settlement",
 		"Date when invoice was paid",
 		time.Now())
-	inv.SettlementTransactionId = util.AskStringFromSearch(
+	inv.SettlementTransaction = NewRef(util.AskStringFromSearch(
 		"Settlement Transaction",
 		"Transaction which settled the invoice",
-		s.Statement.TransactionSearchItems())
-	inv.ProjectName = util.AskString(
-		"Project Name",
-		"Name of the associated project",
-		"")
-	inv.ProjectId = util.AskStringFromSearch(
+		s.Statement.TransactionSearchItems()))
+	inv.Project = NewRef(util.AskStringFromSearch(
 		"Project",
 		"Associated Project",
-		s.Projects.SearchItems())
+		s.Projects.SearchItems()))
 
 	return inv
 }
@@ -255,7 +259,7 @@ func (i *Invoice) Repopulate(s Schema) {
 		return
 	}
 	i.DateOfSettlement = trn.Date
-	i.SettlementTransactionId = trn.Id
+	i.SettlementTransaction = NewRef(trn.Id)
 	fmt.Println(i)
 }
 
@@ -273,7 +277,7 @@ func (i Invoice) SearchItem(s Schema) util.SearchItem {
 		Name:        fmt.Sprintf("%s for customer %s, amount: %s", i.Name, party, i.Amount.Display()),
 		Type:        i.Type(),
 		Value:       i.Id,
-		SearchValue: fmt.Sprintf("%s %s %s %s", i.Name, i.Identifier, i.ProjectName, party),
+		SearchValue: fmt.Sprintf("%s %s %s", i.Name, i.Identifier, party),
 	}
 }
 
@@ -365,13 +369,15 @@ func (i Invoice) Conditions() util.Conditions {
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", i.DateOfSettlement),
 		},
 		{
-			Condition: i.DateOfSettlement != "" && i.SettlementTransactionId == "",
+			Condition: i.DateOfSettlement != "" && i.SettlementTransaction.Empty(),
 			Message:   "although date of settlement is set, the corresponding transaction is empty (SettlementTransactionId is empty",
 		},
-		{
-			Condition: i.ProjectName == "",
-			Message:   "project name is not set (ProjectName is empty)",
-		},
+		/*
+			{
+				Condition: i.ProjectName == "",
+				Message:   "associated project is not set (Project ref is empty)",
+			},
+		*/
 	}
 }
 
