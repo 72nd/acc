@@ -10,7 +10,7 @@ import (
 
 // EntriesForTransaction returns the journal entries for a given schema.Transaction.
 func EntriesForTransaction(s schema.Schema, trn schema.Transaction) []Entry {
-	if trn.AssociatedDocumentId != "" {
+	if trn.AssociatedDocumentId.Empty() {
 		return entriesForTransactionWithDocument(s, trn)
 	}
 	return entrieForDefaultTransaction(s, trn, nil)
@@ -19,7 +19,7 @@ func EntriesForTransaction(s schema.Schema, trn schema.Transaction) []Entry {
 // entriesForTransactionWithDocument returns the entries for transactions with an associated
 // document.
 func entriesForTransactionWithDocument(s schema.Schema, trn schema.Transaction) []Entry {
-	exp, err := s.Expenses.ExpenseById(trn.AssociatedDocumentId)
+	exp, err := s.Expenses.ExpenseByRef(trn.AssociatedDocumentId)
 	if err == nil {
 		return SettlementEntriesForExpense(s, trn, *exp)
 	}

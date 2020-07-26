@@ -51,7 +51,7 @@ func (e Expenses) SetId() {
 	}
 }
 
-func (e Expenses) ExpenseById(ref Ref) (*Expense, error) {
+func (e Expenses) ExpenseByRef(ref Ref) (*Expense, error) {
 	for i := range e {
 		if ref.Match(e[i]) {
 			return &e[i], nil

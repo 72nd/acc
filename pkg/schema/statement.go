@@ -63,13 +63,13 @@ func (t Statement) GetIdentifiables() []Identifiable {
 	return trn
 }
 
-func (t Statement) TransactionById(id string) (*Transaction, error) {
+func (t Statement) TransactionByRef(ref Ref) (*Transaction, error) {
 	for i := range t.Transactions {
-		if t.Transactions[i].Id == id {
+		if ref.Match(t.Transactions[i]) {
 			return &t.Transactions[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no transaction for id \"%s\" found", id)
+	return nil, fmt.Errorf("no transaction for id \"%s\" found", ref.Id)
 }
 
 // Type returns a string with the type name of the element.
@@ -130,7 +130,7 @@ func (t *Statement) AssistedCompletion(s Schema, doAll, autoSave, autoMode, askS
 
 func (t Statement) TransactionForDocument(id string) (*Transaction, error) {
 	for i := range t.Transactions {
-		if t.Transactions[i].AssociatedDocumentId == id {
+		if t.Transactions[i].AssociatedDocumentId.Id == id {
 			return &t.Transactions[i], nil
 		}
 	}

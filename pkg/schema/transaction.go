@@ -29,7 +29,7 @@ type Transaction struct {
 	Description          string               `yaml:"description" default:""`
 	TransactionType      util.TransactionType `yaml:"transactionType" default:"0"`
 	AssociatedPartyId    string               `yaml:"associatedPartyId" default:"" query:"customer,employee"`
-	AssociatedDocumentId string               `yaml:"associatedDocumentId" default:"" query:"expense,invoice"`
+	AssociatedDocumentId Ref                  `yaml:"associatedDocumentId" default:"" query:"expense,invoice"`
 	Date                 string               `yaml:"date" default:""`
 	JournalMode          JournalMode          `yaml:"journalMode" default:"0"`
 }
@@ -178,13 +178,13 @@ func (t Transaction) AssistedCompletion(s Schema, doAll, autoMode, askSkip, docu
 
 	document, err := t.parseAssociatedDocument(s.Expenses, s.Invoices)
 	if err == nil && util.AskForConformation(fmt.Sprintf("Use \"%s\" as associated document?", document.String())) {
-		t.AssociatedDocumentId = document.GetId()
+		t.AssociatedDocumentId = NewRef(document.GetId())
 	} else {
 		docs := append(s.Expenses.SearchItems(), s.Invoices.SearchItems(s)...)
-		t.AssociatedDocumentId = util.AskStringFromSearch(
+		t.AssociatedDocumentId = NewRef(util.AskStringFromSearch(
 			"Associated Document",
 			"couldn't find associated document, manual search",
-			docs)
+			docs))
 	}
 
 	strategy := util.AskForStategy()
@@ -298,7 +298,7 @@ func (t Transaction) Conditions() util.Conditions {
 			Level:     util.BeforeMergeFlaw,
 		},
 		{
-			Condition: t.AssociatedDocumentId == "" && t.JournalMode == AutoJournalMode,
+			Condition: t.AssociatedDocumentId.Empty() && t.JournalMode == AutoJournalMode,
 			Message:   "no associated document set although auto journal mode is set",
 			Level:     util.BeforeMergeFlaw,
 		},
