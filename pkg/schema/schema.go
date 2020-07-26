@@ -1,3 +1,4 @@
+// Package schema contains all the data structure for a acc project.
 package schema
 
 import (
@@ -14,6 +15,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Collection is a collection of elements (like Expenses, Parties etc.).
+type Collection interface {
+	SetReferenceDestinations()
+}
+
+// Schema is the entirety of all business data for all the functionality of acc.
 type Schema struct {
 	Company             Company
 	Expenses            Expenses
@@ -31,10 +38,12 @@ type Schema struct {
 	BaseFolder          string
 }
 
+// Save the schema.
 func (s Schema) Save() {
 	s.SaveFunc(s)
 }
 
+// ValidateProject validates all elements of the schema.
 func (s Schema) ValidateProject() util.ValidateResults {
 	var rsl util.ValidateResults
 	rsl = append(rsl, util.Check(s.Company))
@@ -58,6 +67,8 @@ func (s Schema) ValidateAndReportProject(path string) {
 	rpt.Write(path)
 }
 
+// Filter all elements of the schema by date (between from and to) as well as the identifier.
+// Suffix and overwrite are used for the AppendExpenseInvoice/AppendInvoice function.
 func (s *Schema) Filter(types []string, from *time.Time, to *time.Time, suffix string, overwrite bool, identifier string) {
 	if util.Contains(types, "expenses") {
 		var err error
@@ -78,6 +89,7 @@ func (s *Schema) Filter(types []string, from *time.Time, to *time.Time, suffix s
 
 }
 
+// FilterYear filters the elements of the Schema to certain year.
 func (s Schema) FilterYear(year int) Schema {
 	if year > 0 {
 		from, to := util.DateRangeFromYear(year)
@@ -95,6 +107,9 @@ type Identifiable interface {
 	String() string
 }
 
+// SuggestNextIdentifier suggest the next identifier for a Identifiable. This is solely done by looking
+// at the trailing (e.g. last) number and looking for the uppermost value. The suggestion is this number
+// plus one.
 func SuggestNextIdentifier(idt []Identifiable, prefix string) string {
 	r := regexp.MustCompile(`(\d+)$`)
 	max := 0
@@ -121,6 +136,7 @@ type Completable interface {
 	SetId()
 }
 
+// GetUuid generates a new UUID.
 func GetUuid() string {
 	return uuid.Must(uuid.NewRandom()).String()
 }
@@ -140,6 +156,8 @@ func OpenYamlHashed(data interface{}, path, dataType string) string {
 	return hash(raw)
 }
 
+// SaveYamlOnChange saves the given data if it this data has changed. This is archived by hashing the
+// marshalled YAML and comparing it with the hash from the loaded file content.
 func SaveYamlOnChange(data interface{}, path, dataType, oldHash string) {
 	var raw []byte
 	var err error
