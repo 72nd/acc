@@ -205,8 +205,8 @@ type Expense struct {
 	PaidWithDebit bool `yaml:"paidWithDebit" default:"false"`
 	// Internal states whether this expense is for an internal purpose or not.
 	Internal bool `yaml:"internal" default:"true"`
-	// ProjectId refers to the associated project.
-	ProjectId string `yaml:"projectId" default:""`
+	// Project refers to the associated project.
+	Project Ref `yaml:"projectId" default:""`
 }
 
 // NewExpense returns a new Expense element with the default values.
@@ -305,10 +305,10 @@ func InteractiveNewExpense(s *Schema, asset string) Expense {
 		"Has this expense an internal prupose?",
 		false)
 	if !exp.Internal {
-		exp.ProjectId = util.AskStringFromSearch(
+		exp.Project = NewRef(util.AskStringFromSearch(
 			"Project",
 			"Associated Project",
-			s.Projects.SearchItems())
+			s.Projects.SearchItems()))
 	}
 	return exp
 }
@@ -478,7 +478,7 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   "expense category is not set (ExpenseCategory is empty)",
 		},
 		{
-			Condition: !e.Internal && e.ProjectId == "",
+			Condition: !e.Internal && e.Project.Empty(),
 			Message:   "altrough not an internal expense, project id is not set (ProjectId is empty)",
 		},
 	}

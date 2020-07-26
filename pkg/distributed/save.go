@@ -109,7 +109,7 @@ func projectFile(s schema.Schema, prj schema.Project, cnt *SaveContainer, path s
 	var inv schema.Invoices
 
 	for i := range s.Expenses {
-		if s.Expenses[i].ProjectId == prj.Id {
+		if s.Expenses[i].Project.Match(prj) {
 			e := s.Expenses[i]
 			e.Path = util.RelativeAssetPath(path, e.Path)
 			exp = append(exp, e)
