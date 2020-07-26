@@ -154,6 +154,7 @@ func OpenSchema(path string) schema.Schema {
 		AppendExpenseSuffix: acc.AppendExpensesSuffix,
 		AppendInvoiceSuffix: acc.AppendInvoiceSuffix,
 		BaseFolder:          baseFolder,
+		SaveFunc:            acc.SaveSchema,
 	}
 }
 
@@ -167,7 +168,6 @@ func (a Acc) SaveSchema(s schema.Schema) {
 	if a.DistributedMode {
 		a.Save(a.FileName)
 		distributed.Save(s, s.BaseFolder)
-		// s.SaveFunc(s)
 		return
 	}
 	a.SaveSchemaToFolder(s)
