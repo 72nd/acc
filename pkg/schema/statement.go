@@ -113,6 +113,12 @@ func (t Statement) TransactionSearchItems() util.SearchItems {
 	return result
 }
 
+func (t Statement) Repopulate(s Schema) {
+	for i := range t.Transactions {
+		t.Transactions[i].Repopulate(s)
+	}
+}
+
 func (t *Statement) AssistedCompletion(s Schema, doAll, autoSave, autoMode, askSkip, documentsOnly bool) {
 	first := true
 	for i := range t.Transactions {

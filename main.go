@@ -394,6 +394,7 @@ func main() {
 							s.Expenses.Repopulate(s)
 							s.Invoices.Repopulate(s)
 							s.MiscRecords.Repopulate(s)
+							s.Statement.Repopulate(s)
 							s.Save()
 							return nil
 						},

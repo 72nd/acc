@@ -321,6 +321,35 @@ func (t Transaction) Validate() util.ValidateResults {
 	return []util.ValidateResult{util.Check(t)}
 }
 
+func (t *Transaction) Repopulate(s Schema) {
+	docDone := false
+	for i := range s.Expenses {
+		if s.Expenses[i].SettlementTransaction.Match(t) {
+			t.AssociatedDocument = NewRef(s.Expenses[i].SettlementTransaction.Id)
+			docDone = true
+			break
+		}
+	}
+	if !docDone {
+		for i := range s.Invoices {
+			if s.Invoices[i].SettlementTransaction.Match(t) {
+				t.AssociatedDocument = NewRef(s.Invoices[i].SettlementTransaction.Id)
+				docDone = true
+				break
+			}
+		}
+	}
+	if !docDone {
+		for i := range s.MiscRecords {
+			if s.MiscRecords[i].Transaction.Match(t) {
+				t.AssociatedDocument = NewRef(s.MiscRecords[i].Transaction.Id)
+				docDone = true
+				break
+			}
+		}
+	}
+}
+
 func (t Transaction) SearchItem() util.SearchItem {
 	return util.SearchItem{
 		Name:        t.Description,
