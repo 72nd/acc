@@ -30,7 +30,7 @@ func entriesForEmployeeAdvancedExpense(s schema.Schema, exp schema.Expense) []En
 		acc1 = cat.Account
 	}
 
-	emp, err := s.Parties.EmployeeById(exp.AdvancedThirdPartyId)
+	emp, err := s.Parties.EmployeeByRef(exp.AdvancedThirdParty)
 	cmt.add(err)
 
 	desc := "no employee found"
@@ -128,7 +128,7 @@ func settlementEntriesForAdvancedSettlement(s schema.Schema, trn schema.Transact
 	cmt := NewComment("settlement of employee advancement", trn.String())
 	cmt.add(compareAmounts(trn.Amount, exp.Amount))
 
-	emp, err := s.Parties.EmployeeById(exp.AdvancedThirdPartyId)
+	emp, err := s.Parties.EmployeeByRef(exp.AdvancedThirdParty)
 	cmt.add(err)
 
 	desc := "no employee found"

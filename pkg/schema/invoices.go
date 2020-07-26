@@ -262,7 +262,7 @@ func (i *Invoice) Repopulate(s Schema) {
 func (i Invoice) SearchItem(s Schema) util.SearchItem {
 	party := ""
 	if !i.Customer.Empty() {
-		pty, err := s.Parties.CustomerByReference(i.Customer)
+		pty, err := s.Parties.CustomerByRef(i.Customer)
 		if err != nil {
 			logrus.Warn("while creating search items: ", err)
 		} else {
@@ -270,7 +270,7 @@ func (i Invoice) SearchItem(s Schema) util.SearchItem {
 		}
 	}
 	return util.SearchItem{
-	Name:        fmt.Sprintf("%s for customer %s, amount: %s", i.Name, party, i.Amount.Display()),
+		Name:        fmt.Sprintf("%s for customer %s, amount: %s", i.Name, party, i.Amount.Display()),
 		Type:        i.Type(),
 		Value:       i.Id,
 		SearchValue: fmt.Sprintf("%s %s %s %s", i.Name, i.Identifier, i.ProjectName, party),

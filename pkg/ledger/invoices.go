@@ -17,7 +17,7 @@ func EntriesForInvoicing(s schema.Schema, inv schema.Invoice) []Entry {
 	}
 	cmt := NewComment("invoice sent", inv.String())
 
-	cmp, err := s.Parties.CustomerByReference(inv.Customer)
+	cmp, err := s.Parties.CustomerByRef(inv.Customer)
 	cmt.add(err)
 
 	desc := "no customer found"
@@ -53,7 +53,7 @@ func SettlementEntriesForInvoice(s schema.Schema, trn schema.Transaction, inv sc
 	cmt := NewComment("invoice settlement", trn.String())
 	cmt.add(compareAmounts(trn.Amount, inv.Amount))
 
-	cmp, err := s.Parties.CustomerByReference(inv.Customer)
+	cmp, err := s.Parties.CustomerByRef(inv.Customer)
 	cmt.add(err)
 
 	desc := "TODO no customer found"

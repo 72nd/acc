@@ -105,16 +105,16 @@ func (p Parties) CustomerByIdentifier(ident string) (*Party, error) {
 	return nil, fmt.Errorf("no customer for identifier «%s» found", ident)
 }
 
-func (p Parties) EmployeeById(id string) (*Party, error) {
+func (p Parties) EmployeeByRef(ref Reference) (*Party, error) {
 	for i := range p.Employees {
-		if p.Employees[i].Id == id {
+		if ref.Match(p.Employees[i]) {
 			return &p.Employees[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no employee for id «%s» found", id)
+	return nil, fmt.Errorf("no employee for id «%s» found", ref.Id)
 }
 
-func (p Parties) CustomerByReference(ref Reference) (*Party, error) {
+func (p Parties) CustomerByRef(ref Reference) (*Party, error) {
 	for i := range p.Customers {
 		if ref.Match(p.Customers[i]) {
 			return &p.Customers[i], nil
@@ -123,8 +123,8 @@ func (p Parties) CustomerByReference(ref Reference) (*Party, error) {
 	return nil, fmt.Errorf("no customer for id «%s» found", ref.Id)
 }
 
-func (p Parties) EmployeeStringById(id string) string {
-	emp, err := p.EmployeeById(id)
+func (p Parties) EmployeeStringByRef(ref Reference) string {
+	emp, err := p.EmployeeByRef(ref)
 	if err != nil {
 		logrus.Error("no employee found: ", err)
 		return "no employee for id"
@@ -150,11 +150,11 @@ func (p Parties) EmployeeByIdent(ident string) (*Party, error) {
 	return nil, fmt.Errorf("no employee for identifier «%s» found", ident)
 }
 
-func (p Parties) CustomerStringByReference(ref Reference) string {
+func (p Parties) CustomerStringByRef(ref Reference) string {
 	if ref.Empty() {
 		return "no customer associated"
 	}
-	cst, err := p.CustomerByReference(ref)
+	cst, err := p.CustomerByRef(ref)
 	if err != nil {
 		logrus.Error("no  found: ", err)
 		return "no customer for id"

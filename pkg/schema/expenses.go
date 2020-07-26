@@ -194,7 +194,7 @@ type Expense struct {
 	// AdvancedByThirdParty states if a third party (employee, etc.) advanced the payment of this expense for the company.
 	AdvancedByThirdParty bool `yaml:"advancedByThirdParty" default:"false"`
 	// AdvancePartyId refers to the third party which advanced the payment.
-	AdvancedThirdPartyId string `yaml:"advancedThirdPartyId" default:"" query:"emplyee"`
+	AdvancedThirdParty Reference `yaml:"advancedThirdPartyId" default:"" query:"emplyee"`
 	// DateOfSettlement states the date of the settlement of the expense (the company has not to take further actions).
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
@@ -274,10 +274,10 @@ func InteractiveNewExpense(s *Schema, asset string) Expense {
 		"Was this expense advanced by some third party (ex: employee)?",
 		false)
 	if exp.AdvancedByThirdParty {
-		exp.AdvancedThirdPartyId = util.AskStringFromSearch(
+		exp.AdvancedThirdParty = NewReference(util.AskStringFromSearch(
 			"Advanced party",
 			"Employee which advanced the expense",
-			s.Parties.EmployeesSearchItems())
+			s.Parties.EmployeesSearchItems()))
 	}
 	exp.DateOfSettlement = util.AskDate(
 		"Date of settlement",
@@ -327,11 +327,11 @@ func (e Expense) AssistedCompletion(s *Schema, doAll, autoSave, openAttachment, 
 		ext.Open()
 	}
 	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize expense:")), aurora.BrightMagenta(e.String()))
-	if e.AdvancedByThirdParty && e.AdvancedThirdPartyId == "" {
-		e.AdvancedThirdPartyId = util.AskStringFromListSearch(
+	if e.AdvancedByThirdParty && e.AdvancedThirdParty.Empty() {
+		e.AdvancedThirdParty = NewReference(util.AskStringFromListSearch(
 			"Advanced party",
 			"Employee which advanced the expense",
-			s.Parties.EmployeesSearchItems())
+			s.Parties.EmployeesSearchItems()))
 	}
 	if e.ExpenseCategory == "" {
 		var cat interface{}
@@ -464,7 +464,7 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   "although billable, no obliged customer is set (ObligedCustomerId is empty)",
 		},
 		{
-			Condition: e.AdvancedByThirdParty && e.AdvancedThirdPartyId == "",
+			Condition: e.AdvancedByThirdParty && e.AdvancedThirdParty.Empty(),
 			Message:   "although advanced by third party, no third party id is set (AdvancedThirdPartyId is empty)",
 		},
 		{

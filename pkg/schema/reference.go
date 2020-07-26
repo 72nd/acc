@@ -1,6 +1,8 @@
 package schema
 
-import "gopkg.in/yaml.v3"
+import (
+	"gopkg.in/yaml.v3"
+)
 
 // Reference is used to reference to other data types by using UUID's.
 type Reference struct {

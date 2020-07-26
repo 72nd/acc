@@ -21,7 +21,7 @@ func GenerateAllInvoices(s schema.Schema, dstFolder, place string, doOverwrite b
 			continue
 		}
 		logrus.Infof("(%d/%d) Generate %s...", i+1, nFiles, fileName)
-		customer, err := s.Parties.CustomerByReference(s.Invoices[i].Customer)
+		customer, err := s.Parties.CustomerByRef(s.Invoices[i].Customer)
 		if err != nil {
 			logrus.Errorf("found for invoice %s no customer (given: %s): %s", s.Invoices[i].Id, s.Invoices[i].Customer, err)
 			continue
