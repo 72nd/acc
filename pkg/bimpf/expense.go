@@ -95,18 +95,18 @@ func (e Expense) Validate() util.ValidateResults {
 // As the path in the Bimpf Expense structure is not absolute (is relative to project folder in a nextcloud folder), a folder prefix is needed.
 func (e Expense) Convert(pathPrefix, obligedCustomerId, project string, parties schema.Parties, bimpfEmployees Employees) schema.Expense {
 	exp := schema.Expense{
-		Identifier:              e.SbId,
-		Name:                    e.Name,
-		Amount:                  util.NewMoneyFromFloat(e.Amount, "CHF"),
-		Path:                    path.Join(pathPrefix, e.Path),
-		DateOfAccrual:           e.DateOfAccrual,
-		Billable:                e.Billable,
-		ObligedCustomer:         schema.NewRef(obligedCustomerId),
-		AdvancedByThirdParty:    e.AdvancedByEmployee,
-		AdvancedThirdParty:      schema.NewRef(e.getAdvancedPartyId(parties, bimpfEmployees)),
-		DateOfSettlement:        "",
-		SettlementTransaction: "",
-		ProjectName:             project,
+		Identifier:            e.SbId,
+		Name:                  e.Name,
+		Amount:                util.NewMoneyFromFloat(e.Amount, "CHF"),
+		Path:                  path.Join(pathPrefix, e.Path),
+		DateOfAccrual:         e.DateOfAccrual,
+		Billable:              e.Billable,
+		ObligedCustomer:       schema.NewRef(obligedCustomerId),
+		AdvancedByThirdParty:  e.AdvancedByEmployee,
+		AdvancedThirdParty:    schema.NewRef(e.getAdvancedPartyId(parties, bimpfEmployees)),
+		DateOfSettlement:      "",
+		SettlementTransaction: schema.NewRef(""),
+		ProjectName:           project,
 	}
 	exp.SetId()
 	return exp
