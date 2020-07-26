@@ -158,8 +158,20 @@ func (e Expenses) SortByYear() map[int]Expenses {
 // SetReferenceDestinations sets the destinations of the Reference fields.
 func (e Expenses) SetReferenceDestinations(s Schema) {
 	cst := s.Parties.GetCustomerIdentifiables()
+	emp := s.Parties.GetEmployeeIdentifiables()
+	trn := s.Statement.GetIdentifiables()
+	prj := s.Projects.GetIdentifiables()
 	for i := range e {
-		e[i].ObligedCustomer.SetDestination(cst)
+		if e[i].Billable {
+			e[i].ObligedCustomer.SetDestination(cst)
+		}
+		if e[i].AdvancedByThirdParty {
+			e[i].AdvancedThirdParty.SetDestination(emp)
+		}
+		if e[i].DateOfSettlement != "" {
+			e[i].SettlementTransaction.SetDestination(trn)
+		}
+		e[i].Project.SetDestination(prj)
 	}
 }
 
