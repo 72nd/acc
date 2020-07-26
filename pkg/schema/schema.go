@@ -42,6 +42,7 @@ func (s Schema) Save() {
 
 	s.Expenses.SetReferenceDestinations(cst, emp, trn, prj)
 	s.Invoices.SetReferenceDestinations(cst, trn, prj)
+	s.MiscRecords.SetReferenceDestinations(trn)
 	s.SaveFunc(s)
 }
 

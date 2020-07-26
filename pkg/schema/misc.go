@@ -91,15 +91,21 @@ func (m MiscRecords) Repopulate(s Schema) {
 	}
 }
 
+func (m MiscRecords) SetReferenceDestinations(trn []Identifiable) {
+	for i := range m {
+		m[i].Transaction.SetDestination(trn)
+	}
+}
+
 // MiscRecord represents business records which are not invoices or expenses
 // but still important for accounting. Example: A credit note from an insurance.
 type MiscRecord struct {
-	Id            string `yaml:"id" default:"1"`
-	Identifier    string `yaml:"identifier" default:"m-19-1"`
-	Name          string `yaml:"name" default:""`
-	Path          string `yaml:"path" default:"/path/to/record.pdf" query:"path"`
-	Date          string `yaml:"date" default:"2019-12-20"`
-	TransactionId string `yaml:"settlementTransactionId" default:"" query:"transaction"`
+	Id          string `yaml:"id" default:"1"`
+	Identifier  string `yaml:"identifier" default:"m-19-1"`
+	Name        string `yaml:"name" default:""`
+	Path        string `yaml:"path" default:"/path/to/record.pdf" query:"path"`
+	Date        string `yaml:"date" default:"2019-12-20"`
+	Transaction Ref    `yaml:"settlementTransactionId" default:"" query:"transaction"`
 }
 
 // NewMiscRecord returns a new MiscRecord element with the default values.
@@ -153,7 +159,7 @@ func (m *MiscRecord) Repopulate(s Schema) {
 		logrus.Warnf("there is no transaction for expense \"%s\" associated", m.String())
 		return
 	}
-	m.TransactionId = trn.Id
+	m.Transaction = NewRef(trn.Id)
 }
 
 // GetId returns the id of the MiscRecord.
