@@ -46,13 +46,13 @@ func (i Invoices) SetId() {
 	}
 }
 
-func (i Invoices) InvoiceById(id string) (*Invoice, error) {
+func (i Invoices) InvoiceByRef(ref Ref) (*Invoice, error) {
 	for j := range i {
-		if i[j].Id == id {
+		if ref.Match(i[j]) {
 			return &i[j], nil
 		}
 	}
-	return nil, fmt.Errorf("no invoice for id «%s» found", id)
+	return nil, fmt.Errorf("no invoice for id «%s» found", ref.Id)
 }
 
 func (i Invoices) GetIdentifiables() []Identifiable {
