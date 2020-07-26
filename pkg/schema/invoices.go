@@ -270,7 +270,7 @@ func (i Invoice) SearchItem(s Schema) util.SearchItem {
 		}
 	}
 	return util.SearchItem{
-		Name:        fmt.Sprintf("%s for customer %s, amount: %.2f", i.Name, party, i.Amount),
+	Name:        fmt.Sprintf("%s for customer %s, amount: %s", i.Name, party, i.Amount.Display()),
 		Type:        i.Type(),
 		Value:       i.Id,
 		SearchValue: fmt.Sprintf("%s %s %s %s", i.Name, i.Identifier, i.ProjectName, party),

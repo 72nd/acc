@@ -381,7 +381,7 @@ func (e *Expense) Repopulate(s Schema) {
 
 func (e Expense) SearchItem() util.SearchItem {
 	return util.SearchItem{
-		Name:        fmt.Sprintf("%s for %.2f", e.Name, e.Amount),
+		Name:        fmt.Sprintf("%s for %s", e.Name, e.Amount.Display()),
 		Type:        e.Type(),
 		Value:       e.Id,
 		SearchValue: fmt.Sprintf("%s %s %s", e.Name, e.Identifier, e.ProjectName),
