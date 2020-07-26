@@ -23,7 +23,7 @@ func entriesForTransactionWithDocument(s schema.Schema, trn schema.Transaction) 
 	if err == nil {
 		return SettlementEntriesForExpense(s, trn, *exp)
 	}
-	inv, err := s.Invoices.InvoiceById(trn.AssociatedDocumentId)
+	inv, err := s.Invoices.InvoiceByRef(trn.AssociatedDocumentId)
 	if err == nil {
 		return SettlementEntriesForInvoice(s, trn, *inv)
 	}

@@ -33,15 +33,15 @@ func (m MiscRecords) Save(path string) {
 	util.SaveToYaml(m, path, "misc-records")
 }
 
-// MiscRecordById returns the MiscRecord with the given id. If no record could be found
+// MiscRecordByRef returns the MiscRecord with the given id. If no record could be found
 // an error will be returned.
-func (m MiscRecords) MiscRecordById(id string) (*MiscRecord, error) {
+func (m MiscRecords) MiscRecordByRef(ref Ref) (*MiscRecord, error) {
 	for i := range m {
-		if m[i].Id == id {
+		if ref.Match(m[i]) {
 			return &m[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no misc record for id \"%s\" found", id)
+	return nil, fmt.Errorf("no misc record for id \"%s\" found", ref.Id)
 }
 
 // MiscRecordByIdent returns the MiscRecord with the given identifier.

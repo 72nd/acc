@@ -164,7 +164,7 @@ func (k KeyValue) RenderValue(s schema.Schema) string {
 		}
 		return fmt.Sprintf("%s, %s", k.Value, exp.Short())
 	case "invoice":
-		inv, err := s.Invoices.InvoiceById(k.Value)
+		inv, err := s.Invoices.InvoiceByRef(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such invoice exists)", k.Value)
 		}
@@ -174,7 +174,7 @@ func (k KeyValue) RenderValue(s schema.Schema) string {
 		if err == nil {
 			return fmt.Sprintf("%s, %s", k.Value, exp.Short())
 		}
-		inv, err := s.Invoices.InvoiceById(k.Value)
+		inv, err := s.Invoices.InvoiceByRef(k.Value)
 		if err != nil {
 			return fmt.Sprintf("%s (no such expense/invoice exists)", k.Value)
 		}
