@@ -136,7 +136,7 @@ type KeyValue struct {
 func (k KeyValue) RenderValue(s schema.Schema) string {
 	switch k.Field.Tag.Get("query") {
 	case "customer":
-		cst, err := s.Parties.CustomerById(k.Value)
+		cst, err := s.Parties.CustomerByReference(schema.NewReference(k.Value))
 		if err != nil {
 			return fmt.Sprintf("%s (no such customer exists)", k.Value)
 		}
@@ -148,7 +148,7 @@ func (k KeyValue) RenderValue(s schema.Schema) string {
 		}
 		return fmt.Sprintf("%s, %s", k.Value, emp.Short())
 	case "customer,employee":
-		cst, err := s.Parties.CustomerById(k.Value)
+		cst, err := s.Parties.CustomerByReference(schema.NewReference(k.Value))
 		if err == nil {
 			return fmt.Sprintf("%s, %s", k.Value, cst.Short())
 		}

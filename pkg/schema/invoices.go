@@ -134,8 +134,8 @@ type Invoice struct {
 	Path string `yaml:"path" default:"/path/to/file.utils" query:"path"`
 	// Revoked invoices are disabled an no longer taken into account.
 	Revoked bool `yaml:"revoked" default:"false"`
-	// CustomerId refers to the customer the invoice was sent to.
-	CustomerId string `yaml:"customerId" default:"" query:"customer"`
+	// Customer refers to the customer the invoice was sent to.
+	Customer Reference `yaml:"customerId" default:"" query:"customer"`
 	// SendDate states the date, the invoice was sent to the customer.
 	SendDate string `yaml:"sendDate" default:"2019-12-20"`
 	// DateOfSettlement states the date the customer paid the outstanding amount.
@@ -187,10 +187,10 @@ func InteractiveNewInvoice(s Schema, asset string) Invoice {
 	} else {
 		inv.Path = asset
 	}
-	inv.CustomerId = util.AskStringFromSearch(
+	inv.Customer = NewReference(util.AskStringFromSearch(
 		"Obliged Customer",
 		"Customer which has to pay the invoice",
-		s.Parties.CustomersSearchItems())
+		s.Parties.CustomersSearchItems()))
 	inv.SendDate = util.AskDate(
 		"Send Date",
 		"Date the invoice was sent",
@@ -261,8 +261,8 @@ func (i *Invoice) Repopulate(s Schema) {
 
 func (i Invoice) SearchItem(s Schema) util.SearchItem {
 	party := ""
-	if i.CustomerId != "" {
-		pty, err := s.Parties.CustomerById(i.CustomerId)
+	if !i.Customer.Empty() {
+		pty, err := s.Parties.CustomerByReference(i.Customer)
 		if err != nil {
 			logrus.Warn("while creating search items: ", err)
 		} else {
@@ -353,7 +353,7 @@ func (i Invoice) Conditions() util.Conditions {
 			Message:   fmt.Sprintf("business record document at «%s» not found", i.Path),
 		},
 		{
-			Condition: i.CustomerId == "",
+			Condition: i.Customer.Empty(),
 			Message:   "customer id is not set (CustomerId empty)",
 		},
 		{

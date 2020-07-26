@@ -101,7 +101,7 @@ func (e Expense) Convert(pathPrefix, obligedCustomerId, project string, parties 
 		Path:                    path.Join(pathPrefix, e.Path),
 		DateOfAccrual:           e.DateOfAccrual,
 		Billable:                e.Billable,
-		ObligedCustomerId:       obligedCustomerId,
+		ObligedCustomer:         schema.NewReference(obligedCustomerId),
 		AdvancedByThirdParty:    e.AdvancedByEmployee,
 		AdvancedThirdPartyId:    e.getAdvancedPartyId(parties, bimpfEmployees),
 		DateOfSettlement:        "",

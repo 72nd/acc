@@ -155,6 +155,14 @@ func (e Expenses) SortByYear() map[int]Expenses {
 	return rsl
 }
 
+// SetReferenceDestinations sets the destinations of the Reference fields.
+func (e Expenses) SetReferenceDestinations(s Schema) {
+	cst := s.Parties.GetCustomerIdentifiables()
+	for i := range e {
+		e[i].ObligedCustomer.SetDestination(cst)
+	}
+}
+
 /*
 func (e Expenses) CommentNodes(s Schema) Expenses {
 	rsl := make(Expenses, len(e))
@@ -181,8 +189,8 @@ type Expense struct {
 	DateOfAccrual string `yaml:"dateOfAccrual" default:"2019-12-20"`
 	// Billable states if the costs for the Expense will be forwarded to the customer.
 	Billable bool `yaml:"billable" default:"false"`
-	// ObligedCustomerId refers to the customer which have to pay the Expense.
-	ObligedCustomerId string `yaml:"obligedCustomerId" default:"" query:"customer"`
+	// ObligedCustomer refers to the customer which have to pay the Expense.
+	ObligedCustomer Reference `yaml:"obligedCustomerId" default:"" query:"customer"`
 	// AdvancedByThirdParty states if a third party (employee, etc.) advanced the payment of this expense for the company.
 	AdvancedByThirdParty bool `yaml:"advancedByThirdParty" default:"false"`
 	// AdvancePartyId refers to the third party which advanced the payment.
@@ -254,12 +262,12 @@ func InteractiveNewExpense(s *Schema, asset string) Expense {
 		"Is expense billable to customer?",
 		false)
 	if exp.Billable {
-		exp.ObligedCustomerId = util.AskStringFromSearch(
+		exp.ObligedCustomer = NewReference(util.AskStringFromSearch(
 			"Obliged Customer",
 			"Customer which has to pay this expense",
-			s.Parties.CustomersSearchItems())
+			s.Parties.CustomersSearchItems()))
 	} else {
-		exp.ObligedCustomerId = ""
+		exp.ObligedCustomer = NewReference("")
 	}
 	exp.AdvancedByThirdParty = util.AskBool(
 		"Advanced?",
@@ -381,7 +389,7 @@ func (e *Expense) Repopulate(s Schema) {
 
 func (e Expense) SearchItem() util.SearchItem {
 	return util.SearchItem{
-		Name:        fmt.Sprintf("%s for %s", e.Name, e.Amount.Display()),
+		Name:        fmt.Sprintf("%s for %s", e.Name, e.Amount),
 		Type:        e.Type(),
 		Value:       e.Id,
 		SearchValue: fmt.Sprintf("%s %s %s", e.Name, e.Identifier, e.ProjectName),
@@ -452,7 +460,7 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfAccrual),
 		},
 		{
-			Condition: e.Billable && e.ObligedCustomerId == "",
+			Condition: e.Billable && e.ObligedCustomer.Empty(),
 			Message:   "although billable, no obliged customer is set (ObligedCustomerId is empty)",
 		},
 		{

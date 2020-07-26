@@ -17,7 +17,7 @@ import (
 
 // Collection is a collection of elements (like Expenses, Parties etc.).
 type Collection interface {
-	SetReferenceDestinations()
+	SetReferenceDestinations(s Schema)
 }
 
 // Schema is the entirety of all business data for all the functionality of acc.
@@ -40,6 +40,7 @@ type Schema struct {
 
 // Save the schema.
 func (s Schema) Save() {
+	s.Expenses.SetReferenceDestinations(s)
 	s.SaveFunc(s)
 }
 
