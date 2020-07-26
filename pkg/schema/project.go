@@ -31,15 +31,15 @@ func (p Projects) Save(path string) {
 	util.SaveToYaml(p, path, "projects")
 }
 
-// ProjectById returns the Project with the given id. If no record could be found
+// ProjectByRef returns the Project with the given id. If no record could be found
 // an error will be returned.
-func (p Projects) ProjectById(id string) (*Project, error) {
+func (p Projects) ProjectByRef(ref Ref) (*Project, error) {
 	for i := range p {
-		if p[i].Id == id {
+		if ref.Match(p[i]) {
 			return &p[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no project for id \"%s\" found", id)
+	return nil, fmt.Errorf("no project for id \"%s\" found", ref.Id)
 }
 
 // ProjectByIdent returns the Project with the given identifier.
