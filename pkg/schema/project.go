@@ -82,12 +82,18 @@ func (p Projects) Validate() util.ValidateResults {
 	return rsl
 }
 
+func (p Projects) SetReferenceDestinations(cst []Identifiable) {
+	for i := range p {
+		p[i].Customer.SetDestination(cst)
+	}
+}
+
 // Project represents a project for a customer.
 type Project struct {
 	Id         string `yaml:"id" default:"1"`
 	Identifier string `yaml:"identifier" default:"p-1"`
 	Name       string `yaml:"name" default:"Building a space rocket"`
-	CustomerId string `yaml:"customerId" default:""`
+	Customer   Ref    `yaml:"customerId" default:""`
 }
 
 // NewProject returns a new Project element with the default values.
@@ -112,10 +118,10 @@ func InteractiveNewProject(s Schema) Project {
 		"Name",
 		"Name of the project",
 		"Aktion neue soziale Marktwirtschaft")
-	prj.CustomerId = util.AskStringFromSearch(
+	prj.Customer = NewRef(util.AskStringFromSearch(
 		"Associated customer",
 		"Customer which the project is associated",
-		s.Parties.CustomersSearchItems())
+		s.Parties.CustomersSearchItems()))
 	return prj
 }
 
@@ -177,7 +183,7 @@ func (p Project) Conditions() util.Conditions {
 			Message:   "name not set (Name is empty)",
 		},
 		{
-			Condition: p.CustomerId == "",
+			Condition: p.Customer.Empty(),
 			Message:   "customer id not set (CustomerId is empty)",
 		},
 	}
