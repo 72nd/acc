@@ -51,13 +51,13 @@ func (e Expenses) SetId() {
 	}
 }
 
-func (e Expenses) ExpenseById(id string) (*Expense, error) {
+func (e Expenses) ExpenseById(ref Ref) (*Expense, error) {
 	for i := range e {
-		if e[i].Id == id {
+		if ref.Match(e[i]) {
 			return &e[i], nil
 		}
 	}
-	return nil, fmt.Errorf("no expense for id \"%s\" found", id)
+	return nil, fmt.Errorf("no expense for id \"%s\" found", ref.Id)
 }
 
 func (e Expenses) ExpenseByIdent(ident string) (*Expense, error) {
