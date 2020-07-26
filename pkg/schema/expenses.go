@@ -197,8 +197,8 @@ type Expense struct {
 	AdvancedThirdParty Ref `yaml:"advancedThirdPartyId" default:"" query:"emplyee"`
 	// DateOfSettlement states the date of the settlement of the expense (the company has not to take further actions).
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
-	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
-	SettlementTransactionId string `yaml:"settlementTransactionId" default:"" query:"transaction"`
+	// SettlementTransaction refers to a possible bank transaction which settled the Expense for the company.
+	SettlementTransaction Ref `yaml:"settlementTransactionId" default:"" query:"transaction"`
 	// ExpenseCategory gives additional info for the categorization of the expense in the journal.
 	ExpenseCategory string `yaml:"expenseCategory" default:""`
 	// Debit Payment states whether the expense was directly paid with the main account debithether the expense was directly paid with the main account debit card.
@@ -384,7 +384,7 @@ func (e *Expense) Repopulate(s Schema) {
 		return
 	}
 	e.DateOfSettlement = trn.Date
-	e.SettlementTransactionId = trn.Id
+	e.SettlementTransaction = NewRef(trn.Id)
 }
 
 func (e Expense) SearchItem() util.SearchItem {
@@ -472,7 +472,7 @@ func (e Expense) Conditions() util.Conditions {
 			Message:   fmt.Sprintf("string «%s» could not be parsed with format YYYY-MM-DD", e.DateOfSettlement),
 		},
 		{
-			Condition: e.DateOfSettlement != "" && e.SettlementTransactionId == "",
+			Condition: e.DateOfSettlement != "" && e.SettlementTransaction.Empty(),
 			Message:   "although date of settlement is set, the corresponding transaction is empty (SettlementTransactionId is empty",
 		},
 		{
