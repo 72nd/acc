@@ -135,7 +135,7 @@ type Invoice struct {
 	// Revoked invoices are disabled an no longer taken into account.
 	Revoked bool `yaml:"revoked" default:"false"`
 	// Customer refers to the customer the invoice was sent to.
-	Customer Reference `yaml:"customerId" default:"" query:"customer"`
+	Customer Ref `yaml:"customerId" default:"" query:"customer"`
 	// SendDate states the date, the invoice was sent to the customer.
 	SendDate string `yaml:"sendDate" default:"2019-12-20"`
 	// DateOfSettlement states the date the customer paid the outstanding amount.
@@ -187,7 +187,7 @@ func InteractiveNewInvoice(s Schema, asset string) Invoice {
 	} else {
 		inv.Path = asset
 	}
-	inv.Customer = NewReference(util.AskStringFromSearch(
+	inv.Customer = NewRef(util.AskStringFromSearch(
 		"Obliged Customer",
 		"Customer which has to pay the invoice",
 		s.Parties.CustomersSearchItems()))

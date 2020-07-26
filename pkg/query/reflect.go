@@ -136,23 +136,23 @@ type KeyValue struct {
 func (k KeyValue) RenderValue(s schema.Schema) string {
 	switch k.Field.Tag.Get("query") {
 	case "customer":
-		cst, err := s.Parties.CustomerByRef(schema.NewReference(k.Value))
+		cst, err := s.Parties.CustomerByRef(schema.NewRef(k.Value))
 		if err != nil {
 			return fmt.Sprintf("%s (no such customer exists)", k.Value)
 		}
 		return fmt.Sprintf("%s, %s", k.Value, cst.Short())
 	case "employee":
-		emp, err := s.Parties.EmployeeByRef(schema.NewReference(k.Value))
+		emp, err := s.Parties.EmployeeByRef(schema.NewRef(k.Value))
 		if err != nil {
 			return fmt.Sprintf("%s (no such employee exists)", k.Value)
 		}
 		return fmt.Sprintf("%s, %s", k.Value, emp.Short())
 	case "customer,employee":
-		cst, err := s.Parties.CustomerByRef(schema.NewReference(k.Value))
+		cst, err := s.Parties.CustomerByRef(schema.NewRef(k.Value))
 		if err == nil {
 			return fmt.Sprintf("%s, %s", k.Value, cst.Short())
 		}
-		emp, err := s.Parties.EmployeeByRef(schema.NewReference(k.Value))
+		emp, err := s.Parties.EmployeeByRef(schema.NewRef(k.Value))
 		if err != nil {
 			return fmt.Sprintf("%s (no such party exists)", k.Value)
 		}

@@ -190,11 +190,11 @@ type Expense struct {
 	// Billable states if the costs for the Expense will be forwarded to the customer.
 	Billable bool `yaml:"billable" default:"false"`
 	// ObligedCustomer refers to the customer which have to pay the Expense.
-	ObligedCustomer Reference `yaml:"obligedCustomerId" default:"" query:"customer"`
+	ObligedCustomer Ref `yaml:"obligedCustomerId" default:"" query:"customer"`
 	// AdvancedByThirdParty states if a third party (employee, etc.) advanced the payment of this expense for the company.
 	AdvancedByThirdParty bool `yaml:"advancedByThirdParty" default:"false"`
 	// AdvancePartyId refers to the third party which advanced the payment.
-	AdvancedThirdParty Reference `yaml:"advancedThirdPartyId" default:"" query:"emplyee"`
+	AdvancedThirdParty Ref `yaml:"advancedThirdPartyId" default:"" query:"emplyee"`
 	// DateOfSettlement states the date of the settlement of the expense (the company has not to take further actions).
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
 	// SettlementTransactionId refers to a possible bank transaction which settled the Expense for the company.
@@ -262,19 +262,19 @@ func InteractiveNewExpense(s *Schema, asset string) Expense {
 		"Is expense billable to customer?",
 		false)
 	if exp.Billable {
-		exp.ObligedCustomer = NewReference(util.AskStringFromSearch(
+		exp.ObligedCustomer = NewRef(util.AskStringFromSearch(
 			"Obliged Customer",
 			"Customer which has to pay this expense",
 			s.Parties.CustomersSearchItems()))
 	} else {
-		exp.ObligedCustomer = NewReference("")
+		exp.ObligedCustomer = NewRef("")
 	}
 	exp.AdvancedByThirdParty = util.AskBool(
 		"Advanced?",
 		"Was this expense advanced by some third party (ex: employee)?",
 		false)
 	if exp.AdvancedByThirdParty {
-		exp.AdvancedThirdParty = NewReference(util.AskStringFromSearch(
+		exp.AdvancedThirdParty = NewRef(util.AskStringFromSearch(
 			"Advanced party",
 			"Employee which advanced the expense",
 			s.Parties.EmployeesSearchItems()))
@@ -328,7 +328,7 @@ func (e Expense) AssistedCompletion(s *Schema, doAll, autoSave, openAttachment, 
 	}
 	fmt.Printf("%s %s\n", aurora.BrightMagenta(aurora.Bold("Optimize expense:")), aurora.BrightMagenta(e.String()))
 	if e.AdvancedByThirdParty && e.AdvancedThirdParty.Empty() {
-		e.AdvancedThirdParty = NewReference(util.AskStringFromListSearch(
+		e.AdvancedThirdParty = NewRef(util.AskStringFromListSearch(
 			"Advanced party",
 			"Employee which advanced the expense",
 			s.Parties.EmployeesSearchItems()))

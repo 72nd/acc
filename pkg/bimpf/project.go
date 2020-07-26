@@ -105,7 +105,7 @@ func (d Document) ConvertAsInvoice(pathPrefix, customerId, projectName string, p
 		Name:                    d.Name,
 		Amount:                  util.NewMoney(-1, "CHF"),
 		Path:                    path.Join(pathPrefix, d.Path),
-		Customer:                schema.NewReference(customerId),
+		Customer:                schema.NewRef(customerId),
 		SendDate:                d.SendDate,
 		DateOfSettlement:        "",
 		SettlementTransactionId: "",
