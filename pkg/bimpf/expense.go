@@ -106,7 +106,6 @@ func (e Expense) Convert(pathPrefix, obligedCustomerId, project string, parties 
 		AdvancedThirdParty:    schema.NewRef(e.getAdvancedPartyId(parties, bimpfEmployees)),
 		DateOfSettlement:      "",
 		SettlementTransaction: schema.NewRef(""),
-		ProjectName:           project,
 	}
 	exp.SetId()
 	return exp

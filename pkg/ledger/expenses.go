@@ -84,9 +84,7 @@ func entriesForCompanyPaidExpenses(s schema.Schema, exp schema.Expense) []Entry 
 	} else {
 		data := map[string]string{
 			"Name":       exp.Name,
-			"Identifier": exp.Identifier,
-			"Project":    exp.ProjectName,
-		}
+			"Identifier": exp.Identifier}
 		desc = util.ApplyTemplate(
 			"production expense occurrence description",
 			s.JournalConfig.ProductionExpenseOccurenceDescription,

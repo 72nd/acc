@@ -205,8 +205,6 @@ type Expense struct {
 	PaidWithDebit bool `yaml:"paidWithDebit" default:"false"`
 	// Internal states whether this expense is for an internal purpose or not.
 	Internal bool `yaml:"internal" default:"true"`
-	// ProjectName refers to the associated project of the expense. Depreciated.
-	ProjectName string `yaml:"projectName" default:""`
 	// ProjectId refers to the associated project.
 	ProjectId string `yaml:"projectId" default:""`
 }
@@ -392,7 +390,7 @@ func (e Expense) SearchItem() util.SearchItem {
 		Name:        fmt.Sprintf("%s for %s", e.Name, e.Amount),
 		Type:        e.Type(),
 		Value:       e.Id,
-		SearchValue: fmt.Sprintf("%s %s %s", e.Name, e.Identifier, e.ProjectName),
+		SearchValue: fmt.Sprintf("%s %s", e.Name, e.Identifier),
 	}
 }
 
@@ -420,7 +418,7 @@ func (e Expense) Type() string {
 
 // String returns a human readable representation of the element.
 func (e Expense) String() string {
-	return fmt.Sprintf("%s (%s): %s for %s", e.Name, e.Identifier, e.Amount.Display(), e.ProjectName)
+	return fmt.Sprintf("%s (%s): %s", e.Name, e.Identifier, e.Amount.Display())
 }
 
 // Short returns a short representation of the element.
