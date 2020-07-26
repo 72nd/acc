@@ -23,15 +23,15 @@ const (
 
 // Transaction represents a single transaction of a bank statement.
 type Transaction struct {
-	Id                   string               `yaml:"id" default:""`
-	Identifier           string               `yaml:"identifier" default:""`
-	Amount               util.Money           `yaml:"amount" default:"-" query:"amount"`
-	Description          string               `yaml:"description" default:""`
-	TransactionType      util.TransactionType `yaml:"transactionType" default:"0"`
-	AssociatedPartyId    string               `yaml:"associatedPartyId" default:"" query:"customer,employee"`
-	AssociatedDocumentId Ref                  `yaml:"associatedDocumentId" default:"" query:"expense,invoice"`
-	Date                 string               `yaml:"date" default:""`
-	JournalMode          JournalMode          `yaml:"journalMode" default:"0"`
+	Id                 string               `yaml:"id" default:""`
+	Identifier         string               `yaml:"identifier" default:""`
+	Amount             util.Money           `yaml:"amount" default:"-" query:"amount"`
+	Description        string               `yaml:"description" default:""`
+	TransactionType    util.TransactionType `yaml:"transactionType" default:"0"`
+	AssociatedParty    Ref                  `yaml:"associatedPartyId" default:"" query:"customer,employee"`
+	AssociatedDocument Ref                  `yaml:"associatedDocumentId" default:"" query:"expense,invoice,misc"`
+	Date               string               `yaml:"date" default:""`
+	JournalMode        JournalMode          `yaml:"journalMode" default:"0"`
 }
 
 func NewTransaction() Transaction {
@@ -147,19 +147,20 @@ func (t Transaction) AssistedCompletion(s Schema, doAll, autoMode, askSkip, docu
 					Name:  "Auto Mode",
 					Value: int(AutoJournalMode),
 				}}))
-		if t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode {
+		if t.AssociatedParty.Empty() && t.JournalMode == AutoJournalMode {
 			parties := append(s.Parties.CustomersSearchItems(), s.Parties.EmployeesSearchItems()...)
 			suggestion, err := t.parseAssociatedParty(t.Description, s.Parties)
 			if err == nil && util.AskForConformation(fmt.Sprintf("Use \"%s\" as associeted third party?", suggestion.String())) {
-				t.AssociatedPartyId = suggestion.GetId()
+				t.AssociatedParty = NewRef(suggestion.GetId())
 			} else {
 				var pty interface{}
-				t.AssociatedPartyId, pty = util.AskStringFromSearchWithNew(
+				value, pty := util.AskStringFromSearchWithNew(
 					"Associated Party",
 					"customer/employee which is originator/recipient of the transaction",
 					parties,
 					InteractiveNewGenericParty,
 					s)
+				t.AssociatedParty = NewRef(value)
 				if pty != nil {
 					value, ok := pty.(Party)
 					if !ok {
@@ -170,7 +171,7 @@ func (t Transaction) AssistedCompletion(s Schema, doAll, autoMode, askSkip, docu
 					} else if value.PartyType == EmployeeType {
 						s.Parties.Employees = append(s.Parties.Employees, value)
 					}
-					t.AssociatedPartyId = value.Id
+					t.AssociatedParty = NewRef(value.Id)
 				}
 			}
 		}
@@ -178,10 +179,10 @@ func (t Transaction) AssistedCompletion(s Schema, doAll, autoMode, askSkip, docu
 
 	document, err := t.parseAssociatedDocument(s.Expenses, s.Invoices)
 	if err == nil && util.AskForConformation(fmt.Sprintf("Use \"%s\" as associated document?", document.String())) {
-		t.AssociatedDocumentId = NewRef(document.GetId())
+		t.AssociatedDocument = NewRef(document.GetId())
 	} else {
 		docs := append(s.Expenses.SearchItems(), s.Invoices.SearchItems(s)...)
-		t.AssociatedDocumentId = NewRef(util.AskStringFromSearch(
+		t.AssociatedDocument = NewRef(util.AskStringFromSearch(
 			"Associated Document",
 			"couldn't find associated document, manual search",
 			docs))
@@ -293,12 +294,12 @@ func (t Transaction) Conditions() util.Conditions {
 			Level:     util.BeforeExportFlaw,
 		},
 		{
-			Condition: t.AssociatedPartyId == "" && t.JournalMode == AutoJournalMode,
+			Condition: t.AssociatedParty.Empty() && t.JournalMode == AutoJournalMode,
 			Message:   "no associated party set although auto journal mode is set",
 			Level:     util.BeforeMergeFlaw,
 		},
 		{
-			Condition: t.AssociatedDocumentId.Empty() && t.JournalMode == AutoJournalMode,
+			Condition: t.AssociatedDocument.Empty() && t.JournalMode == AutoJournalMode,
 			Message:   "no associated document set although auto journal mode is set",
 			Level:     util.BeforeMergeFlaw,
 		},

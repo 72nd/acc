@@ -10,7 +10,7 @@ import (
 
 // EntriesForTransaction returns the journal entries for a given schema.Transaction.
 func EntriesForTransaction(s schema.Schema, trn schema.Transaction) []Entry {
-	if trn.AssociatedDocumentId.Empty() {
+	if trn.AssociatedDocument.Empty() {
 		return entriesForTransactionWithDocument(s, trn)
 	}
 	return entrieForDefaultTransaction(s, trn, nil)
@@ -19,15 +19,15 @@ func EntriesForTransaction(s schema.Schema, trn schema.Transaction) []Entry {
 // entriesForTransactionWithDocument returns the entries for transactions with an associated
 // document.
 func entriesForTransactionWithDocument(s schema.Schema, trn schema.Transaction) []Entry {
-	exp, err := s.Expenses.ExpenseByRef(trn.AssociatedDocumentId)
+	exp, err := s.Expenses.ExpenseByRef(trn.AssociatedDocument)
 	if err == nil {
 		return SettlementEntriesForExpense(s, trn, *exp)
 	}
-	inv, err := s.Invoices.InvoiceByRef(trn.AssociatedDocumentId)
+	inv, err := s.Invoices.InvoiceByRef(trn.AssociatedDocument)
 	if err == nil {
 		return SettlementEntriesForInvoice(s, trn, *inv)
 	}
-	return entrieForDefaultTransaction(s, trn, fmt.Errorf("no expense/invoice for id \"%s\" found", trn.AssociatedDocumentId))
+	return entrieForDefaultTransaction(s, trn, fmt.Errorf("no expense/invoice for id \"%s\" found", trn.AssociatedDocument))
 }
 
 // entrieForDefaultTransaction is the fallback function. It is possible to give an additional

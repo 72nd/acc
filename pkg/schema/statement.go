@@ -130,7 +130,7 @@ func (t *Statement) AssistedCompletion(s Schema, doAll, autoSave, autoMode, askS
 
 func (t Statement) TransactionForDocument(id string) (*Transaction, error) {
 	for i := range t.Transactions {
-		if t.Transactions[i].AssociatedDocumentId.Id == id {
+		if t.Transactions[i].AssociatedDocument.Id == id {
 			return &t.Transactions[i], nil
 		}
 	}
@@ -159,4 +159,11 @@ func (t Statement) FilterTransactions(from *time.Time, to *time.Time) ([]Transac
 		}
 	}
 	return result, nil
+}
+
+func (t Statement) SetReferenceDestinations(doc, pty []Identifiable) {
+	for i := range t.Transactions {
+		t.Transactions[i].AssociatedDocument.SetDestination(doc)
+		t.Transactions[i].AssociatedParty.SetDestination(pty)
+	}
 }

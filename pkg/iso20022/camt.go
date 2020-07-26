@@ -76,11 +76,11 @@ func (t Transaction) AccTransaction(date, currency string) schema.Transaction {
 		logrus.Fatal(err)
 	}
 	trn := schema.Transaction{
-		Description:       t.String(),
-		TransactionType:   trnType,
-		AssociatedPartyId: "",
-		Date:              date,
-		Amount:            amount,
+		Description:     t.String(),
+		TransactionType: trnType,
+		AssociatedParty: schema.NewRef(""),
+		Date:            date,
+		Amount:          amount,
 	}
 	trn.SetId()
 	return trn
@@ -88,9 +88,9 @@ func (t Transaction) AccTransaction(date, currency string) schema.Transaction {
 
 // String returns a human readable string of a given Transaction.
 func (t Transaction) String() string {
-	typeStr := fmt.Sprintf("Received %.2f.- from %s", t.Amount, t.Debitor)
+	typeStr := fmt.Sprintf("Received %s from %s", t.Amount, t.Debitor)
 	if t.CreditDebitIndicator == "DBIT" {
-		typeStr = fmt.Sprintf("Paid %.2f.- to %s", t.Amount, t.Creditor)
+		typeStr = fmt.Sprintf("Paid %s to %s", t.Amount, t.Creditor)
 	}
 
 	var description string

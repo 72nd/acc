@@ -37,6 +37,9 @@ type Schema struct {
 func (s Schema) Save() {
 	cst := s.Parties.GetCustomerIdentifiables()
 	emp := s.Parties.GetEmployeeIdentifiables()
+	exp := s.Expenses.GetIdentifiables()
+	inv := s.Invoices.GetIdentifiables()
+	misc := s.MiscRecords.GetIdentifiables()
 	trn := s.Statement.GetIdentifiables()
 	prj := s.Projects.GetIdentifiables()
 
@@ -44,6 +47,7 @@ func (s Schema) Save() {
 	s.Invoices.SetReferenceDestinations(cst, trn, prj)
 	s.MiscRecords.SetReferenceDestinations(trn)
 	s.Projects.SetReferenceDestinations(cst)
+	s.Statement.SetReferenceDestinations(append(append(exp, inv...), misc...), append(cst, emp...))
 	s.SaveFunc(s)
 }
 
