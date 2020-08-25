@@ -148,6 +148,7 @@ func (e Expenses) SortByYear() map[int]Expenses {
 	for i := range e {
 		if e[i].GetDate() == nil {
 			rsl[0] = append(rsl[0], e[i])
+			continue
 		}
 		year := e[i].GetDate().Year()
 		rsl[year] = append(rsl[year], e[i])
