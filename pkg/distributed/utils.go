@@ -23,10 +23,14 @@ const (
 // folderName takes a string and returns version without spaces, umlauts etc.
 func folderName(name string) string {
 	name = strings.ToLower(name)
+
 	r := strings.NewReplacer(
 		"ä", "ae",
+		"a\u0308", "ae",
 		"ö", "oe",
+		"o\u0308", "oe",
 		"ü", "ue",
+		"u\u0308", "ue",
 		"à", "a",
 		"é", "e",
 		"è", "e",

@@ -14,5 +14,6 @@ require (
 	github.com/signintech/gopdf v0.9.5
 	github.com/sirupsen/logrus v1.4.2
 	github.com/urfave/cli/v2 v2.1.1
+	golang.org/x/text v0.3.2
 	gopkg.in/yaml.v3 v3.0.0-20200615113413-eeeca48fe776
 )
