@@ -85,7 +85,7 @@ func customerToSave(s schema.Schema, cst schema.Party, cnt *SaveContainer, path 
 	prjCnt := &SaveContainer{}
 
 	for i := range s.Projects {
-		if s.Projects[i].Customer.Match(cst) {
+		if !s.Projects[i].Customer.Match(cst) {
 			continue
 		}
 		prjWg.Add(1)
