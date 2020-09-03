@@ -96,7 +96,7 @@ func searchPrompt(name, desc string, items SearchItems, showList bool, newFuncti
 		}
 
 		value, err := strconv.Atoi(input2)
-		if err != nil || value < 1 || value > len(items) {
+		if err != nil || value < 1 || value > len(matches) {
 			logrus.Error("invalid input, try again")
 			continue
 		}
