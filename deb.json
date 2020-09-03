@@ -18,7 +18,8 @@
     {
       "files": "*",
       "copyright": "2020 72nd <msg@frg72.com>",
-      "license": "Expat"
+      "license": "MIT",
+	  "file": "LICENSE"
     }
   ],
   "essential": false,
