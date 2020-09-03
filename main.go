@@ -73,6 +73,7 @@ func main() {
 	app := &cli.App{
 		Name:                 "acc",
 		Usage:                "collection of tools for accounting with hledger",
+		Version:              "v0.5.1",
 		EnableBashCompletion: true,
 		Action: func(c *cli.Context) error {
 			_ = cli.ShowCommandHelp(c, c.Command.Name)
