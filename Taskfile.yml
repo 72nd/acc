@@ -45,3 +45,45 @@ tasks:
         env:
             GOOS: "{{.GOOS}}"
             GOARCH: "{{.GOARCH}}"
+    deb:
+        desc: Build the deb package with go-bin-deb
+        # deps:
+        # - build
+        cmds:
+            - task: empty-folder
+              vars: {PATH: "pkg-build"}
+            - task: empty-folder
+              vars: {PATH: "deb-tmp"}
+            - task: deb-cp-binary
+              vars: {GOARCH: "amd64"}
+            - task: deb-cp-binary
+              vars: {GOARCH: "386"}
+            - task: deb-cp-binary
+              vars: {GOARCH: "arm"}
+            - task: deb-cp-binary
+              vars: {GOARCH: "arm64"}
+            - task: deb-build
+              vars: {GOARCH: "amd64"}
+            - task: deb-build
+              vars: {GOARCH: "386"}
+            - task: deb-build
+              vars: {GOARCH: "arm"}
+            - task: deb-build
+              vars: {GOARCH: "arm64"}
+            - rm -rf pkg-build
+            - rm -rf deb-tmp
+    deb-cp-binary:
+        desc: Copy a binary from the build folder to the correct position in the deb-tmp folder.
+        cmds:
+            - mkdir deb-tmp/{{.GOARCH}}
+            - cp build/acc_linux_{{.GOARCH}} deb-tmp/{{.GOARCH}}/acc
+    deb-build:
+        desc: Builds the deb packages
+        cmds:
+            - go-bin-deb generate -a {{.GOARCH}} -w pkg-build/{{.GOARCH}} -o build/
+    empty-folder:
+        desc: Creates an empty folder, already existing folders will be removed
+        cmds:
+            - rm -rf {{.PATH}}
+            - mkdir {{.PATH}}
+

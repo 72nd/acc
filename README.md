@@ -41,7 +41,7 @@ _Current status:_ The project is under active use and development at the [Genoss
 - [ ] First Run with 2019 Taxes
 - [ ] Documentation in Readme done
 - [x] Filter function
-- [ ] Project Mode _(almost done)_
+- [x] Project Mode
 - [x] Shorts for commands 
 - [ ] Code Documentation
 - [ ] Misc Documents in complete Transactions
@@ -127,6 +127,21 @@ Open your bash config file and add this line:
 PROG=acc source path/to/store/autocomplete-script/bash_autocomplete
 ``` 
 
+
+### Build for multiple platforms
+
+This project uses the [Task](https://github.com/go-task/task) task runner to build this application for multiple platforms. With `task` present run `task build`in the repository root. You'll find all the binaries in the `build` folder.
+
+To build the deb packages:
+
+```shell script
+// Dependencies
+go install github.com/mh-cbon/go-bin-deb
+sudo apt install build-essential lintian
+
+// Build
+task deb
+```
 
 ## Basic Concepts
 
@@ -264,7 +279,7 @@ The `acc complete repopulate` on the other hand can be used to link expenses and
 
 ### distributed
 
-Distributed mode specific commands.
+Place for some utility commands for working in distributed mode.
 
 
 ### filter
