@@ -11,7 +11,9 @@ func RelativeAssetPath(absolute, asset string) string {
 	if asset == "" {
 		return ""
 	}
-	asset = AbsolutePathWithWD(asset)
+	if !filepath.IsAbs(asset) {
+		asset = AbsolutePathWithWD(asset)
+	}
 	rsl, err := filepath.Rel(absolute, asset)
 	if err != nil {
 		logrus.Errorf("couldn't determine relative path \"%s\" in respective of \"%s\": %s", asset, absolute, err)
@@ -27,5 +29,5 @@ func AbsolutePathWithWD(path string) string {
 	if err != nil {
 		logrus.Fatal("working directory not found: ", err)
 	}
-	return filepath.Clean(filepath.Join(wd, path))
+	return filepath.Join(wd, path)
 }
