@@ -81,15 +81,13 @@ func (m Money) Value() string {
 	part1 := m.Amount() / 100
 	part2 := m.Amount() - part1*100
 	if part2 < 10 {
-		return fmt.Sprintf("%d.0%d", part1, part2)
+		return fmt.Sprintf("%d.0%d %s", part1, part2, m.Currency().Code)
 	}
-	return fmt.Sprintf("%d.%d", part1, part2)
+	return fmt.Sprintf("%d.%d %s", part1, part2, m.Currency().Code)
 }
 
 func (m Money) MarshalYAML() (interface{}, error) {
-	part1 := m.Amount() / 100
-	part2 := m.Amount() - part1*100
-	return fmt.Sprintf("%d.%d %s", part1, part2, m.Currency().Code), nil
+	return m.Value(), nil
 }
 
 func (m Money) String() string {
