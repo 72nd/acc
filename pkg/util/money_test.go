@@ -1,6 +1,7 @@
 package util
 
 import (
+	"strings"
 	"testing"
 
 	"gopkg.in/yaml.v3"
@@ -11,13 +12,13 @@ type TestStruct struct {
 }
 
 func TestNewMonyFromParse(t *testing.T) {
-	m1, err := NewMonyFromParse("CHF 23.42")
+	m1, err := NewMonyFromParse("23.42 CHF")
 	if err != nil {
 		t.Error(err)
 	}
 	checkMoney(t, m1, 2342, "CHF")
 
-	m2, err := NewMonyFromParse("CHF 123.42")
+	m2, err := NewMonyFromParse("123.42 CHF")
 	if err != nil {
 		t.Error(err)
 	}
@@ -34,8 +35,8 @@ func checkMoney(t *testing.T, money Money, expectedAmount int64, expectedCode st
 }
 
 func TestUnmarshalYAML(t *testing.T) {
-	given := `amount: CHF 23.42`
-	expected := TestStruct{Amount: NewMoney(2342, "CHF")}
+	given := `amount: 2342.42 CHF`
+	expected := TestStruct{Amount: NewMoney(234242, "CHF")}
 
 	var s TestStruct
 	err := yaml.Unmarshal([]byte(given), &s)
@@ -48,12 +49,11 @@ func TestUnmarshalYAML(t *testing.T) {
 }
 
 func TestMarshalYAML(t *testing.T) {
-	given := NewMoney(12342, "CHF")
-	// expected := "amount: CHF 123.42\n       "
+	given := NewMoney(112342, "CHF")
+	expected := "amount: 1123.42 CHF"
+
 	b, _ := yaml.Marshal(TestStruct{given})
-	t.Log(string(b))
-	/*
-		if string(b) != expected {
-			t.Errorf("should be \"%s\" but is \"%s\"", expected, string(b))
-		} */
+	if strings.TrimSpace(string(b)) != expected {
+		t.Errorf("should be \"%s\" but is \"%s\"", expected, string(b))
+	}
 }

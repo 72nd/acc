@@ -87,7 +87,9 @@ func (m Money) Value() string {
 }
 
 func (m Money) MarshalYAML() (interface{}, error) {
-	return m.Display(), nil
+	part1 := m.Amount() / 100
+	part2 := m.Amount() - part1*100
+	return fmt.Sprintf("%d.%d %s", part1, part2, m.Currency().Code), nil
 }
 
 func (m Money) String() string {
