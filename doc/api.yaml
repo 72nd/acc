@@ -33,8 +33,7 @@ definitions:
     Parties:
         type: array
         items:
-            type:
-                $ref: '#/definitions/Party'
+            $ref: '#/definitions/Party'
     Party:
         type: object
         properties:

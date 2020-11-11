@@ -176,14 +176,18 @@ This operation does not require authentication
 
 ```json
 [
-  null
+  {
+    "id": "string"
+  }
 ]
 
 ```
 
 ### Properties
 
-*None*
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|*anonymous*|[[Party](#schemaparty)]|false|none|none|
 
 <h2 id="tocS_Party">Party</h2>
 <!-- backwards compatibility -->
