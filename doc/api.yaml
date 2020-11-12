@@ -1,43 +1,29 @@
 swagger: "2.0"
 info:
-    title: ACC REST API Documentation
-    description: "This API enables to use the plain-text ERP tool Acc via an REST interface."
-    contact:
-        name: 72nd
-        url: https://github.com/72nd
-        email: msg@frg72.com
-    license:
-        name: MIT
-        url: https://opensource.org/licenses/MIT
-        version: 0.5.2
-host: localhost
-basePath: /
+  title: ACC REST API Documentation
+  description: "This API enables to use the plain-text ERP tool Acc via an RESTful interface."
+  contact:
+    name: 72nd
+    url: https://github.com/72nd
+    email: msg@frg72.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 0.5.2
+basePath: "/v1"
 schemes:
-    - https
+  - https
 paths:
-    /customers:
-        get:
-            summary: Returns all customers.
-            response:
-                200:
-                    description: Party objects
-                    schema:
-                        $ref: '#/definitions/Parties'
-    /expenses:
-    /expense-categories:
-    /invoices:
-        /misc-records:
-    /projects:
-    /transactions:
-definitions:
-    Parties:
-        type: array
-        items:
-            $ref: '#/definitions/Party'
-    Party:
-        type: object
-        properties:
-            id:
-                type: string
-                description: UUID of the party object
+  /customers:
+    get:
+      summary: Get all customers
+      description: Returns an Array of all customers
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Customers
+          schema:
+            $ref: 'parties.yaml#/Parties'
+
 

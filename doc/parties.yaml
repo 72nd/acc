@@ -1,0 +1,41 @@
+Parties:
+  type: array
+  description: A collection of multiple parties (customers or employees)
+  items:
+    $ref: '#/Party'
+Party:
+  type: object
+  description: A company or person (customer or employee) which is in in some way relevant to the company
+  properties:
+    id:
+      $ref: 'common.yaml#/id'
+    identifier:
+      $ref: 'common.yaml#/identifier/party'
+    name:
+      type: string
+      description: Name of the person/company
+      example: Max Mustermann
+    street: 
+      type: string
+      description: Name of the street the party residence in
+      example: Society Street
+    streetNr:
+      type: integer
+      description: Street number of party's address
+      example: 49
+    postalCode:
+      type: integer
+      description: ZIP/Postal-Code of the address
+      example: 8000
+    place:
+      type: string
+      description: Name of the place
+      example: Zürich
+    partyType:
+      type: integer
+      description: States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
+      enum:
+        - 0
+        - 1
+      example: 0
+

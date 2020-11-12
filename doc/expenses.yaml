@@ -1,0 +1,59 @@
+Expenses:
+  type: array
+  items:
+    $ref: '#/Expense'
+Expense:
+  type: object
+  description: Expense represents a payment done by the company or a third party to assure the ongoing of the business
+  properties:
+    id:
+      $ref: '#/Id'
+    identifier:
+      $ref: '#/Identifier'
+    name:
+      type: string
+      description: Describes meaningful manner the expense
+    amount:
+      type:
+        $ref: '#/Money'
+      description: The costs of the expense
+    path:
+      type: string
+      description: The full path to the business record document
+    dateOfAccrual:
+      type: 
+        $ref: '#/Date'
+      description: Day the obligation emerged
+    billable:
+      type: boolean
+      description: States whether the costs for the Expense will be forwarded to the customer
+    obligedCustomerId:
+      type: string
+      description: Refers to the customer which have to pay the expense
+    advancedByThirdParty:
+      type: boolean
+      description: States whether a third party (employee, etc.) advanced the payment of this expense for the company
+    advancedThirdPartyId:
+      type: string
+      description: Refers to the third party which advanced the payment
+    dateOfSettlement:
+      type:
+        $ref: '#/Date'
+      description: The date of the settlement of the expense (the company has not to take further actions after this date)
+    settlementTransactionId:
+      type: string
+      description: Refers to a possible bank transaction which settled the Expense for the company
+    expenseCategory:
+      type: string
+      description: "Classify the expense into an expense category. This information is used to generate the ledger entries for the expense. Notice: The expense category has to be existent in acc."
+    paidWithDebit:
+      type: boolean
+      description: States whether the expense was directly paid with the main account debithether the expense was directly paid with the main account debit card.
+    internal:
+      type: boolean
+      description: States whether this expense is for an internal purpose or not.
+    projectId:
+      type: string
+      description: Refers to the associated project.
+
+
