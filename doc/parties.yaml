@@ -1,41 +1,135 @@
-Parties:
-  type: array
-  description: A collection of multiple parties (customers or employees)
-  items:
-    $ref: '#/Party'
-Party:
-  type: object
-  description: A company or person (customer or employee) which is in in some way relevant to the company
-  properties:
-    id:
-      $ref: 'common.yaml#/id'
-    identifier:
-      $ref: 'common.yaml#/identifier/party'
-    name:
-      type: string
-      description: Name of the person/company
-      example: Max Mustermann
-    street: 
-      type: string
-      description: Name of the street the party residence in
-      example: Society Street
-    streetNr:
-      type: integer
-      description: Street number of party's address
-      example: 49
-    postalCode:
-      type: integer
-      description: ZIP/Postal-Code of the address
-      example: 8000
-    place:
-      type: string
-      description: Name of the place
-      example: Zürich
-    partyType:
-      type: integer
-      description: States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
-      enum:
-        - 0
-        - 1
-      example: 0
+paths:
+  /customers:
+      get:
+        summary: Get all customers
+        description: Returns an Array of all customers with the option to query them. 
+        parameters:
+          - in: formData
+            name: query
+            type: string
+            description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
+          - in: formData
+            name: identifier
+            type: string
+            description: Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+        produces:
+          - application/json
+        responses:
+          200:
+            description: All matching customers
+            schema:
+              $ref: '#/schemas/parties'
+  /customers/{id}:
+    parameters:
+      - in: path
+        name: id
+        type: string
+        required: true
+        description: Unique ID of the requested customer
+        example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
+    get:
+      summary: Get a customer by ID
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A customer
+          schema:
+            $ref: '#/schemas/party'
+        404:
+          description: No User with specified ID found.
+    put:
+      summary: Update a customer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/partyNoId'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No User with specified ID found.
+    post: 
+      summary: Add a customer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/partyNoId'
+
+schemas:
+  parties:
+    type: array
+    description: A collection of multiple parties (customers or employees)
+    items:
+      $ref: '#/schemas/party'
+  partyNoId:
+    type: object
+    description: A company or person (customer or employee) which is in in some way relevant to the company
+    properties:
+      identifier:
+        $ref: 'common.yaml#/identifier/party'
+      name:
+        type: string
+        description: Name of the person/company
+        example: Max Mustermann
+      street: 
+        type: string
+        description: Name of the street the party residence in
+        example: Society Street
+      streetNr:
+        type: integer
+        description: Street number of party's address
+        example: 49
+      postalCode:
+        type: integer
+        description: ZIP/Postal-Code of the address
+        example: 8000
+      place:
+        type: string
+        description: Name of the place
+        example: Zürich
+      partyType:
+        type: integer
+        description: States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
+        enum:
+          - 0
+          - 1
+        example: 0
+  party:
+    type: object
+    description: A company or person (customer or employee) which is in in some way relevant to the company
+    properties:
+      id:
+        $ref: 'common.yaml#/id'
+      identifier:
+        $ref: 'common.yaml#/identifier/party'
+      name:
+        type: string
+        description: Name of the person/company
+        example: Max Mustermann
+      street: 
+        type: string
+        description: Name of the street the party residence in
+        example: Society Street
+      streetNr:
+        type: integer
+        description: Street number of party's address
+        example: 49
+      postalCode:
+        type: integer
+        description: ZIP/Postal-Code of the address
+        example: 8000
+      place:
+        type: string
+        description: Name of the place
+        example: Zürich
+      partyType:
+        type: integer
+        description: States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
+        enum:
+          - 0
+          - 1
+        example: 0
 

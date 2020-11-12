@@ -14,16 +14,4 @@ basePath: "/v1"
 schemes:
   - https
 paths:
-  /customers:
-    get:
-      summary: Get all customers
-      description: Returns an Array of all customers
-      produces:
-        - application/json
-      responses:
-        200:
-          description: Customers
-          schema:
-            $ref: 'parties.yaml#/Parties'
-
-
+  $ref: 'parties.yaml#/paths'
