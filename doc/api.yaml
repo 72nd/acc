@@ -1,4 +1,4 @@
-swagger: "2.0"
+openapi: 3.0.0
 info:
   title: ACC REST API Documentation
   description: "This API enables to use the plain-text ERP tool Acc via an RESTful interface."
@@ -13,5 +13,71 @@ info:
 basePath: "/v1"
 schemes:
   - https
+tags:
+  - name: customer
+    x-displayName: Customers
+    description: Interact with your customers.
+  - name: employee
+    x-displayName: Employees
+    description: Interact with your employees.
+  - name: expense
+    x-displayName: Expenses
+    description: Interact with your expenses.
+  - name: invoice
+    x-displayName: Invoices
+    description: Interact with your invoices.
+  - name: misc_document
+    x-displayName: Miscellaneous Records
+    description: Interact with your miscellaneous records.
+  - name: project
+    x-displayName: Projects
+    description: Interact with your projects.
+  - name: statement
+    x-displayName: Statements
+    description: Interact with your bank statements.
+  - name: customer_model
+    x-displayName: Customer Model
+    description: Someone who buys stuff from your company
+  - name: employee_model
+    x-displayName: Employee Model
+    description: Someone who works for you
+  - name: expense_model
+    x-displayName: Expense Model
+    description: Represents a payment done by the company or a third party to assure the ongoing of the business
+  - name: invoice_model
+    x-displayName: Invoice Model
+    description: An invoice sent to a customer for some services
+  - name: misc_document_model
+    x-displayName: Miscellaneous Records Model
+    description: "Business records which are not invoices or expenses but still important for accounting. Example: A credit note from an insurance"
+  - name: project_model
+    x-displayName: Project Model
+    description: A project for a customer
+  - name: statement_model
+    x-displayName: Bank Statement Model
+    description: A bank statement containing transactions on a bank account
+  - name: transaction_model
+    x-displayName: Transaction Model
+    description: A single transaction in a bank statement
+x-tagGroups:
+  - name: API
+    tags:
+      - customer
+      - employee
+      - expense
+      - invoice
+      - misc_document
+      - project
+      - statement
+  - name: Models
+    tags:
+      - customer_model
+      - employee_model
+      - expense_model
+      - invoice_model
+      - misc_document_model
+      - project_model
+      - statement_model
+      - transaction_model
 paths:
   $ref: 'parties.yaml#/paths'

@@ -35,3 +35,6 @@ date:
 ref:
   type: string
   description: References to an element with another data type by UUID's
+serverError:
+  500:
+    description: Internal Server Error
