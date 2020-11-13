@@ -1,0 +1,121 @@
+paths:
+  miscRecords:
+    get:
+      tags:
+        - misc_record
+      summary: Get all Miscellaneous Records
+      description: Returns an array of all Miscellaneous Records which optionally matches to some query.
+      parameters:
+        - in: query
+          name: query
+          type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
+        - in: query
+          name: identifier
+          type: string
+          description: Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching Miscellaneous Records
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/miscRecords'
+        500:
+          description: Internal Server Error
+  miscRecordById:
+    parameters:
+      - $ref: 'common.yaml#/idParam'
+        description: Unique ID of the requested Miscellaneous Record
+    get:
+      tags:
+        - misc_record
+      summary: Get a Miscellaneous Record by ID
+      responses:
+        200:
+          description: A misc
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/miscRecord'
+        404:
+          description: No Miscellaneous Record with specified ID found.
+        500:
+          description: Internal Server Error
+    put:
+      tags:
+        - misc_record
+      summary: Update a Miscellaneous Record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/miscRecordBase'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No Miscellaneous Record with specified ID found.
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - misc_record
+      summary: Add a Miscellaneous Record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/miscRecordBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Miscellaneous Record failed.
+        500:
+          description: Internal Server Error
+    delete:
+      tags:
+        - misc_record
+      summary: Remove a Miscellaneous Record
+      response:
+        200:
+          description: Miscellaneous Record deleted successfully.
+        404:
+          description: No Miscellaneous Record with specified ID found.
+        500:
+          description: Internal Server Error
+schemas:
+  miscRecords:
+    type: array
+    description: A collection of multiple Miscellaneous Records
+    items:
+      $ref: '#/schemas/miscRecord'
+  miscRecordBase:
+    type: object
+    description: "Business records which are not invoices or expenses but still important for accounting. Example: A credit note from an insurance."
+    properties:
+      identifier:
+        $ref: 'common.yaml#/identifier/misc'
+      name:
+        type: string
+        description: Name of the Miscellaneous Record.
+        example: Health insurance settlement
+      path:
+        type: string
+        description: The full path to the business record document (PDF or PNG)
+        example: /path/to/misc-record.pdf
+      date:
+        $ref: 'common.yaml#/date'
+        description: Day the Miscellaneous Record arrived emerged
+      settlementTransactionId:
+        type: string
+        description: Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
+        example: t-115
+  miscRecord:
+    allOf:
+      - type: object
+        properties:
+          id:
+            $ref: 'common.yaml#/id'
+      - $ref: '#/schemas/miscRecordBase'

@@ -26,7 +26,7 @@ tags:
   - name: invoice
     x-displayName: Invoices
     description: Interact with your invoices.
-  - name: misc_document
+  - name: misc_record
     x-displayName: Miscellaneous Records
     description: "Business records which are not invoices or expenses but still important for accounting. Example: A credit note from an insurance."
   - name: project
@@ -48,15 +48,19 @@ tags:
     x-displayName: Invoice Model
     description: |
       # Invoices
-     
       <SchemaDefinition schemaRef="#/models/invoices" />
 
       # Invoice
       <SchemaDefinition schemaRef="#/models/invoice" />
 
-  - name: misc_document_model
+  - name: misc_record_model
     x-displayName: Miscellaneous Records Model
-    description: 
+    description: |
+      # Miscellaneous Records
+      <SchemaDefinition schemaRef="#/models/miscRecords" />
+
+      # Miscellaneous Record
+      <SchemaDefinition schemaRef="#/models/miscRecord" />
   - name: party_model
     x-displayName: Party Model (Customer, Employee)
     description: |
@@ -81,14 +85,14 @@ x-tagGroups:
       - employee
       - expense
       - invoice
-      - misc_document
+      - misc_record
       - project
       - statement
   - name: Models
     tags:
       - expense_model
       - invoice_model
-      - misc_document_model
+      - misc_record_model
       - party_model
       - project_model
       - statement_model
@@ -108,6 +112,10 @@ paths:
     $ref: 'invoices.yaml#/paths/invoices'
   /invoices/{id}:
     $ref: 'invoices.yaml#/paths/invoiceById'
+  /misc_records:
+    $ref: 'misc.yaml#/paths/miscRecords'
+  /misc_records/{id}:
+    $ref: 'misc.yaml#/paths/miscRecordById'
 models:
   parties:
     $ref: 'parties.yaml#/schemas/parties'
@@ -121,3 +129,7 @@ models:
     $ref: 'invoices.yaml#/schemas/invoices'
   invoice:
     $ref: 'invoices.yaml#/schemas/invoice'
+  miscRecords:
+    $ref: 'misc.yaml#/schemas/miscRecords'
+  miscRecord:
+    $ref: 'misc.yaml#/schemas/miscRecord'
