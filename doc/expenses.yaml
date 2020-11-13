@@ -106,7 +106,7 @@ schemas:
         $ref: 'common.yaml#/money'
       path:
         type: string
-        description: The full path to the business record document
+        description: The full path to the business record document (PDF or PNG)
         example: /path/to/expense.pdf
       dateOfAccrual:
         $ref: 'common.yaml#/date'

@@ -38,24 +38,32 @@ tags:
   - name: expense_model
     x-displayName: Expense Model
     description: |
-      ## Expenses
+      # Expenses
       <SchemaDefinition schemaRef="#/models/expenses" />
 
-      ## Expense
+      # Expense
       <SchemaDefinition schemaRef="#/models/expense" />
+
   - name: invoice_model
     x-displayName: Invoice Model
-    description: An invoice sent to a customer for some services
+    description: |
+      # Invoices
+     
+      <SchemaDefinition schemaRef="#/models/invoices" />
+
+      # Invoice
+      <SchemaDefinition schemaRef="#/models/invoice" />
+
   - name: misc_document_model
     x-displayName: Miscellaneous Records Model
     description: 
   - name: party_model
     x-displayName: Party Model (Customer, Employee)
     description: |
-      ## Parties
+      # Parties
       <SchemaDefinition schemaRef="#/models/parties" />
 
-      ## Party
+      # Party
       <SchemaDefinition schemaRef="#/models/party" />
   - name: project_model
     x-displayName: Project Model
@@ -96,6 +104,10 @@ paths:
     $ref: 'expenses.yaml#/paths/expenses'
   /expenses/{id}:
     $ref: 'expenses.yaml#/paths/expenseById'
+  /invoices:
+    $ref: 'invoices.yaml#/paths/invoices'
+  /invoices/{id}:
+    $ref: 'invoices.yaml#/paths/invoiceById'
 models:
   parties:
     $ref: 'parties.yaml#/schemas/parties'
@@ -105,3 +117,7 @@ models:
     $ref: 'expenses.yaml#/schemas/expenses'
   expense:
     $ref: 'expenses.yaml#/schemas/expense'
+  invoices:
+    $ref: 'invoices.yaml#/schemas/invoices'
+  invoice:
+    $ref: 'invoices.yaml#/schemas/invoice'
