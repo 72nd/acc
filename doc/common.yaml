@@ -7,6 +7,12 @@ id:
   type: string
   description: UUID of the object used for the universal identification of an element
   example: 33eaa67e-3225-4d1e-962f-3c4fdd8b3602
+idParam:
+  in: path
+  name: id
+  type: string
+  required: true
+  example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
 identifier:
   expense:
     type: string

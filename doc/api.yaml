@@ -45,7 +45,12 @@ tags:
       <SchemaDefinition schemaRef="#/models/party" />
   - name: employee_model
     x-displayName: Employee Model
-    description: 
+    description: |
+      ## Parties
+      <SchemaDefinition schemaRef="#/models/expenses" />
+
+      ## Party
+      <SchemaDefinition schemaRef="#/models/expense" />
   - name: expense_model
     x-displayName: Expense Model
     description: 
@@ -85,9 +90,20 @@ x-tagGroups:
       - statement_model
       - transaction_model
 paths:
-  $ref: 'parties.yaml#/paths'
+  /customers:
+    $ref: 'parties.yaml#/paths/customers'
+  /customers/{id}:
+    $ref: 'parties.yaml#/paths/customerById'
+  /expenses:
+    $ref: 'expenses.yaml#/paths/expenses'
+  /expenses/{id}:
+    $ref: 'expenses.yaml#/paths/expenseById'
 models:
   parties:
     $ref: 'parties.yaml#/schemas/parties'
   party:
     $ref: 'parties.yaml#/schemas/party'
+  expenses:
+    $ref: 'expenses.yaml#/schemas/expenses'
+  expense:
+    $ref: 'expenses.yaml#/schemas/expense'

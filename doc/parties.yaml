@@ -1,36 +1,32 @@
 paths:
-  /customers:
-      get:
-        tags:
-          - customer
-        summary: Get all customers
-        description: Returns an Array of all customers with the option to query them. 
-        parameters:
-          - in: formData
-            name: query
-            type: string
-            description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
-          - in: formData
-            name: identifier
-            type: string
-            description: Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
-        responses:
-          200:
-            description: All matching customers
-            content:
-              application/json:
-                schema:
-                  $ref: '#/schemas/parties'
-          500:
-            description: Internal Server Error
-  /customers/{id}:
+  customers:
+    get:
+      tags:
+        - customer
+      summary: Get all customers
+      description: Returns an Array of all customers with the option to query them. 
+      parameters:
+        - in: query
+          name: query
+          type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
+        - in: query
+          name: identifier
+          type: string
+          description: Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching customers
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/parties'
+        500:
+          description: Internal Server Error
+  customerById:
     parameters:
-      - in: path
-        name: id
-        type: string
-        required: true
+      - $ref: 'common.yaml#/idParam'
         description: Unique ID of the requested customer
-        example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
     get:
       tags:
         - customer
@@ -93,8 +89,6 @@ paths:
 schemas:
   parties:
     type: array
-    tags:
-      - customer_model
     description: A collection of multiple parties (customers or employees)
     items:
       $ref: '#/schemas/party'
@@ -136,7 +130,6 @@ schemas:
   party:
     allOf:
       - type: object
-        description: A company or person (customer or employee) which is in in some way relevant to the company
         properties:
           id:
             $ref: 'common.yaml#/id'
