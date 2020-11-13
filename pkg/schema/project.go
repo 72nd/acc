@@ -90,9 +90,13 @@ func (p Projects) SetReferenceDestinations(cst []Identifiable) {
 
 // Project represents a project for a customer.
 type Project struct {
+	// Id is the internal unique identifier of the Project.
 	Id         string `yaml:"id" default:"1"`
+	// Identifier is the uniquely user-chosen identifier for a Project, should be human readable
 	Identifier string `yaml:"identifier" default:"p-1"`
+	// Name of the project.
 	Name       string `yaml:"name" default:"Building a space rocket"`
+	// Customer refers to the associated customer.
 	Customer   Ref    `yaml:"customerId" default:""`
 }
 
