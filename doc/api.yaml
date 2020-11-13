@@ -38,40 +38,45 @@ tags:
   - name: expense_model
     x-displayName: Expense Model
     description: |
-      # Expenses
+      ### Expenses
       <SchemaDefinition schemaRef="#/models/expenses" />
 
-      # Expense
+      ### Expense
       <SchemaDefinition schemaRef="#/models/expense" />
 
   - name: invoice_model
     x-displayName: Invoice Model
     description: |
-      # Invoices
+      ### Invoices
       <SchemaDefinition schemaRef="#/models/invoices" />
 
-      # Invoice
+      ### Invoice
       <SchemaDefinition schemaRef="#/models/invoice" />
 
   - name: misc_record_model
     x-displayName: Miscellaneous Records Model
     description: |
-      # Miscellaneous Records
+      ### Miscellaneous Records
       <SchemaDefinition schemaRef="#/models/miscRecords" />
 
-      # Miscellaneous Record
+      ### Miscellaneous Record
       <SchemaDefinition schemaRef="#/models/miscRecord" />
   - name: party_model
     x-displayName: Party Model (Customer, Employee)
     description: |
-      # Parties
+      ### Parties
       <SchemaDefinition schemaRef="#/models/parties" />
 
-      # Party
+      ### Party
       <SchemaDefinition schemaRef="#/models/party" />
   - name: project_model
     x-displayName: Project Model
-    description: 
+    description: |
+      ### Projects
+      <SchemaDefinition schemaRef="#/models/projects" />
+
+      ### Project
+      <SchemaDefinition schemaRef="#/models/project" />
   - name: statement_model
     x-displayName: Bank Statement Model
     description: 
@@ -116,6 +121,10 @@ paths:
     $ref: 'misc.yaml#/paths/miscRecords'
   /misc_records/{id}:
     $ref: 'misc.yaml#/paths/miscRecordById'
+  /projects:
+    $ref: 'projects.yaml#/paths/projects'
+  /projects/{id}:
+    $ref: 'projects.yaml#/paths/projectById'
 models:
   parties:
     $ref: 'parties.yaml#/schemas/parties'
@@ -133,3 +142,7 @@ models:
     $ref: 'misc.yaml#/schemas/miscRecords'
   miscRecord:
     $ref: 'misc.yaml#/schemas/miscRecord'
+  projects:
+    $ref: 'projects.yaml#/schemas/projects'
+  project:
+    $ref: 'projects.yaml#/schemas/project'

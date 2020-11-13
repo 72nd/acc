@@ -16,23 +16,27 @@ idParam:
 identifier:
   expense:
     type: string
-    description: Unique user-chosen identifier for a expense, should be human readable
+    description: Unique user-chosen identifier for a Expense, should be human readable
     example: 'e-69'
   invoice:
     type: string
-    description: Unique user-chosen identifier for a invoice, should be human readable
+    description: Unique user-chosen identifier for a Invoice, should be human readable
     example: 'i-28'
   misc:
     type: string
-    description: Unique user-chosen identifier for a misc-record, should be human readable
+    description: Unique user-chosen identifier for a Miscellaneous Records, should be human readable
     example: 'm-10'
   party:
     type: string
-    description: Unique user-chosen identifier for a party, should be human readable
+    description: Unique user-chosen identifier for a Party, should be human readable
+    example: 'c-5'
+  project:
+    type: string
+    description: Unique user-chosen identifier for a Project, should be human readable
     example: 'c-5'
   transaction:
     type: string
-    description: Unique user-chosen identifier for a transaction, should be human readable
+    description: Unique user-chosen identifier for a Transaction, should be human readable
     example: 't-115'
 date:
   type: string

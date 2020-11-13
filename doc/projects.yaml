@@ -1,0 +1,114 @@
+paths:
+  projects:
+    get:
+      tags:
+        - project
+      summary: Get all Projects
+      description: Returns an array of all Projects which optionally matches to some query.
+      parameters:
+        - in: query
+          name: query
+          type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
+        - in: query
+          name: identifier
+          type: string
+          description: Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching Projects
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/projects'
+        500:
+          description: Internal Server Error
+  projectById:
+    parameters:
+      - $ref: 'common.yaml#/idParam'
+        description: Unique ID of the requested Project
+    get:
+      tags:
+        - project
+      summary: Get a Project by ID
+      responses:
+        200:
+          description: A project
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/project'
+        404:
+          description: No Project with specified ID found.
+        500:
+          description: Internal Server Error
+    put:
+      tags:
+        - project
+      summary: Update a Project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/projectBase'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No Project with specified ID found.
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - project
+      summary: Add a Project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/projectBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Project failed.
+        500:
+          description: Internal Server Error
+    delete:
+      tags:
+        - project
+      summary: Remove a Project
+      response:
+        200:
+          description: Project deleted successfully.
+        404:
+          description: No Project with specified ID found.
+        500:
+          description: Internal Server Error
+schemas:
+  projects:
+    type: array
+    description: A collection of multiple Projects
+    items:
+      $ref: '#/schemas/project'
+  projectBase:
+    type: object
+    description: A Project for a specific Customer.
+    properties:
+      identifier:
+        $ref: 'common.yaml#/identifier/project'
+      name:
+        type: string
+        description: Name of the Project.
+        example: Aktion neue soziale Marktwirtschaft
+      customerId:
+        type: string
+        description: Refers to the customer the project is associated to.
+        example: c-15
+  project:
+    allOf:
+      - type: object
+        properties:
+          id:
+            $ref: 'common.yaml#/id'
+      - $ref: '#/schemas/projectBase'
