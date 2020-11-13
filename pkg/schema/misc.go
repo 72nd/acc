@@ -100,11 +100,17 @@ func (m MiscRecords) SetReferenceDestinations(trn []Identifiable) {
 // MiscRecord represents business records which are not invoices or expenses
 // but still important for accounting. Example: A credit note from an insurance.
 type MiscRecord struct {
+	// Id is the internal unique identifier of the Miscellaneous Record.
 	Id          string `yaml:"id" default:"1"`
+	// Identifier is a unique user-chosen identifier for a misc-record, should be human readable.
 	Identifier  string `yaml:"identifier" default:"m-19-1"`
+	// Name of the Miscellaneous Record.
 	Name        string `yaml:"name" default:""`
+	// Path is the full file path to the associated business record.
 	Path        string `yaml:"path" default:"/path/to/record.pdf" query:"path"`
+	// Date represents the date the document arrived.
 	Date        string `yaml:"date" default:"2019-12-20"`
+	// Transaction refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record.
 	Transaction Ref    `yaml:"settlementTransactionId" default:"" query:"transaction"`
 }
 
