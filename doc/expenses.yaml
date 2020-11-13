@@ -3,8 +3,8 @@ paths:
     get:
       tags:
         - expense
-      summary: Get all expenses
-      description: Returns an array of all expenses which optionally matches to some query.
+      summary: Get all Expenses
+      description: Returns an array of all Expenses which optionally matches to some query.
       parameters:
         - in: query
           name: query
@@ -16,7 +16,7 @@ paths:
           description: Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
       responses:
         200:
-          description: All matching expenses
+          description: All matching Expenses
           content:
             application/json:
               schema:
@@ -26,7 +26,7 @@ paths:
   expenseById:
     parameters:
       - $ref: 'common.yaml#/idParam'
-        description: Unique ID of the requested expense
+        description: Unique ID of the requested Expense
     get:
       tags:
         - expense
@@ -88,7 +88,7 @@ paths:
 schemas:
   expenses:
     type: array
-    description: A collection of multiple expenses
+    description: A collection of multiple Expenses
     items:
       $ref: '#/schemas/expense'
   expenseBase:
@@ -99,10 +99,10 @@ schemas:
         $ref: 'common.yaml#/identifier/expense'
       name:
         type: string
-        description: Describes meaningful manner the expense
+        description: Describes meaningful manner the Expense
         example: HAL 9000
       amount:
-        description: The costs of the expense
+        description: The costs of the Expense
         $ref: 'common.yaml#/money'
       path:
         type: string
@@ -116,31 +116,31 @@ schemas:
         description: States whether the costs for the Expense will be forwarded to the customer
       obligedCustomerId:
         type: string
-        description: Refers to the customer which have to pay the expense
+        description: Refers to the customer which have to pay the Expense
         example: c-15
       advancedByThirdParty:
         type: boolean
-        description: States whether a third party (employee, etc.) advanced the payment of this expense for the company
+        description: States whether a third party (employee, etc.) advanced the payment of this Expense for the company
       advancedThirdPartyId:
         type: string
         description: Refers to the third party which advanced the payment
         example: y-46
       dateOfSettlement:
         $ref: 'common.yaml#/date'
-        description: The date of the settlement of the expense (the company has not to take further actions after this date)
+        description: The date of the settlement of the Expense (the company has not to take further actions after this date)
       settlementTransactionId:
         type: string
         description: Refers to a possible bank transaction which settled the Expense for the company
       expenseCategory:
         type: string
-        description: "Classify the expense into an expense category. This information is used to generate the ledger entries for the expense. Notice: The expense category has to be existent in acc."
+        description: "Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc."
         example: Food
       paidWithDebit:
         type: boolean
-        description: States whether the expense was directly paid with the main account debithether the expense was directly paid with the main account debit card.
+        description: States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
       internal:
         type: boolean
-        description: States whether this expense is for an internal purpose or not.
+        description: States whether this Expense is for an internal purpose or not.
       projectId:
         type: string
         description: Refers to the associated project.
