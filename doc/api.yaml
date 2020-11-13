@@ -16,49 +16,54 @@ schemes:
 tags:
   - name: customer
     x-displayName: Customers
-    description: Interact with your customers.
+    description: Someone who buys stuff from your company.
   - name: employee
     x-displayName: Employees
-    description: Interact with your employees.
+    description: Someone who works for you.
   - name: expense
     x-displayName: Expenses
-    description: Interact with your expenses.
+    description: Represents a payment done by the company or a third party to assure the ongoing of the business.
   - name: invoice
     x-displayName: Invoices
     description: Interact with your invoices.
   - name: misc_document
     x-displayName: Miscellaneous Records
-    description: Interact with your miscellaneous records.
+    description: "Business records which are not invoices or expenses but still important for accounting. Example: A credit note from an insurance."
   - name: project
     x-displayName: Projects
-    description: Interact with your projects.
+    description: A project for a customer.
   - name: statement
     x-displayName: Statements
-    description: Interact with your bank statements.
+    description: A bank statement containing transactions on a bank account.
   - name: customer_model
     x-displayName: Customer Model
-    description: Someone who buys stuff from your company
+    description: |
+      ## Parties
+      <SchemaDefinition schemaRef="#/models/parties" />
+
+      ## Party
+      <SchemaDefinition schemaRef="#/models/party" />
   - name: employee_model
     x-displayName: Employee Model
-    description: Someone who works for you
+    description: 
   - name: expense_model
     x-displayName: Expense Model
-    description: Represents a payment done by the company or a third party to assure the ongoing of the business
+    description: 
   - name: invoice_model
     x-displayName: Invoice Model
     description: An invoice sent to a customer for some services
   - name: misc_document_model
     x-displayName: Miscellaneous Records Model
-    description: "Business records which are not invoices or expenses but still important for accounting. Example: A credit note from an insurance"
+    description: 
   - name: project_model
     x-displayName: Project Model
-    description: A project for a customer
+    description: 
   - name: statement_model
     x-displayName: Bank Statement Model
-    description: A bank statement containing transactions on a bank account
+    description: 
   - name: transaction_model
     x-displayName: Transaction Model
-    description: A single transaction in a bank statement
+    description: 
 x-tagGroups:
   - name: API
     tags:
@@ -81,3 +86,8 @@ x-tagGroups:
       - transaction_model
 paths:
   $ref: 'parties.yaml#/paths'
+models:
+  parties:
+    $ref: 'parties.yaml#/schemas/parties'
+  party:
+    $ref: 'parties.yaml#/schemas/party'

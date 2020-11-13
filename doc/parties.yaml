@@ -78,6 +78,18 @@ paths:
           description: Adding User failed.
         500:
           description: Internal Server Error
+    delete:
+      tags:
+        - customer
+      summary: Remove a customer
+      response:
+        200:
+          description: User deleted successfully.
+        404:
+          description: No User with specified ID found.
+        500:
+          description: Internal Server Error
+        
 schemas:
   parties:
     type: array
@@ -88,6 +100,8 @@ schemas:
       $ref: '#/schemas/party'
   partyBase:
     type: object
+    tags:
+      - customer_model
     description: A company or person (customer or employee) which is in in some way relevant to the company
     properties:
       identifier:
@@ -122,8 +136,6 @@ schemas:
   party:
     allOf:
       - type: object
-        tags:
-          - customer_model
         description: A company or person (customer or employee) which is in in some way relevant to the company
         properties:
           id:
