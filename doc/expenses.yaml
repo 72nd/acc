@@ -100,12 +100,14 @@ schemas:
       name:
         type: string
         description: Describes meaningful manner the expense
+        example: HAL 9000
       amount:
         description: The costs of the expense
         $ref: 'common.yaml#/money'
       path:
         type: string
         description: The full path to the business record document
+        example: /path/to/expense.pdf
       dateOfAccrual:
         $ref: 'common.yaml#/date'
         description: Day the obligation emerged
@@ -115,12 +117,14 @@ schemas:
       obligedCustomerId:
         type: string
         description: Refers to the customer which have to pay the expense
+        example: c-15
       advancedByThirdParty:
         type: boolean
         description: States whether a third party (employee, etc.) advanced the payment of this expense for the company
       advancedThirdPartyId:
         type: string
         description: Refers to the third party which advanced the payment
+        example: y-46
       dateOfSettlement:
         $ref: 'common.yaml#/date'
         description: The date of the settlement of the expense (the company has not to take further actions after this date)
@@ -130,6 +134,7 @@ schemas:
       expenseCategory:
         type: string
         description: "Classify the expense into an expense category. This information is used to generate the ledger entries for the expense. Notice: The expense category has to be existent in acc."
+        example: Food
       paidWithDebit:
         type: boolean
         description: States whether the expense was directly paid with the main account debithether the expense was directly paid with the main account debit card.

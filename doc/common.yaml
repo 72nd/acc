@@ -17,15 +17,15 @@ identifier:
   expense:
     type: string
     description: Unique user-chosen identifier for a expense, should be human readable
-    example: 'e-39'
+    example: 'e-69'
   invoice:
     type: string
     description: Unique user-chosen identifier for a invoice, should be human readable
-    example: 'i-43'
+    example: 'i-28'
   misc:
     type: string
     description: Unique user-chosen identifier for a misc-record, should be human readable
-    example: 'm-39'
+    example: 'm-10'
   party:
     type: string
     description: Unique user-chosen identifier for a party, should be human readable
@@ -33,11 +33,12 @@ identifier:
   transaction:
     type: string
     description: Unique user-chosen identifier for a transaction, should be human readable
-    example: 't-425'
+    example: 't-115'
 date:
   type: string
   description: A date in the calender in the format YYYY-MM-DD
   pattern: '^\d{4}-\d{2}-\d{2}$'
+  example: 2014-05-23
 ref:
   type: string
   description: References to an element with another data type by UUID's
