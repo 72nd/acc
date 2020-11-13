@@ -35,31 +35,28 @@ tags:
   - name: statement
     x-displayName: Statements
     description: A bank statement containing transactions on a bank account.
-  - name: customer_model
-    x-displayName: Customer Model
-    description: |
-      ## Parties
-      <SchemaDefinition schemaRef="#/models/parties" />
-
-      ## Party
-      <SchemaDefinition schemaRef="#/models/party" />
-  - name: employee_model
-    x-displayName: Employee Model
-    description: |
-      ## Parties
-      <SchemaDefinition schemaRef="#/models/expenses" />
-
-      ## Party
-      <SchemaDefinition schemaRef="#/models/expense" />
   - name: expense_model
     x-displayName: Expense Model
-    description: 
+    description: |
+      ## Expenses
+      <SchemaDefinition schemaRef="#/models/expenses" />
+
+      ## Expense
+      <SchemaDefinition schemaRef="#/models/expense" />
   - name: invoice_model
     x-displayName: Invoice Model
     description: An invoice sent to a customer for some services
   - name: misc_document_model
     x-displayName: Miscellaneous Records Model
     description: 
+  - name: party_model
+    x-displayName: Party Model (Customer, Employee)
+    description: |
+      ## Parties
+      <SchemaDefinition schemaRef="#/models/parties" />
+
+      ## Party
+      <SchemaDefinition schemaRef="#/models/party" />
   - name: project_model
     x-displayName: Project Model
     description: 
@@ -81,11 +78,10 @@ x-tagGroups:
       - statement
   - name: Models
     tags:
-      - customer_model
-      - employee_model
       - expense_model
       - invoice_model
       - misc_document_model
+      - party_model
       - project_model
       - statement_model
       - transaction_model
@@ -94,6 +90,8 @@ paths:
     $ref: 'parties.yaml#/paths/customers'
   /customers/{id}:
     $ref: 'parties.yaml#/paths/customerById'
+  /employees:
+    $ref: 'parties.yaml#/paths/employees'
   /expenses:
     $ref: 'expenses.yaml#/paths/expenses'
   /expenses/{id}:

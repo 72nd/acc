@@ -39,7 +39,7 @@ paths:
               schema:
                 $ref: '#/schemas/party'
         404:
-          description: No User with specified ID found.
+          description: No Customer with specified ID found.
         500:
           description: Internal Server Error
     put:
@@ -55,7 +55,7 @@ paths:
         200:
           description: Updated successfully.
         404:
-          description: No User with specified ID found.
+          description: No Customer with specified ID found.
         500:
           description: Internal Server Error
     post: 
@@ -71,7 +71,7 @@ paths:
         200:
           description: Added successfully.
         404:
-          description: Adding User failed.
+          description: Adding Customer failed.
         500:
           description: Internal Server Error
     delete:
@@ -80,12 +80,97 @@ paths:
       summary: Remove a customer
       response:
         200:
-          description: User deleted successfully.
+          description: Customer deleted successfully.
         404:
-          description: No User with specified ID found.
+          description: No Customer with specified ID found.
         500:
           description: Internal Server Error
-        
+  employees:
+    get:
+      tags:
+        - employee
+      summary: Get all employees
+      description: Returns an Array of all employees with the option to query them. 
+      parameters:
+        - in: query
+          name: query
+          type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching employees.
+        - in: query
+          name: identifier
+          type: string
+          description: Search for employees with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching employees
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/parties'
+        500:
+          description: Internal Server Error
+  employeeById:
+    parameters:
+      - $ref: 'common.yaml#/idParam'
+        description: Unique ID of the requested employee
+    get:
+      tags:
+        - employee
+      summary: Get a employee by ID
+      responses:
+        200:
+          description: A employee
+          content:
+            application/json:
+              schema:
+                $ref: '#/schemas/party'
+        404:
+          description: No Employee with specified ID found.
+        500:
+          description: Internal Server Error
+    put:
+      tags:
+        - employee
+      summary: Update a employee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/partyBase'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No Employee with specified ID found.
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - employee
+      summary: Add a employee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/schemas/partyBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Employee failed.
+        500:
+          description: Internal Server Error
+    delete:
+      tags:
+        - employee
+      summary: Remove a employee
+      response:
+        200:
+          description: Employee deleted successfully.
+        404:
+          description: No Employee with specified ID found.
+        500:
+          description: Internal Server Error
 schemas:
   parties:
     type: array
@@ -94,8 +179,6 @@ schemas:
       $ref: '#/schemas/party'
   partyBase:
     type: object
-    tags:
-      - customer_model
     description: A company or person (customer or employee) which is in in some way relevant to the company
     properties:
       identifier:
