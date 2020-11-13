@@ -132,13 +132,13 @@ func (i Invoices) SetReferenceDestinations(cst, trn, prj []Identifiable) {
 
 // Invoice represents an invoice sent to a customer for some services.
 type Invoice struct {
-	// Id is the internal unique identifier of the Expense.
+	// Id is the internal unique identifier of the Invoice.
 	Id string `yaml:"id" default:"1"`
 	// Value is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
 	Identifier string `yaml:"identifier" default:"i-19-1"`
-	// Name describes meaningful the kind of the Expense.
-	Name string `yaml:"name" default:"Expense Name"`
-	// Amount states the amount of the Expense.
+	// Name describes meaningful the Invoice.
+	Name string `yaml:"name" default:"Invoice Name"`
+	// Amount states the amount of the Invoice.
 	Amount util.Money `yaml:"amount" default:"-" query:"amount"`
 	// Path is the full path to the voucher utils.
 	Path string `yaml:"path" default:"/path/to/file.utils" query:"path"`
@@ -150,7 +150,7 @@ type Invoice struct {
 	SendDate string `yaml:"sendDate" default:"2019-12-20"`
 	// DateOfSettlement states the date the customer paid the outstanding amount.
 	DateOfSettlement string `yaml:"dateOfSettlement" default:"2019-12-25"`
-	// SettlementTransaction refers to a possible bank transaction which settled the Expense for the company.
+	// SettlementTransaction refers to a possible bank transaction which settled the Invoice for the company.
 	SettlementTransaction Ref `yaml:"settlementTransactionId" default:"" query:"transaction"`
 	// Project refers to the associated project.
 	Project Ref `yaml:"projectId" default:""`
