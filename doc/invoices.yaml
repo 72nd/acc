@@ -132,10 +132,42 @@ schemas:
         type: string
         description: Refers to the associated project.
   invoice:
-    allOf:
-      - type: object
-        properties:
-          id:
-            $ref: 'common.yaml#/id'
-      - $ref: '#/schemas/invoiceBase'
-    
+    type: object
+    description: A Invoice sent to a customer.
+    properties:
+      id:
+        $ref: 'common.yaml#/id'
+      identifier:
+        $ref: 'common.yaml#/identifier/invoice'
+      name:
+        type: string
+        description: Describes the Invoice.
+        example: Your Invoice
+      amount:
+        description: Outstanding amount.
+        $ref: 'common.yaml#/money'
+      path:
+        type: string
+        description: The full path to the business record document (PDF or PNG).
+        example: /path/to/invoice.pdf
+      revoked:
+        type: boolean
+        description: Revoked Invoices are disabled an no longer taken into account.
+      customerId:
+        type: string
+        description: Refers to the customer the Invoice was sent to.
+        example: c-17
+      sendDate:
+        $ref: 'common.yaml#/date'
+        description: Day the Invoice was sent to the customer.
+      dateOfSettlement:
+        $ref: 'common.yaml#/date'
+        description: The date the customer paid the outstanding amount.
+      settlementTransactionId:
+        type: string
+        description: Refers to a possible bank transaction which settled the Invoice for the company.
+        example: t-115
+      projectId:
+        type: string
+        description: Refers to the associated project.
+   

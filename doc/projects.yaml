@@ -108,9 +108,18 @@ schemas:
         description: Refers to the customer the project is associated to.
         example: c-15
   project:
-    allOf:
-      - type: object
-        properties:
-          id:
-            $ref: 'common.yaml#/id'
-      - $ref: '#/schemas/projectBase'
+    type: object
+    description: A Project for a specific Customer.
+    properties:
+      id:
+        $ref: 'common.yaml#/id'
+      identifier:
+        $ref: 'common.yaml#/identifier/project'
+      name:
+        type: string
+        description: Name of the Project.
+        example: Aktion neue soziale Marktwirtschaft
+      customerId:
+        type: string
+        description: Refers to the customer the project is associated to.
+        example: c-15

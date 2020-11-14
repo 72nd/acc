@@ -115,9 +115,24 @@ schemas:
         description: Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
         example: t-115
   miscRecord:
-    allOf:
-      - type: object
-        properties:
-          id:
-            $ref: 'common.yaml#/id'
-      - $ref: '#/schemas/miscRecordBase'
+    type: object
+    description: "Business records which are not invoices or expenses but still important for accounting. Example: A credit note from an insurance."
+    properties:
+      identifier:
+        $ref: 'common.yaml#/identifier/misc'
+      name:
+        type: string
+        description: Name of the Miscellaneous Record.
+        example: Health insurance settlement
+      path:
+        type: string
+        description: The full path to the business record document (PDF or PNG)
+        example: /path/to/misc-record.pdf
+      date:
+        $ref: 'common.yaml#/date'
+        description: Day the Miscellaneous Record arrived emerged
+      settlementTransactionId:
+        type: string
+        description: Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
+        example: t-115
+

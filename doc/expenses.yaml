@@ -147,11 +147,57 @@ schemas:
         type: string
         description: Refers to the associated project.
   expense:
-    allOf:
-      - type: object
-        properties:
-          id:
-            $ref: 'common.yaml#/id'
-      - $ref: '#/schemas/expenseBase'
-    
-
+    type: object
+    description: Expense represents a payment done by the company or a third party to assure the ongoing of the business
+    properties:
+      id:
+        $ref: 'common.yaml#/id'
+      identifier:
+        $ref: 'common.yaml#/identifier/expense'
+      name:
+        type: string
+        description: Describes meaningful manner the Expense
+        example: HAL 9000
+      amount:
+        description: The costs of the Expense
+        $ref: 'common.yaml#/money'
+      path:
+        type: string
+        description: The full path to the business record document (PDF or PNG)
+        example: /path/to/expense.pdf
+      dateOfAccrual:
+        $ref: 'common.yaml#/date'
+        description: Day the obligation emerged
+      billable:
+        type: boolean
+        description: States whether the costs for the Expense will be forwarded to the customer
+      obligedCustomerId:
+        type: string
+        description: Refers to the customer which have to pay the Expense
+        example: c-15
+      advancedByThirdParty:
+        type: boolean
+        description: States whether a third party (employee, etc.) advanced the payment of this Expense for the company
+      advancedThirdPartyId:
+        type: string
+        description: Refers to the third party which advanced the payment
+        example: y-46
+      dateOfSettlement:
+        $ref: 'common.yaml#/date'
+        description: The date of the settlement of the Expense (the company has not to take further actions after this date)
+      settlementTransactionId:
+        type: string
+        description: Refers to a possible bank transaction which settled the Expense for the company
+      expenseCategory:
+        type: string
+        description: "Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc."
+        example: Food
+      paidWithDebit:
+        type: boolean
+        description: States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
+      internal:
+        type: boolean
+        description: States whether this Expense is for an internal purpose or not.
+      projectId:
+        type: string
+        description: Refers to the associated project.
