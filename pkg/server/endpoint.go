@@ -3,19 +3,21 @@ package server
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/72nd/acc/pkg/schema"
 	"github.com/72nd/acc/pkg/server/api"
 	"github.com/labstack/echo/v4"
 	middleware "github.com/labstack/echo/v4/middleware"
 	"github.com/neko-neko/echo-logrus/v2/log"
-	"github.com/sirupsen/logrus"
 )
 
 // Defines the endpoint for the REST interface.
 type Endpoint struct {
 	// The Schema to operate on.
 	schema *schema.Schema
+	// Locks the endpoint thus only one request can change the state at any given moment.
+	mutex sync.Mutex
 }
 
 // NewEndpoint returns a new endpoint. Takes a Schema as parameter. The request
@@ -39,7 +41,6 @@ func (e *Endpoint) Serve(port int) {
 	echo := echo.New()
 	echo.Logger = log.Logger()
 	echo.Use(middleware.Logger())
-	// echo.Use(middleware.OapiRequestValidator(swagger))
 
 	api.RegisterHandlers(echo, e)
 
@@ -52,7 +53,11 @@ func (e *Endpoint) Serve(port int) {
 // Get all customers
 // (GET /customers)
 func (e *Endpoint) GetCustomers(ctx echo.Context, params api.GetCustomersParams) error {
-	logrus.Info("hoi")
+	e.mutex.Lock()
+	defer e.mutex.Unlock()
+
+
+
 	return nil
 }
 
