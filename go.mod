@@ -6,7 +6,7 @@ require (
 	github.com/GeertJohan/go.rice v1.0.0
 	github.com/Rhymond/go-money v1.0.1
 	github.com/creasty/defaults v1.3.0
-	github.com/go-chi/chi v4.1.2+incompatible
+	github.com/deepmap/oapi-codegen v1.4.1 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/lithammer/fuzzysearch v1.1.0
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381

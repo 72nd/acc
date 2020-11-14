@@ -46,6 +46,7 @@ _Current status:_ The project is under active use and development at the [Genoss
 - [ ] Code Documentation
 - [ ] Misc Documents in complete Transactions
 - [ ] Debug flag
+- [ ] Multiple Bank Statements
 - [x] Amounts with Amount type
 - [ ] pain.001 for payment generation
 	- [ ] Add IBAN to employee (data field, interactive add, assisted completion, validation)

@@ -10,7 +10,8 @@ id:
 idParam:
   in: path
   name: id
-  type: string
+  schema:
+    type: string
   required: true
   example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
 identifier:

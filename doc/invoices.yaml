@@ -8,11 +8,13 @@ paths:
       parameters:
         - in: query
           name: query
-          type: string
+          schema:
+            type: string
           description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
         - in: query
           name: identifier
-          type: string
+          schema:
+            type: string
           description: Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
       responses:
         200:
