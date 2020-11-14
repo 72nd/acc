@@ -86,4 +86,10 @@ tasks:
         cmds:
             - rm -rf {{.PATH}}
             - mkdir {{.PATH}}
+    gen-server:
+        desc: Generate REST server code from API declaration
+        cmds:
+            - speccy resolve -i doc/api.yaml -o merged.yaml
+            - oapi-codegen merged.yaml -generate server > pkg/server/api.go
+            - rm merged.yaml
 
