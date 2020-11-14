@@ -1,12 +1,11 @@
 // REST API Server
-package server
+package api
 
 import (
 	"fmt"
 	"sync"
 
 	"github.com/72nd/acc/pkg/schema"
-	"github.com/72nd/acc/pkg/server/api"
 	"github.com/labstack/echo/v4"
 	middleware "github.com/labstack/echo/v4/middleware"
 	"github.com/neko-neko/echo-logrus/v2/log"
@@ -42,7 +41,7 @@ func (e *Endpoint) Serve(port int) {
 	echo.Logger = log.Logger()
 	echo.Use(middleware.Logger())
 
-	api.RegisterHandlers(echo, e)
+	RegisterHandlers(echo, e)
 
 	if port == 0 {
 		port = 8000
@@ -52,7 +51,7 @@ func (e *Endpoint) Serve(port int) {
 
 // Get all customers
 // (GET /customers)
-func (e *Endpoint) GetCustomers(ctx echo.Context, params api.GetCustomersParams) error {
+func (e *Endpoint) GetCustomers(ctx echo.Context, params GetCustomersParams) error {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
 
@@ -87,13 +86,13 @@ func (e *Endpoint) PutCustomersId(ctx echo.Context, id string) error {
 
 // Get all employees
 // (GET /employees)
-func (e *Endpoint) GetEmployees(ctx echo.Context, params api.GetEmployeesParams) error {
+func (e *Endpoint) GetEmployees(ctx echo.Context, params GetEmployeesParams) error {
 	return nil
 }
 
 // Get all Expenses
 // (GET /expenses)
-func (e *Endpoint) GetExpenses(ctx echo.Context, params api.GetExpensesParams) error {
+func (e *Endpoint) GetExpenses(ctx echo.Context, params GetExpensesParams) error {
 	return nil
 }
 
@@ -123,7 +122,7 @@ func (e *Endpoint) PutExpensesId(ctx echo.Context, id string) error {
 
 // Get all invoices
 // (GET /invoices)
-func (e *Endpoint) GetInvoices(ctx echo.Context, params api.GetInvoicesParams) error {
+func (e *Endpoint) GetInvoices(ctx echo.Context, params GetInvoicesParams) error {
 	return nil
 }
 
@@ -153,7 +152,7 @@ func (e *Endpoint) PutInvoicesId(ctx echo.Context, id string) error {
 
 // Get all Miscellaneous Records
 // (GET /misc_records)
-func (e *Endpoint) GetMiscRecords(ctx echo.Context, params api.GetMiscRecordsParams) error {
+func (e *Endpoint) GetMiscRecords(ctx echo.Context, params GetMiscRecordsParams) error {
 	return nil
 }
 
@@ -183,7 +182,7 @@ func (e *Endpoint) PutMiscRecordsId(ctx echo.Context, id string) error {
 
 // Get all Projects
 // (GET /projects)
-func (e *Endpoint) GetProjects(ctx echo.Context, params api.GetProjectsParams) error {
+func (e *Endpoint) GetProjects(ctx echo.Context, params GetProjectsParams) error {
 	return nil
 }
 

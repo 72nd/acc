@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/72nd/acc/pkg/api"
 	"github.com/72nd/acc/pkg/bimpf"
 	"github.com/72nd/acc/pkg/config"
 	"github.com/72nd/acc/pkg/distributed"
@@ -16,7 +17,6 @@ import (
 	"github.com/72nd/acc/pkg/ledger"
 	"github.com/72nd/acc/pkg/query"
 	"github.com/72nd/acc/pkg/schema"
-	"github.com/72nd/acc/pkg/server"
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
@@ -810,7 +810,7 @@ func main() {
 				Action: func(c *cli.Context) error {
 					inputPath := getReadPathOrExit(c, "input", "acc project file")
 					s := config.OpenSchema(inputPath)
-					srv := server.NewEndpoint(&s)
+					srv := api.NewEndpoint(&s)
 					srv.Serve(c.Int("port"))
 					return nil
 				},

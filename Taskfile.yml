@@ -90,6 +90,6 @@ tasks:
         desc: Generate REST server code from API declaration
         cmds:
             - speccy resolve -i doc/api.yaml -o merged.yaml
-            - oapi-codegen -package api merged.yaml > pkg/server/api/server-gen.go
+            - oapi-codegen -package api merged.yaml > pkg/api/server-gen.go
             - rm merged.yaml
 
