@@ -16,6 +16,7 @@ import (
 	"github.com/72nd/acc/pkg/ledger"
 	"github.com/72nd/acc/pkg/query"
 	"github.com/72nd/acc/pkg/schema"
+	"github.com/72nd/acc/pkg/server"
 	"github.com/logrusorgru/aurora"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
@@ -787,6 +788,31 @@ func main() {
 						Aliases: []string{"y"},
 						Usage:   "generate journal for specific year",
 					},
+				},
+			},
+			{
+				Name:    "server",
+				Aliases: []string{"srv"},
+				Usage:   "run the REST API server",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:    "input",
+						Aliases: []string{"i"},
+						Usage:   "acc project file",
+					},
+					&cli.IntFlag{
+						Name:        "port",
+						Aliases:     []string{"p"},
+						Usage:       "define the port",
+						DefaultText: "8000",
+					},
+				},
+				Action: func(c *cli.Context) error {
+					inputPath := getReadPathOrExit(c, "input", "acc project file")
+					s := config.OpenSchema(inputPath)
+					srv := server.NewEndpoint(&s)
+					srv.Serve(c.Int("port"))
+					return nil
 				},
 			},
 			{
