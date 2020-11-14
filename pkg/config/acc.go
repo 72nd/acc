@@ -129,6 +129,7 @@ func NewSchema(folderPath, logo string, doSave, interactive, distMode bool) sche
 // OpenAcc opens a Acc saved in the json file given by the path.
 func OpenAcc(path string) Acc {
 	var acc Acc
+	path = util.AbsolutePathWithWD(path)
 	util.OpenYaml(&acc, path, "acc")
 	acc.FileName = path
 	return acc
@@ -177,7 +178,7 @@ func (a Acc) SaveSchema(s schema.Schema) {
 func (a Acc) SaveSchemaToFolder(s schema.Schema) {
 	a.Company = s.Company
 	a.JournalConfig = s.JournalConfig
-	a.Save(filepath.Join(s.BaseFolder, a.FileName))
+	a.Save(a.FileName)
 
 	s.Expenses.Save(&s, filepath.Join(s.BaseFolder, a.ExpensesFilePath))
 	s.Invoices.Save(filepath.Join(s.BaseFolder, a.InvoicesFilePath))
