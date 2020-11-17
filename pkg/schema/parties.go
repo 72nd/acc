@@ -20,13 +20,16 @@ const (
 	CustomerType
 )
 
+// PartiesCollection contains two classes of Parties. One for the customers and one
+// for the employees. This two Parties are grouped together as saving them separately
+// doesn't make sense.
 type PartiesCollection struct {
 	Employees []Party `yaml:"employees"`
 	Customers []Party `yaml:"customers"`
 }
 
-// NewParties returns a new Parties struct with the one Expense in it.
-func NewParties(useDefault bool) PartiesCollection {
+// NewPartiesCollection returns a new Parties struct with the one Expense in it.
+func NewPartiesCollection(useDefault bool) PartiesCollection {
 	if useDefault {
 		cst := NewParty()
 		cst.Identifier = "c-1"
@@ -48,8 +51,8 @@ func NewParties(useDefault bool) PartiesCollection {
 	}
 }
 
-// OpenParties opens a Parties element saved in the json file given by the path.
-func OpenParties(path string) PartiesCollection {
+// OpenPartiesCollection opens a Parties element saved in the json file given by the path.
+func OpenPartiesCollection(path string) PartiesCollection {
 	var prt PartiesCollection
 	util.OpenYaml(&prt, path, "parties")
 	return prt

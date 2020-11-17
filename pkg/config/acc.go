@@ -81,7 +81,7 @@ func NewSchema(folderPath, logo string, doSave, interactive, distMode bool) sche
 	exp := schema.NewExpenses(!interactive)
 	inv := schema.NewInvoices(!interactive)
 	mrc := schema.NewMiscRecords()
-	prt := schema.NewParties(!interactive)
+	prt := schema.NewPartiesCollection(!interactive)
 	prj := schema.NewProjects()
 	stm := schema.NewBankStatement(!interactive)
 
@@ -149,7 +149,7 @@ func OpenSchema(path string) schema.Schema {
 		JournalConfig:       acc.JournalConfig,
 		Currency:            acc.Currency,
 		MiscRecords:         schema.OpenMiscRecords(filepath.Join(baseFolder, acc.MiscRecordsFilePath)),
-		Parties:             schema.OpenParties(filepath.Join(baseFolder, acc.PartiesFilePath)),
+		Parties:             schema.OpenPartiesCollection(filepath.Join(baseFolder, acc.PartiesFilePath)),
 		Projects:            schema.OpenProjects(filepath.Join(baseFolder, acc.ProjectsFilePath)),
 		Statement:           schema.OpenBankStatement(filepath.Join(baseFolder, acc.StatementFilePath)),
 		AppendExpenseSuffix: acc.AppendExpensesSuffix,
