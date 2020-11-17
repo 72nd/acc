@@ -21,261 +21,376 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Expense defines model for expense.
+type Expense struct {
+
+	// States whether a third party (employee, etc.) advanced the payment of this Expense for the company
+	AdvancedByThirdParty *bool `json:"advancedByThirdParty,omitempty"`
+
+	// Refers to the third party which advanced the payment
+	AdvancedThirdPartyId *string `json:"advancedThirdPartyId,omitempty"`
+
+	// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
+	Amount *string `json:"amount,omitempty"`
+
+	// States whether the costs for the Expense will be forwarded to the customer
+	Billable *bool `json:"billable,omitempty"`
+
+	// Day the obligation emerged
+	DateOfAccrual *string `json:"dateOfAccrual,omitempty"`
+
+	// The date of the settlement of the Expense (the company has not to take further actions after this date)
+	DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
+
+	// Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc.
+	ExpenseCategory *string `json:"expenseCategory,omitempty"`
+
+	// UUID of the object used for the universal identification of an element
+	Id *string `json:"id,omitempty"`
+
+	// Unique user-chosen identifier for a Expense, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// States whether this Expense is for an internal purpose or not.
+	Internal *bool `json:"internal,omitempty"`
+
+	// Describes meaningful manner the Expense
+	Name *string `json:"name,omitempty"`
+
+	// Refers to the customer which have to pay the Expense
+	ObligedCustomerId *string `json:"obligedCustomerId,omitempty"`
+
+	// States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
+	PaidWithDebit *bool `json:"paidWithDebit,omitempty"`
+
+	// The full path to the business record document (PDF or PNG)
+	Path *string `json:"path,omitempty"`
+
+	// Refers to the associated project.
+	ProjectId *string `json:"projectId,omitempty"`
+
+	// Refers to a possible bank transaction which settled the Expense for the company
+	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
+}
+
+// ExpenseBase defines model for expenseBase.
+type ExpenseBase struct {
+
+	// States whether a third party (employee, etc.) advanced the payment of this Expense for the company
+	AdvancedByThirdParty *bool `json:"advancedByThirdParty,omitempty"`
+
+	// Refers to the third party which advanced the payment
+	AdvancedThirdPartyId *string `json:"advancedThirdPartyId,omitempty"`
+
+	// The costs of the Expense
+	Amount *string `json:"amount,omitempty"`
+
+	// States whether the costs for the Expense will be forwarded to the customer
+	Billable *bool `json:"billable,omitempty"`
+
+	// Day the obligation emerged
+	DateOfAccrual *string `json:"dateOfAccrual,omitempty"`
+
+	// The date of the settlement of the Expense (the company has not to take further actions after this date)
+	DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
+
+	// Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc.
+	ExpenseCategory *string `json:"expenseCategory,omitempty"`
+
+	// Unique user-chosen identifier for a Expense, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// States whether this Expense is for an internal purpose or not.
+	Internal *bool `json:"internal,omitempty"`
+
+	// Describes meaningful manner the Expense
+	Name *string `json:"name,omitempty"`
+
+	// Refers to the customer which have to pay the Expense
+	ObligedCustomerId *string `json:"obligedCustomerId,omitempty"`
+
+	// States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
+	PaidWithDebit *bool `json:"paidWithDebit,omitempty"`
+
+	// The full path to the business record document (PDF or PNG)
+	Path *string `json:"path,omitempty"`
+
+	// Refers to the associated project.
+	ProjectId *string `json:"projectId,omitempty"`
+
+	// Refers to a possible bank transaction which settled the Expense for the company
+	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
+}
+
+// Expenses defines model for expenses.
+type Expenses []Expense
+
+// Invoice defines model for invoice.
+type Invoice struct {
+
+	// Outstanding amount.
+	Amount *string `json:"amount,omitempty"`
+
+	// Refers to the customer the Invoice was sent to.
+	CustomerId *string `json:"customerId,omitempty"`
+
+	// The date the customer paid the outstanding amount.
+	DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
+
+	// UUID of the object used for the universal identification of an element
+	Id *string `json:"id,omitempty"`
+
+	// Unique user-chosen identifier for a Invoice, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// Describes the Invoice.
+	Name *string `json:"name,omitempty"`
+
+	// The full path to the business record document (PDF or PNG).
+	Path *string `json:"path,omitempty"`
+
+	// Refers to the associated project.
+	ProjectId *string `json:"projectId,omitempty"`
+
+	// Revoked Invoices are disabled an no longer taken into account.
+	Revoked *bool `json:"revoked,omitempty"`
+
+	// Day the Invoice was sent to the customer.
+	SendDate *string `json:"sendDate,omitempty"`
+
+	// Refers to a possible bank transaction which settled the Invoice for the company.
+	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
+}
+
+// InvoiceBase defines model for invoiceBase.
+type InvoiceBase struct {
+
+	// Outstanding amount.
+	Amount *string `json:"amount,omitempty"`
+
+	// Refers to the customer the Invoice was sent to.
+	CustomerId *string `json:"customerId,omitempty"`
+
+	// The date the customer paid the outstanding amount.
+	DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
+
+	// Unique user-chosen identifier for a Invoice, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// Describes the Invoice.
+	Name *string `json:"name,omitempty"`
+
+	// The full path to the business record document (PDF or PNG).
+	Path *string `json:"path,omitempty"`
+
+	// Refers to the associated project.
+	ProjectId *string `json:"projectId,omitempty"`
+
+	// Revoked Invoices are disabled an no longer taken into account.
+	Revoked *bool `json:"revoked,omitempty"`
+
+	// Day the Invoice was sent to the customer.
+	SendDate *string `json:"sendDate,omitempty"`
+
+	// Refers to a possible bank transaction which settled the Invoice for the company.
+	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
+}
+
+// Invoices defines model for invoices.
+type Invoices []Invoice
+
+// MiscRecord defines model for miscRecord.
+type MiscRecord struct {
+
+	// Day the Miscellaneous Record arrived emerged
+	Date *string `json:"date,omitempty"`
+
+	// Unique user-chosen identifier for a Miscellaneous Records, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// Name of the Miscellaneous Record.
+	Name *string `json:"name,omitempty"`
+
+	// The full path to the business record document (PDF or PNG)
+	Path *string `json:"path,omitempty"`
+
+	// Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
+	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
+}
+
+// MiscRecordBase defines model for miscRecordBase.
+type MiscRecordBase struct {
+
+	// Day the Miscellaneous Record arrived emerged
+	Date *string `json:"date,omitempty"`
+
+	// Unique user-chosen identifier for a Invoice, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// Name of the Miscellaneous Record.
+	Name *string `json:"name,omitempty"`
+
+	// The full path to the business record document (PDF or PNG)
+	Path *string `json:"path,omitempty"`
+
+	// Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
+	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
+}
+
+// MiscRecords defines model for miscRecords.
+type MiscRecords []MiscRecord
+
+// Parties defines model for parties.
+type Parties []Party
+
+// Party defines model for party.
+type Party struct {
+
+	// UUID of the object used for the universal identification of an element
+	Id *string `json:"id,omitempty"`
+
+	// Unique user-chosen identifier for a Invoice, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// Name of the person/company
+	Name *string `json:"name,omitempty"`
+
+	// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
+	PartyType *int `json:"partyType,omitempty"`
+
+	// Name of the place
+	Place *string `json:"place,omitempty"`
+
+	// ZIP/Postal-Code of the address
+	PostalCode *int `json:"postalCode,omitempty"`
+
+	// Name of the street the party residence in
+	Street *string `json:"street,omitempty"`
+
+	// Street number of party's address
+	StreetNr *int `json:"streetNr,omitempty"`
+}
+
+// PartyBase defines model for partyBase.
+type PartyBase struct {
+
+	// Unique user-chosen identifier for a Party, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// Name of the person/company
+	Name *string `json:"name,omitempty"`
+
+	// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
+	PartyType *int `json:"partyType,omitempty"`
+
+	// Name of the place
+	Place *string `json:"place,omitempty"`
+
+	// ZIP/Postal-Code of the address
+	PostalCode *int `json:"postalCode,omitempty"`
+
+	// Name of the street the party residence in
+	Street *string `json:"street,omitempty"`
+
+	// Street number of party's address
+	StreetNr *int `json:"streetNr,omitempty"`
+}
+
+// Project defines model for project.
+type Project struct {
+
+	// Refers to the customer the project is associated to.
+	CustomerId *string `json:"customerId,omitempty"`
+
+	// UUID of the object used for the universal identification of an element
+	Id *string `json:"id,omitempty"`
+
+	// Unique user-chosen identifier for a Project, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// Name of the Project.
+	Name *string `json:"name,omitempty"`
+}
+
+// ProjectBase defines model for projectBase.
+type ProjectBase struct {
+
+	// Refers to the customer the project is associated to.
+	CustomerId *string `json:"customerId,omitempty"`
+
+	// Unique user-chosen identifier for a Project, should be human readable
+	Identifier *string `json:"identifier,omitempty"`
+
+	// Name of the Project.
+	Name *string `json:"name,omitempty"`
+}
+
+// Projects defines model for projects.
+type Projects []Project
+
 // GetCustomersParams defines parameters for GetCustomers.
 type GetCustomersParams struct {
 
-	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
+	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Customers.
 	Query *string `json:"query,omitempty"`
 
-	// Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+	// Search for Customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
 	Identifier *string `json:"identifier,omitempty"`
 }
 
 // PostCustomersIdJSONBody defines parameters for PostCustomersId.
-type PostCustomersIdJSONBody struct {
-
-	// Unique user-chosen identifier for a Party, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// Name of the person/company
-	Name *string `json:"name,omitempty"`
-
-	// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
-	PartyType *int `json:"partyType,omitempty"`
-
-	// Name of the place
-	Place *string `json:"place,omitempty"`
-
-	// ZIP/Postal-Code of the address
-	PostalCode *int `json:"postalCode,omitempty"`
-
-	// Name of the street the party residence in
-	Street *string `json:"street,omitempty"`
-
-	// Street number of party's address
-	StreetNr *int `json:"streetNr,omitempty"`
-}
+type PostCustomersIdJSONBody PartyBase
 
 // PutCustomersIdJSONBody defines parameters for PutCustomersId.
-type PutCustomersIdJSONBody struct {
-
-	// Unique user-chosen identifier for a Party, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// Name of the person/company
-	Name *string `json:"name,omitempty"`
-
-	// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
-	PartyType *int `json:"partyType,omitempty"`
-
-	// Name of the place
-	Place *string `json:"place,omitempty"`
-
-	// ZIP/Postal-Code of the address
-	PostalCode *int `json:"postalCode,omitempty"`
-
-	// Name of the street the party residence in
-	Street *string `json:"street,omitempty"`
-
-	// Street number of party's address
-	StreetNr *int `json:"streetNr,omitempty"`
-}
+type PutCustomersIdJSONBody PartyBase
 
 // GetEmployeesParams defines parameters for GetEmployees.
 type GetEmployeesParams struct {
 
-	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching employees.
+	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Employees.
 	Query *string `json:"query,omitempty"`
 
-	// Search for employees with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+	// Search for Employees with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
 	Identifier *string `json:"identifier,omitempty"`
 }
+
+// PostEmployeesIdJSONBody defines parameters for PostEmployeesId.
+type PostEmployeesIdJSONBody PartyBase
+
+// PutEmployeesIdJSONBody defines parameters for PutEmployeesId.
+type PutEmployeesIdJSONBody PartyBase
 
 // GetExpensesParams defines parameters for GetExpenses.
 type GetExpensesParams struct {
 
-	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
+	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Expenses.
 	Query *string `json:"query,omitempty"`
 
-	// Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+	// Search for Expenses with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
 	Identifier *string `json:"identifier,omitempty"`
 }
 
 // PostExpensesIdJSONBody defines parameters for PostExpensesId.
-type PostExpensesIdJSONBody struct {
-
-	// States whether a third party (employee, etc.) advanced the payment of this Expense for the company
-	AdvancedByThirdParty *bool `json:"advancedByThirdParty,omitempty"`
-
-	// Refers to the third party which advanced the payment
-	AdvancedThirdPartyId *string `json:"advancedThirdPartyId,omitempty"`
-
-	// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-	Amount *string `json:"amount,omitempty"`
-
-	// States whether the costs for the Expense will be forwarded to the customer
-	Billable *bool `json:"billable,omitempty"`
-
-	// A date in the calender in the format YYYY-MM-DD
-	DateOfAccrual *string `json:"dateOfAccrual,omitempty"`
-
-	// A date in the calender in the format YYYY-MM-DD
-	DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-	// Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc.
-	ExpenseCategory *string `json:"expenseCategory,omitempty"`
-
-	// Unique user-chosen identifier for a Expense, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// States whether this Expense is for an internal purpose or not.
-	Internal *bool `json:"internal,omitempty"`
-
-	// Describes meaningful manner the Expense
-	Name *string `json:"name,omitempty"`
-
-	// Refers to the customer which have to pay the Expense
-	ObligedCustomerId *string `json:"obligedCustomerId,omitempty"`
-
-	// States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
-	PaidWithDebit *bool `json:"paidWithDebit,omitempty"`
-
-	// The full path to the business record document (PDF or PNG)
-	Path *string `json:"path,omitempty"`
-
-	// Refers to the associated project.
-	ProjectId *string `json:"projectId,omitempty"`
-
-	// Refers to a possible bank transaction which settled the Expense for the company
-	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-}
+type PostExpensesIdJSONBody ExpenseBase
 
 // PutExpensesIdJSONBody defines parameters for PutExpensesId.
-type PutExpensesIdJSONBody struct {
-
-	// States whether a third party (employee, etc.) advanced the payment of this Expense for the company
-	AdvancedByThirdParty *bool `json:"advancedByThirdParty,omitempty"`
-
-	// Refers to the third party which advanced the payment
-	AdvancedThirdPartyId *string `json:"advancedThirdPartyId,omitempty"`
-
-	// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-	Amount *string `json:"amount,omitempty"`
-
-	// States whether the costs for the Expense will be forwarded to the customer
-	Billable *bool `json:"billable,omitempty"`
-
-	// A date in the calender in the format YYYY-MM-DD
-	DateOfAccrual *string `json:"dateOfAccrual,omitempty"`
-
-	// A date in the calender in the format YYYY-MM-DD
-	DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-	// Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc.
-	ExpenseCategory *string `json:"expenseCategory,omitempty"`
-
-	// Unique user-chosen identifier for a Expense, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// States whether this Expense is for an internal purpose or not.
-	Internal *bool `json:"internal,omitempty"`
-
-	// Describes meaningful manner the Expense
-	Name *string `json:"name,omitempty"`
-
-	// Refers to the customer which have to pay the Expense
-	ObligedCustomerId *string `json:"obligedCustomerId,omitempty"`
-
-	// States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
-	PaidWithDebit *bool `json:"paidWithDebit,omitempty"`
-
-	// The full path to the business record document (PDF or PNG)
-	Path *string `json:"path,omitempty"`
-
-	// Refers to the associated project.
-	ProjectId *string `json:"projectId,omitempty"`
-
-	// Refers to a possible bank transaction which settled the Expense for the company
-	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-}
+type PutExpensesIdJSONBody ExpenseBase
 
 // GetInvoicesParams defines parameters for GetInvoices.
 type GetInvoicesParams struct {
 
-	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
+	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Invoices.
 	Query *string `json:"query,omitempty"`
 
-	// Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+	// Search for Invoices with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
 	Identifier *string `json:"identifier,omitempty"`
 }
 
 // PostInvoicesIdJSONBody defines parameters for PostInvoicesId.
-type PostInvoicesIdJSONBody struct {
-
-	// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-	Amount *string `json:"amount,omitempty"`
-
-	// Refers to the customer the Invoice was sent to.
-	CustomerId *string `json:"customerId,omitempty"`
-
-	// A date in the calender in the format YYYY-MM-DD
-	DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-	// Unique user-chosen identifier for a Invoice, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// Describes the Invoice.
-	Name *string `json:"name,omitempty"`
-
-	// The full path to the business record document (PDF or PNG).
-	Path *string `json:"path,omitempty"`
-
-	// Refers to the associated project.
-	ProjectId *string `json:"projectId,omitempty"`
-
-	// Revoked Invoices are disabled an no longer taken into account.
-	Revoked *bool `json:"revoked,omitempty"`
-
-	// A date in the calender in the format YYYY-MM-DD
-	SendDate *string `json:"sendDate,omitempty"`
-
-	// Refers to a possible bank transaction which settled the Invoice for the company.
-	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-}
+type PostInvoicesIdJSONBody InvoiceBase
 
 // PutInvoicesIdJSONBody defines parameters for PutInvoicesId.
-type PutInvoicesIdJSONBody struct {
-
-	// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-	Amount *string `json:"amount,omitempty"`
-
-	// Refers to the customer the Invoice was sent to.
-	CustomerId *string `json:"customerId,omitempty"`
-
-	// A date in the calender in the format YYYY-MM-DD
-	DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-	// Unique user-chosen identifier for a Invoice, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// Describes the Invoice.
-	Name *string `json:"name,omitempty"`
-
-	// The full path to the business record document (PDF or PNG).
-	Path *string `json:"path,omitempty"`
-
-	// Refers to the associated project.
-	ProjectId *string `json:"projectId,omitempty"`
-
-	// Revoked Invoices are disabled an no longer taken into account.
-	Revoked *bool `json:"revoked,omitempty"`
-
-	// A date in the calender in the format YYYY-MM-DD
-	SendDate *string `json:"sendDate,omitempty"`
-
-	// Refers to a possible bank transaction which settled the Invoice for the company.
-	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-}
+type PutInvoicesIdJSONBody InvoiceBase
 
 // GetMiscRecordsParams defines parameters for GetMiscRecords.
 type GetMiscRecordsParams struct {
@@ -283,89 +398,43 @@ type GetMiscRecordsParams struct {
 	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
 	Query *string `json:"query,omitempty"`
 
-	// Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+	// Search for Miscellaneous Records with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
 	Identifier *string `json:"identifier,omitempty"`
 }
 
 // PostMiscRecordsIdJSONBody defines parameters for PostMiscRecordsId.
-type PostMiscRecordsIdJSONBody struct {
-
-	// A date in the calender in the format YYYY-MM-DD
-	Date *string `json:"date,omitempty"`
-
-	// Unique user-chosen identifier for a Miscellaneous Records, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// Name of the Miscellaneous Record.
-	Name *string `json:"name,omitempty"`
-
-	// The full path to the business record document (PDF or PNG)
-	Path *string `json:"path,omitempty"`
-
-	// Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
-	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-}
+type PostMiscRecordsIdJSONBody MiscRecordBase
 
 // PutMiscRecordsIdJSONBody defines parameters for PutMiscRecordsId.
-type PutMiscRecordsIdJSONBody struct {
-
-	// A date in the calender in the format YYYY-MM-DD
-	Date *string `json:"date,omitempty"`
-
-	// Unique user-chosen identifier for a Miscellaneous Records, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// Name of the Miscellaneous Record.
-	Name *string `json:"name,omitempty"`
-
-	// The full path to the business record document (PDF or PNG)
-	Path *string `json:"path,omitempty"`
-
-	// Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
-	SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-}
+type PutMiscRecordsIdJSONBody MiscRecordBase
 
 // GetProjectsParams defines parameters for GetProjects.
 type GetProjectsParams struct {
 
-	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
+	// The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Projects.
 	Query *string `json:"query,omitempty"`
 
-	// Search for customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+	// Search for Projects with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
 	Identifier *string `json:"identifier,omitempty"`
 }
 
 // PostProjectsIdJSONBody defines parameters for PostProjectsId.
-type PostProjectsIdJSONBody struct {
-
-	// Refers to the customer the project is associated to.
-	CustomerId *string `json:"customerId,omitempty"`
-
-	// Unique user-chosen identifier for a Project, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// Name of the Project.
-	Name *string `json:"name,omitempty"`
-}
+type PostProjectsIdJSONBody ProjectBase
 
 // PutProjectsIdJSONBody defines parameters for PutProjectsId.
-type PutProjectsIdJSONBody struct {
-
-	// Refers to the customer the project is associated to.
-	CustomerId *string `json:"customerId,omitempty"`
-
-	// Unique user-chosen identifier for a Project, should be human readable
-	Identifier *string `json:"identifier,omitempty"`
-
-	// Name of the Project.
-	Name *string `json:"name,omitempty"`
-}
+type PutProjectsIdJSONBody ProjectBase
 
 // PostCustomersIdRequestBody defines body for PostCustomersId for application/json ContentType.
 type PostCustomersIdJSONRequestBody PostCustomersIdJSONBody
 
 // PutCustomersIdRequestBody defines body for PutCustomersId for application/json ContentType.
 type PutCustomersIdJSONRequestBody PutCustomersIdJSONBody
+
+// PostEmployeesIdRequestBody defines body for PostEmployeesId for application/json ContentType.
+type PostEmployeesIdJSONRequestBody PostEmployeesIdJSONBody
+
+// PutEmployeesIdRequestBody defines body for PutEmployeesId for application/json ContentType.
+type PutEmployeesIdJSONRequestBody PutEmployeesIdJSONBody
 
 // PostExpensesIdRequestBody defines body for PostExpensesId for application/json ContentType.
 type PostExpensesIdJSONRequestBody PostExpensesIdJSONBody
@@ -485,6 +554,22 @@ type ClientInterface interface {
 
 	// GetEmployees request
 	GetEmployees(ctx context.Context, params *GetEmployeesParams) (*http.Response, error)
+
+	// DeleteEmployeesId request
+	DeleteEmployeesId(ctx context.Context, id string) (*http.Response, error)
+
+	// GetEmployeesId request
+	GetEmployeesId(ctx context.Context, id string) (*http.Response, error)
+
+	// PostEmployeesId request  with any body
+	PostEmployeesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
+
+	PostEmployeesId(ctx context.Context, id string, body PostEmployeesIdJSONRequestBody) (*http.Response, error)
+
+	// PutEmployeesId request  with any body
+	PutEmployeesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
+
+	PutEmployeesId(ctx context.Context, id string, body PutEmployeesIdJSONRequestBody) (*http.Response, error)
 
 	// GetExpenses request
 	GetExpenses(ctx context.Context, params *GetExpensesParams) (*http.Response, error)
@@ -670,6 +755,96 @@ func (c *Client) PutCustomersId(ctx context.Context, id string, body PutCustomer
 
 func (c *Client) GetEmployees(ctx context.Context, params *GetEmployeesParams) (*http.Response, error) {
 	req, err := NewGetEmployeesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteEmployeesId(ctx context.Context, id string) (*http.Response, error) {
+	req, err := NewDeleteEmployeesIdRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetEmployeesId(ctx context.Context, id string) (*http.Response, error) {
+	req, err := NewGetEmployeesIdRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEmployeesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewPostEmployeesIdRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEmployeesId(ctx context.Context, id string, body PostEmployeesIdJSONRequestBody) (*http.Response, error) {
+	req, err := NewPostEmployeesIdRequest(c.Server, id, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutEmployeesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewPutEmployeesIdRequestWithBody(c.Server, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutEmployeesId(ctx context.Context, id string, body PutEmployeesIdJSONRequestBody) (*http.Response, error) {
+	req, err := NewPutEmployeesIdRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1386,6 +1561,166 @@ func NewGetEmployeesRequest(server string, params *GetEmployeesParams) (*http.Re
 		return nil, err
 	}
 
+	return req, nil
+}
+
+// NewDeleteEmployeesIdRequest generates requests for DeleteEmployeesId
+func NewDeleteEmployeesIdRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/employees/%s", pathParam0)
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryUrl.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetEmployeesIdRequest generates requests for GetEmployeesId
+func NewGetEmployeesIdRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/employees/%s", pathParam0)
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryUrl.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewPostEmployeesIdRequest calls the generic PostEmployeesId builder with application/json body
+func NewPostEmployeesIdRequest(server string, id string, body PostEmployeesIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostEmployeesIdRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewPostEmployeesIdRequestWithBody generates requests for PostEmployeesId with any type of body
+func NewPostEmployeesIdRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/employees/%s", pathParam0)
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryUrl.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
+// NewPutEmployeesIdRequest calls the generic PutEmployeesId builder with application/json body
+func NewPutEmployeesIdRequest(server string, id string, body PutEmployeesIdJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPutEmployeesIdRequestWithBody(server, id, "application/json", bodyReader)
+}
+
+// NewPutEmployeesIdRequestWithBody generates requests for PutEmployeesId with any type of body
+func NewPutEmployeesIdRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
+	if err != nil {
+		return nil, err
+	}
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/employees/%s", pathParam0)
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryUrl.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 	return req, nil
 }
 
@@ -2332,6 +2667,22 @@ type ClientWithResponsesInterface interface {
 	// GetEmployees request
 	GetEmployeesWithResponse(ctx context.Context, params *GetEmployeesParams) (*GetEmployeesResponse, error)
 
+	// DeleteEmployeesId request
+	DeleteEmployeesIdWithResponse(ctx context.Context, id string) (*DeleteEmployeesIdResponse, error)
+
+	// GetEmployeesId request
+	GetEmployeesIdWithResponse(ctx context.Context, id string) (*GetEmployeesIdResponse, error)
+
+	// PostEmployeesId request  with any body
+	PostEmployeesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostEmployeesIdResponse, error)
+
+	PostEmployeesIdWithResponse(ctx context.Context, id string, body PostEmployeesIdJSONRequestBody) (*PostEmployeesIdResponse, error)
+
+	// PutEmployeesId request  with any body
+	PutEmployeesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PutEmployeesIdResponse, error)
+
+	PutEmployeesIdWithResponse(ctx context.Context, id string, body PutEmployeesIdJSONRequestBody) (*PutEmployeesIdResponse, error)
+
 	// GetExpenses request
 	GetExpensesWithResponse(ctx context.Context, params *GetExpensesParams) (*GetExpensesResponse, error)
 
@@ -2412,32 +2763,7 @@ type ClientWithResponsesInterface interface {
 type GetCustomersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct {
-
-		// UUID of the object used for the universal identification of an element
-		Id *string `json:"id,omitempty"`
-
-		// Unique user-chosen identifier for a Party, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// Name of the person/company
-		Name *string `json:"name,omitempty"`
-
-		// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
-		PartyType *int `json:"partyType,omitempty"`
-
-		// Name of the place
-		Place *string `json:"place,omitempty"`
-
-		// ZIP/Postal-Code of the address
-		PostalCode *int `json:"postalCode,omitempty"`
-
-		// Name of the street the party residence in
-		Street *string `json:"street,omitempty"`
-
-		// Street number of party's address
-		StreetNr *int `json:"streetNr,omitempty"`
-	}
+	JSON200      *Parties
 }
 
 // Status returns HTTPResponse.Status
@@ -2480,32 +2806,7 @@ func (r DeleteCustomersIdResponse) StatusCode() int {
 type GetCustomersIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-
-		// UUID of the object used for the universal identification of an element
-		Id *string `json:"id,omitempty"`
-
-		// Unique user-chosen identifier for a Party, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// Name of the person/company
-		Name *string `json:"name,omitempty"`
-
-		// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
-		PartyType *int `json:"partyType,omitempty"`
-
-		// Name of the place
-		Place *string `json:"place,omitempty"`
-
-		// ZIP/Postal-Code of the address
-		PostalCode *int `json:"postalCode,omitempty"`
-
-		// Name of the street the party residence in
-		Street *string `json:"street,omitempty"`
-
-		// Street number of party's address
-		StreetNr *int `json:"streetNr,omitempty"`
-	}
+	JSON200      *Party
 }
 
 // Status returns HTTPResponse.Status
@@ -2569,32 +2870,7 @@ func (r PutCustomersIdResponse) StatusCode() int {
 type GetEmployeesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct {
-
-		// UUID of the object used for the universal identification of an element
-		Id *string `json:"id,omitempty"`
-
-		// Unique user-chosen identifier for a Party, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// Name of the person/company
-		Name *string `json:"name,omitempty"`
-
-		// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
-		PartyType *int `json:"partyType,omitempty"`
-
-		// Name of the place
-		Place *string `json:"place,omitempty"`
-
-		// ZIP/Postal-Code of the address
-		PostalCode *int `json:"postalCode,omitempty"`
-
-		// Name of the street the party residence in
-		Street *string `json:"street,omitempty"`
-
-		// Street number of party's address
-		StreetNr *int `json:"streetNr,omitempty"`
-	}
+	JSON200      *Parties
 }
 
 // Status returns HTTPResponse.Status
@@ -2613,59 +2889,95 @@ func (r GetEmployeesResponse) StatusCode() int {
 	return 0
 }
 
+type DeleteEmployeesIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteEmployeesIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteEmployeesIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetEmployeesIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Party
+}
+
+// Status returns HTTPResponse.Status
+func (r GetEmployeesIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetEmployeesIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostEmployeesIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PostEmployeesIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostEmployeesIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PutEmployeesIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PutEmployeesIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutEmployeesIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetExpensesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct {
-
-		// States whether a third party (employee, etc.) advanced the payment of this Expense for the company
-		AdvancedByThirdParty *bool `json:"advancedByThirdParty,omitempty"`
-
-		// Refers to the third party which advanced the payment
-		AdvancedThirdPartyId *string `json:"advancedThirdPartyId,omitempty"`
-
-		// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-		Amount *string `json:"amount,omitempty"`
-
-		// States whether the costs for the Expense will be forwarded to the customer
-		Billable *bool `json:"billable,omitempty"`
-
-		// A date in the calender in the format YYYY-MM-DD
-		DateOfAccrual *string `json:"dateOfAccrual,omitempty"`
-
-		// A date in the calender in the format YYYY-MM-DD
-		DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-		// Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc.
-		ExpenseCategory *string `json:"expenseCategory,omitempty"`
-
-		// UUID of the object used for the universal identification of an element
-		Id *string `json:"id,omitempty"`
-
-		// Unique user-chosen identifier for a Expense, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// States whether this Expense is for an internal purpose or not.
-		Internal *bool `json:"internal,omitempty"`
-
-		// Describes meaningful manner the Expense
-		Name *string `json:"name,omitempty"`
-
-		// Refers to the customer which have to pay the Expense
-		ObligedCustomerId *string `json:"obligedCustomerId,omitempty"`
-
-		// States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
-		PaidWithDebit *bool `json:"paidWithDebit,omitempty"`
-
-		// The full path to the business record document (PDF or PNG)
-		Path *string `json:"path,omitempty"`
-
-		// Refers to the associated project.
-		ProjectId *string `json:"projectId,omitempty"`
-
-		// Refers to a possible bank transaction which settled the Expense for the company
-		SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-	}
+	JSON200      *Expenses
 }
 
 // Status returns HTTPResponse.Status
@@ -2708,56 +3020,7 @@ func (r DeleteExpensesIdResponse) StatusCode() int {
 type GetExpensesIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-
-		// States whether a third party (employee, etc.) advanced the payment of this Expense for the company
-		AdvancedByThirdParty *bool `json:"advancedByThirdParty,omitempty"`
-
-		// Refers to the third party which advanced the payment
-		AdvancedThirdPartyId *string `json:"advancedThirdPartyId,omitempty"`
-
-		// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-		Amount *string `json:"amount,omitempty"`
-
-		// States whether the costs for the Expense will be forwarded to the customer
-		Billable *bool `json:"billable,omitempty"`
-
-		// A date in the calender in the format YYYY-MM-DD
-		DateOfAccrual *string `json:"dateOfAccrual,omitempty"`
-
-		// A date in the calender in the format YYYY-MM-DD
-		DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-		// Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc.
-		ExpenseCategory *string `json:"expenseCategory,omitempty"`
-
-		// UUID of the object used for the universal identification of an element
-		Id *string `json:"id,omitempty"`
-
-		// Unique user-chosen identifier for a Expense, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// States whether this Expense is for an internal purpose or not.
-		Internal *bool `json:"internal,omitempty"`
-
-		// Describes meaningful manner the Expense
-		Name *string `json:"name,omitempty"`
-
-		// Refers to the customer which have to pay the Expense
-		ObligedCustomerId *string `json:"obligedCustomerId,omitempty"`
-
-		// States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
-		PaidWithDebit *bool `json:"paidWithDebit,omitempty"`
-
-		// The full path to the business record document (PDF or PNG)
-		Path *string `json:"path,omitempty"`
-
-		// Refers to the associated project.
-		ProjectId *string `json:"projectId,omitempty"`
-
-		// Refers to a possible bank transaction which settled the Expense for the company
-		SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-	}
+	JSON200      *Expense
 }
 
 // Status returns HTTPResponse.Status
@@ -2821,41 +3084,7 @@ func (r PutExpensesIdResponse) StatusCode() int {
 type GetInvoicesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct {
-
-		// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-		Amount *string `json:"amount,omitempty"`
-
-		// Refers to the customer the Invoice was sent to.
-		CustomerId *string `json:"customerId,omitempty"`
-
-		// A date in the calender in the format YYYY-MM-DD
-		DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-		// UUID of the object used for the universal identification of an element
-		Id *string `json:"id,omitempty"`
-
-		// Unique user-chosen identifier for a Invoice, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// Describes the Invoice.
-		Name *string `json:"name,omitempty"`
-
-		// The full path to the business record document (PDF or PNG).
-		Path *string `json:"path,omitempty"`
-
-		// Refers to the associated project.
-		ProjectId *string `json:"projectId,omitempty"`
-
-		// Revoked Invoices are disabled an no longer taken into account.
-		Revoked *bool `json:"revoked,omitempty"`
-
-		// A date in the calender in the format YYYY-MM-DD
-		SendDate *string `json:"sendDate,omitempty"`
-
-		// Refers to a possible bank transaction which settled the Invoice for the company.
-		SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-	}
+	JSON200      *Invoices
 }
 
 // Status returns HTTPResponse.Status
@@ -2898,41 +3127,7 @@ func (r DeleteInvoicesIdResponse) StatusCode() int {
 type GetInvoicesIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-
-		// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-		Amount *string `json:"amount,omitempty"`
-
-		// Refers to the customer the Invoice was sent to.
-		CustomerId *string `json:"customerId,omitempty"`
-
-		// A date in the calender in the format YYYY-MM-DD
-		DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-		// UUID of the object used for the universal identification of an element
-		Id *string `json:"id,omitempty"`
-
-		// Unique user-chosen identifier for a Invoice, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// Describes the Invoice.
-		Name *string `json:"name,omitempty"`
-
-		// The full path to the business record document (PDF or PNG).
-		Path *string `json:"path,omitempty"`
-
-		// Refers to the associated project.
-		ProjectId *string `json:"projectId,omitempty"`
-
-		// Revoked Invoices are disabled an no longer taken into account.
-		Revoked *bool `json:"revoked,omitempty"`
-
-		// A date in the calender in the format YYYY-MM-DD
-		SendDate *string `json:"sendDate,omitempty"`
-
-		// Refers to a possible bank transaction which settled the Invoice for the company.
-		SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-	}
+	JSON200      *Invoice
 }
 
 // Status returns HTTPResponse.Status
@@ -2996,23 +3191,7 @@ func (r PutInvoicesIdResponse) StatusCode() int {
 type GetMiscRecordsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct {
-
-		// A date in the calender in the format YYYY-MM-DD
-		Date *string `json:"date,omitempty"`
-
-		// Unique user-chosen identifier for a Miscellaneous Records, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// Name of the Miscellaneous Record.
-		Name *string `json:"name,omitempty"`
-
-		// The full path to the business record document (PDF or PNG)
-		Path *string `json:"path,omitempty"`
-
-		// Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
-		SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-	}
+	JSON200      *MiscRecords
 }
 
 // Status returns HTTPResponse.Status
@@ -3055,23 +3234,7 @@ func (r DeleteMiscRecordsIdResponse) StatusCode() int {
 type GetMiscRecordsIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-
-		// A date in the calender in the format YYYY-MM-DD
-		Date *string `json:"date,omitempty"`
-
-		// Unique user-chosen identifier for a Miscellaneous Records, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// Name of the Miscellaneous Record.
-		Name *string `json:"name,omitempty"`
-
-		// The full path to the business record document (PDF or PNG)
-		Path *string `json:"path,omitempty"`
-
-		// Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
-		SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-	}
+	JSON200      *MiscRecord
 }
 
 // Status returns HTTPResponse.Status
@@ -3135,20 +3298,7 @@ func (r PutMiscRecordsIdResponse) StatusCode() int {
 type GetProjectsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct {
-
-		// Refers to the customer the project is associated to.
-		CustomerId *string `json:"customerId,omitempty"`
-
-		// UUID of the object used for the universal identification of an element
-		Id *string `json:"id,omitempty"`
-
-		// Unique user-chosen identifier for a Project, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// Name of the Project.
-		Name *string `json:"name,omitempty"`
-	}
+	JSON200      *Projects
 }
 
 // Status returns HTTPResponse.Status
@@ -3191,20 +3341,7 @@ func (r DeleteProjectsIdResponse) StatusCode() int {
 type GetProjectsIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-
-		// Refers to the customer the project is associated to.
-		CustomerId *string `json:"customerId,omitempty"`
-
-		// UUID of the object used for the universal identification of an element
-		Id *string `json:"id,omitempty"`
-
-		// Unique user-chosen identifier for a Project, should be human readable
-		Identifier *string `json:"identifier,omitempty"`
-
-		// Name of the Project.
-		Name *string `json:"name,omitempty"`
-	}
+	JSON200      *Project
 }
 
 // Status returns HTTPResponse.Status
@@ -3333,6 +3470,58 @@ func (c *ClientWithResponses) GetEmployeesWithResponse(ctx context.Context, para
 		return nil, err
 	}
 	return ParseGetEmployeesResponse(rsp)
+}
+
+// DeleteEmployeesIdWithResponse request returning *DeleteEmployeesIdResponse
+func (c *ClientWithResponses) DeleteEmployeesIdWithResponse(ctx context.Context, id string) (*DeleteEmployeesIdResponse, error) {
+	rsp, err := c.DeleteEmployeesId(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteEmployeesIdResponse(rsp)
+}
+
+// GetEmployeesIdWithResponse request returning *GetEmployeesIdResponse
+func (c *ClientWithResponses) GetEmployeesIdWithResponse(ctx context.Context, id string) (*GetEmployeesIdResponse, error) {
+	rsp, err := c.GetEmployeesId(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetEmployeesIdResponse(rsp)
+}
+
+// PostEmployeesIdWithBodyWithResponse request with arbitrary body returning *PostEmployeesIdResponse
+func (c *ClientWithResponses) PostEmployeesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostEmployeesIdResponse, error) {
+	rsp, err := c.PostEmployeesIdWithBody(ctx, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEmployeesIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostEmployeesIdWithResponse(ctx context.Context, id string, body PostEmployeesIdJSONRequestBody) (*PostEmployeesIdResponse, error) {
+	rsp, err := c.PostEmployeesId(ctx, id, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEmployeesIdResponse(rsp)
+}
+
+// PutEmployeesIdWithBodyWithResponse request with arbitrary body returning *PutEmployeesIdResponse
+func (c *ClientWithResponses) PutEmployeesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PutEmployeesIdResponse, error) {
+	rsp, err := c.PutEmployeesIdWithBody(ctx, id, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutEmployeesIdResponse(rsp)
+}
+
+func (c *ClientWithResponses) PutEmployeesIdWithResponse(ctx context.Context, id string, body PutEmployeesIdJSONRequestBody) (*PutEmployeesIdResponse, error) {
+	rsp, err := c.PutEmployeesId(ctx, id, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutEmployeesIdResponse(rsp)
 }
 
 // GetExpensesWithResponse request returning *GetExpensesResponse
@@ -3594,32 +3783,7 @@ func ParseGetCustomersResponse(rsp *http.Response) (*GetCustomersResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct {
-
-			// UUID of the object used for the universal identification of an element
-			Id *string `json:"id,omitempty"`
-
-			// Unique user-chosen identifier for a Party, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// Name of the person/company
-			Name *string `json:"name,omitempty"`
-
-			// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
-			PartyType *int `json:"partyType,omitempty"`
-
-			// Name of the place
-			Place *string `json:"place,omitempty"`
-
-			// ZIP/Postal-Code of the address
-			PostalCode *int `json:"postalCode,omitempty"`
-
-			// Name of the street the party residence in
-			Street *string `json:"street,omitempty"`
-
-			// Street number of party's address
-			StreetNr *int `json:"streetNr,omitempty"`
-		}
+		var dest Parties
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3664,32 +3828,7 @@ func ParseGetCustomersIdResponse(rsp *http.Response) (*GetCustomersIdResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-
-			// UUID of the object used for the universal identification of an element
-			Id *string `json:"id,omitempty"`
-
-			// Unique user-chosen identifier for a Party, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// Name of the person/company
-			Name *string `json:"name,omitempty"`
-
-			// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
-			PartyType *int `json:"partyType,omitempty"`
-
-			// Name of the place
-			Place *string `json:"place,omitempty"`
-
-			// ZIP/Postal-Code of the address
-			PostalCode *int `json:"postalCode,omitempty"`
-
-			// Name of the street the party residence in
-			Street *string `json:"street,omitempty"`
-
-			// Street number of party's address
-			StreetNr *int `json:"streetNr,omitempty"`
-		}
+		var dest Party
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3753,37 +3892,95 @@ func ParseGetEmployeesResponse(rsp *http.Response) (*GetEmployeesResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct {
-
-			// UUID of the object used for the universal identification of an element
-			Id *string `json:"id,omitempty"`
-
-			// Unique user-chosen identifier for a Party, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// Name of the person/company
-			Name *string `json:"name,omitempty"`
-
-			// States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
-			PartyType *int `json:"partyType,omitempty"`
-
-			// Name of the place
-			Place *string `json:"place,omitempty"`
-
-			// ZIP/Postal-Code of the address
-			PostalCode *int `json:"postalCode,omitempty"`
-
-			// Name of the street the party residence in
-			Street *string `json:"street,omitempty"`
-
-			// Street number of party's address
-			StreetNr *int `json:"streetNr,omitempty"`
-		}
+		var dest Parties
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParseDeleteEmployeesIdResponse parses an HTTP response from a DeleteEmployeesIdWithResponse call
+func ParseDeleteEmployeesIdResponse(rsp *http.Response) (*DeleteEmployeesIdResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteEmployeesIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	}
+
+	return response, nil
+}
+
+// ParseGetEmployeesIdResponse parses an HTTP response from a GetEmployeesIdWithResponse call
+func ParseGetEmployeesIdResponse(rsp *http.Response) (*GetEmployeesIdResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetEmployeesIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Party
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParsePostEmployeesIdResponse parses an HTTP response from a PostEmployeesIdWithResponse call
+func ParsePostEmployeesIdResponse(rsp *http.Response) (*PostEmployeesIdResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostEmployeesIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	}
+
+	return response, nil
+}
+
+// ParsePutEmployeesIdResponse parses an HTTP response from a PutEmployeesIdWithResponse call
+func ParsePutEmployeesIdResponse(rsp *http.Response) (*PutEmployeesIdResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutEmployeesIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	}
 
 	return response, nil
@@ -3804,56 +4001,7 @@ func ParseGetExpensesResponse(rsp *http.Response) (*GetExpensesResponse, error) 
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct {
-
-			// States whether a third party (employee, etc.) advanced the payment of this Expense for the company
-			AdvancedByThirdParty *bool `json:"advancedByThirdParty,omitempty"`
-
-			// Refers to the third party which advanced the payment
-			AdvancedThirdPartyId *string `json:"advancedThirdPartyId,omitempty"`
-
-			// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-			Amount *string `json:"amount,omitempty"`
-
-			// States whether the costs for the Expense will be forwarded to the customer
-			Billable *bool `json:"billable,omitempty"`
-
-			// A date in the calender in the format YYYY-MM-DD
-			DateOfAccrual *string `json:"dateOfAccrual,omitempty"`
-
-			// A date in the calender in the format YYYY-MM-DD
-			DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-			// Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc.
-			ExpenseCategory *string `json:"expenseCategory,omitempty"`
-
-			// UUID of the object used for the universal identification of an element
-			Id *string `json:"id,omitempty"`
-
-			// Unique user-chosen identifier for a Expense, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// States whether this Expense is for an internal purpose or not.
-			Internal *bool `json:"internal,omitempty"`
-
-			// Describes meaningful manner the Expense
-			Name *string `json:"name,omitempty"`
-
-			// Refers to the customer which have to pay the Expense
-			ObligedCustomerId *string `json:"obligedCustomerId,omitempty"`
-
-			// States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
-			PaidWithDebit *bool `json:"paidWithDebit,omitempty"`
-
-			// The full path to the business record document (PDF or PNG)
-			Path *string `json:"path,omitempty"`
-
-			// Refers to the associated project.
-			ProjectId *string `json:"projectId,omitempty"`
-
-			// Refers to a possible bank transaction which settled the Expense for the company
-			SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-		}
+		var dest Expenses
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3898,56 +4046,7 @@ func ParseGetExpensesIdResponse(rsp *http.Response) (*GetExpensesIdResponse, err
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-
-			// States whether a third party (employee, etc.) advanced the payment of this Expense for the company
-			AdvancedByThirdParty *bool `json:"advancedByThirdParty,omitempty"`
-
-			// Refers to the third party which advanced the payment
-			AdvancedThirdPartyId *string `json:"advancedThirdPartyId,omitempty"`
-
-			// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-			Amount *string `json:"amount,omitempty"`
-
-			// States whether the costs for the Expense will be forwarded to the customer
-			Billable *bool `json:"billable,omitempty"`
-
-			// A date in the calender in the format YYYY-MM-DD
-			DateOfAccrual *string `json:"dateOfAccrual,omitempty"`
-
-			// A date in the calender in the format YYYY-MM-DD
-			DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-			// Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc.
-			ExpenseCategory *string `json:"expenseCategory,omitempty"`
-
-			// UUID of the object used for the universal identification of an element
-			Id *string `json:"id,omitempty"`
-
-			// Unique user-chosen identifier for a Expense, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// States whether this Expense is for an internal purpose or not.
-			Internal *bool `json:"internal,omitempty"`
-
-			// Describes meaningful manner the Expense
-			Name *string `json:"name,omitempty"`
-
-			// Refers to the customer which have to pay the Expense
-			ObligedCustomerId *string `json:"obligedCustomerId,omitempty"`
-
-			// States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
-			PaidWithDebit *bool `json:"paidWithDebit,omitempty"`
-
-			// The full path to the business record document (PDF or PNG)
-			Path *string `json:"path,omitempty"`
-
-			// Refers to the associated project.
-			ProjectId *string `json:"projectId,omitempty"`
-
-			// Refers to a possible bank transaction which settled the Expense for the company
-			SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-		}
+		var dest Expense
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4011,41 +4110,7 @@ func ParseGetInvoicesResponse(rsp *http.Response) (*GetInvoicesResponse, error) 
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct {
-
-			// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-			Amount *string `json:"amount,omitempty"`
-
-			// Refers to the customer the Invoice was sent to.
-			CustomerId *string `json:"customerId,omitempty"`
-
-			// A date in the calender in the format YYYY-MM-DD
-			DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-			// UUID of the object used for the universal identification of an element
-			Id *string `json:"id,omitempty"`
-
-			// Unique user-chosen identifier for a Invoice, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// Describes the Invoice.
-			Name *string `json:"name,omitempty"`
-
-			// The full path to the business record document (PDF or PNG).
-			Path *string `json:"path,omitempty"`
-
-			// Refers to the associated project.
-			ProjectId *string `json:"projectId,omitempty"`
-
-			// Revoked Invoices are disabled an no longer taken into account.
-			Revoked *bool `json:"revoked,omitempty"`
-
-			// A date in the calender in the format YYYY-MM-DD
-			SendDate *string `json:"sendDate,omitempty"`
-
-			// Refers to a possible bank transaction which settled the Invoice for the company.
-			SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-		}
+		var dest Invoices
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4090,41 +4155,7 @@ func ParseGetInvoicesIdResponse(rsp *http.Response) (*GetInvoicesIdResponse, err
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-
-			// Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-			Amount *string `json:"amount,omitempty"`
-
-			// Refers to the customer the Invoice was sent to.
-			CustomerId *string `json:"customerId,omitempty"`
-
-			// A date in the calender in the format YYYY-MM-DD
-			DateOfSettlement *string `json:"dateOfSettlement,omitempty"`
-
-			// UUID of the object used for the universal identification of an element
-			Id *string `json:"id,omitempty"`
-
-			// Unique user-chosen identifier for a Invoice, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// Describes the Invoice.
-			Name *string `json:"name,omitempty"`
-
-			// The full path to the business record document (PDF or PNG).
-			Path *string `json:"path,omitempty"`
-
-			// Refers to the associated project.
-			ProjectId *string `json:"projectId,omitempty"`
-
-			// Revoked Invoices are disabled an no longer taken into account.
-			Revoked *bool `json:"revoked,omitempty"`
-
-			// A date in the calender in the format YYYY-MM-DD
-			SendDate *string `json:"sendDate,omitempty"`
-
-			// Refers to a possible bank transaction which settled the Invoice for the company.
-			SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-		}
+		var dest Invoice
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4188,23 +4219,7 @@ func ParseGetMiscRecordsResponse(rsp *http.Response) (*GetMiscRecordsResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct {
-
-			// A date in the calender in the format YYYY-MM-DD
-			Date *string `json:"date,omitempty"`
-
-			// Unique user-chosen identifier for a Miscellaneous Records, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// Name of the Miscellaneous Record.
-			Name *string `json:"name,omitempty"`
-
-			// The full path to the business record document (PDF or PNG)
-			Path *string `json:"path,omitempty"`
-
-			// Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
-			SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-		}
+		var dest MiscRecords
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4249,23 +4264,7 @@ func ParseGetMiscRecordsIdResponse(rsp *http.Response) (*GetMiscRecordsIdRespons
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-
-			// A date in the calender in the format YYYY-MM-DD
-			Date *string `json:"date,omitempty"`
-
-			// Unique user-chosen identifier for a Miscellaneous Records, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// Name of the Miscellaneous Record.
-			Name *string `json:"name,omitempty"`
-
-			// The full path to the business record document (PDF or PNG)
-			Path *string `json:"path,omitempty"`
-
-			// Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
-			SettlementTransactionId *string `json:"settlementTransactionId,omitempty"`
-		}
+		var dest MiscRecord
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4329,20 +4328,7 @@ func ParseGetProjectsResponse(rsp *http.Response) (*GetProjectsResponse, error) 
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct {
-
-			// Refers to the customer the project is associated to.
-			CustomerId *string `json:"customerId,omitempty"`
-
-			// UUID of the object used for the universal identification of an element
-			Id *string `json:"id,omitempty"`
-
-			// Unique user-chosen identifier for a Project, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// Name of the Project.
-			Name *string `json:"name,omitempty"`
-		}
+		var dest Projects
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4387,20 +4373,7 @@ func ParseGetProjectsIdResponse(rsp *http.Response) (*GetProjectsIdResponse, err
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-
-			// Refers to the customer the project is associated to.
-			CustomerId *string `json:"customerId,omitempty"`
-
-			// UUID of the object used for the universal identification of an element
-			Id *string `json:"id,omitempty"`
-
-			// Unique user-chosen identifier for a Project, should be human readable
-			Identifier *string `json:"identifier,omitempty"`
-
-			// Name of the Project.
-			Name *string `json:"name,omitempty"`
-		}
+		var dest Project
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4469,6 +4442,18 @@ type ServerInterface interface {
 	// Get all employees
 	// (GET /employees)
 	GetEmployees(ctx echo.Context, params GetEmployeesParams) error
+	// Remove a employee
+	// (DELETE /employees/{id})
+	DeleteEmployeesId(ctx echo.Context, id string) error
+	// Get a employee by ID
+	// (GET /employees/{id})
+	GetEmployeesId(ctx echo.Context, id string) error
+	// Add a employee
+	// (POST /employees/{id})
+	PostEmployeesId(ctx echo.Context, id string) error
+	// Update a employee
+	// (PUT /employees/{id})
+	PutEmployeesId(ctx echo.Context, id string) error
 	// Get all Expenses
 	// (GET /expenses)
 	GetExpenses(ctx echo.Context, params GetExpensesParams) error
@@ -4647,6 +4632,70 @@ func (w *ServerInterfaceWrapper) GetEmployees(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetEmployees(ctx, params)
+	return err
+}
+
+// DeleteEmployeesId converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteEmployeesId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.DeleteEmployeesId(ctx, id)
+	return err
+}
+
+// GetEmployeesId converts echo context to params.
+func (w *ServerInterfaceWrapper) GetEmployeesId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetEmployeesId(ctx, id)
+	return err
+}
+
+// PostEmployeesId converts echo context to params.
+func (w *ServerInterfaceWrapper) PostEmployeesId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostEmployeesId(ctx, id)
+	return err
+}
+
+// PutEmployeesId converts echo context to params.
+func (w *ServerInterfaceWrapper) PutEmployeesId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutEmployeesId(ctx, id)
 	return err
 }
 
@@ -5040,6 +5089,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/customers/:id", wrapper.PostCustomersId)
 	router.PUT(baseURL+"/customers/:id", wrapper.PutCustomersId)
 	router.GET(baseURL+"/employees", wrapper.GetEmployees)
+	router.DELETE(baseURL+"/employees/:id", wrapper.DeleteEmployeesId)
+	router.GET(baseURL+"/employees/:id", wrapper.GetEmployeesId)
+	router.POST(baseURL+"/employees/:id", wrapper.PostEmployeesId)
+	router.PUT(baseURL+"/employees/:id", wrapper.PutEmployeesId)
 	router.GET(baseURL+"/expenses", wrapper.GetExpenses)
 	router.DELETE(baseURL+"/expenses/:id", wrapper.DeleteExpensesId)
 	router.GET(baseURL+"/expenses/:id", wrapper.GetExpensesId)
@@ -5066,75 +5119,70 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"b7ROntzZAAA=",
+	"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",
+	"shmm0+6dNkgnYIfLm8ub/wUAAP//GqRrNuJ1AAA=",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

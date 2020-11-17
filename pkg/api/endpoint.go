@@ -90,6 +90,31 @@ func (e *Endpoint) GetEmployees(ctx echo.Context, params GetEmployeesParams) err
 	return nil
 }
 
+// Remove a employee
+// (DELETE /employees/{id})
+func (e *Endpoint) DeleteEmployeesId(ctx echo.Context, id string) error {
+	return nil
+}
+
+// Get a employee by ID
+// (GET /employees/{id})
+func (e *Endpoint) GetEmployeesId(ctx echo.Context, id string) error {
+	return nil
+}
+
+
+// Add a employee
+// (POST /employees/{id})
+func (e *Endpoint) PostEmployeesId(ctx echo.Context, id string) error {
+	return nil
+}
+
+// Update a employee
+// (PUT /employees/{id})
+func (e *Endpoint) PutEmployeesId(ctx echo.Context, id string) error {
+	return nil
+}
+
 // Get all Expenses
 // (GET /expenses)
 func (e *Endpoint) GetExpenses(ctx echo.Context, params GetExpensesParams) error {
