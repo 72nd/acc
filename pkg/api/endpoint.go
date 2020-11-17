@@ -45,6 +45,26 @@ func (e *Endpoint) Serve(port int) {
 	echo.Logger.Fatal(echo.Start(fmt.Sprintf("0.0.0.0:%d", port)))
 }
 
+// validateGetRequest checks if the user has set both queries (identifier and query) at the
+// same time. If so an error message gets logged and also returned to the caller. Otherwise
+// the function will return nil.
+func validateGetRequest(ctx echo.Context, params GetCustomersParams) error {
+	if params.Identifier != nil && params.Query != nil {
+		ctx.Logger().Error("using the query and identifier parameters at the same time is forbidden")
+		return ctx.String(http.StatusBadRequest, "using the query and identifier parameters at the same time is forbidden")
+	}
+	return nil
+}
+
+// onIdNotFound handles the event when there was no element for an given id. The incident is
+// logged and the appropriate HTTP response is given to the callee.
+func onIdNotFound(ctx echo.Context, id, typeName string) error {
+	msg := fmt.Sprintf("no %s for id %s found", typeName, id)
+	ctx.Logger().Error(msg)
+	return ctx.String(http.StatusNotFound, msg)
+
+}
+
 // Get all customers
 // (GET /customers)
 func (e *Endpoint) GetCustomers(ctx echo.Context, params GetCustomersParams) error {
@@ -52,10 +72,10 @@ func (e *Endpoint) GetCustomers(ctx echo.Context, params GetCustomersParams) err
 	defer e.mutex.Unlock()
 	var rsl Parties
 
-	if params.Identifier != nil && params.Query != nil {
-		ctx.Logger().Error("using the query and identifier parameters at the same time is forbidden")
-		return ctx.String(http.StatusBadRequest, "using the query and identifier parameters at the same time is forbidden")
-	} else if params.Identifier != nil {
+	if err := validateGetRequest(ctx, params); err != nil {
+		return err
+	}
+	if params.Identifier != nil {
 		cst, err := e.schema.Parties.CustomerByIdentifier(*params.Identifier)
 		if err != nil {
 			msg := fmt.Sprintf("found multiple customers for given ident %sb, please fix this duplication first", *params.Identifier)
@@ -85,7 +105,15 @@ func (e *Endpoint) DeleteCustomersId(ctx echo.Context, id string) error {
 // Get a customer by ID
 // (GET /customers/{id})
 func (e *Endpoint) GetCustomersId(ctx echo.Context, id string) error {
-	return nil
+	e.mutex.Lock()
+	defer e.mutex.Unlock()
+
+	rsl, err := e.schema.Parties.CustomerByRef(schema.NewRef(id))
+	if err != nil {
+		return onIdNotFound(ctx, id, "customer")
+	}
+
+	return ctx.JSON(http.StatusOK, fromAccParty(*rsl))
 }
 
 // Add a customer
