@@ -13,7 +13,8 @@ type Ref struct {
 // NewRef returns a new Reference with the given id.
 func NewRef(id string) Ref {
 	return Ref{
-		Id: id}
+		Id: id,
+	}
 }
 
 // Empty returns whether a referencing id is set
