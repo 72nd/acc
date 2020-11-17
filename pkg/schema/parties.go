@@ -133,24 +133,6 @@ func (p Parties) EmployeeStringByRef(ref Ref) string {
 	return emp.String()
 }
 
-func (p Parties) CustomerByIdent(ident string) (*Party, error) {
-	for i := range p.Customers {
-		if p.Customers[i].Identifier == ident {
-			return &p.Customers[i], nil
-		}
-	}
-	return nil, fmt.Errorf("no customer for identifier «%s» found", ident)
-}
-
-func (p Parties) EmployeeByIdent(ident string) (*Party, error) {
-	for i := range p.Employees {
-		if p.Employees[i].Identifier == ident {
-			return &p.Employees[i], nil
-		}
-	}
-	return nil, fmt.Errorf("no employee for identifier «%s» found", ident)
-}
-
 func (p Parties) CustomerStringByRef(ref Ref) string {
 	if ref.Empty() {
 		return "no customer associated"
