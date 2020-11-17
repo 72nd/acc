@@ -2,6 +2,7 @@ package schema
 
 import (
 	"fmt"
+
 	"github.com/72nd/acc/pkg/util"
 	"github.com/creasty/defaults"
 	"github.com/google/uuid"

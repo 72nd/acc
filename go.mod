@@ -6,7 +6,7 @@ require (
 	github.com/GeertJohan/go.rice v1.0.0
 	github.com/Rhymond/go-money v1.0.1
 	github.com/creasty/defaults v1.3.0
-	github.com/deepmap/oapi-codegen v1.4.1
+	github.com/deepmap/oapi-codegen v1.4.0
 	github.com/getkin/kin-openapi v0.26.0
 	github.com/google/uuid v1.1.1
 	github.com/labstack/echo/v4 v4.1.17

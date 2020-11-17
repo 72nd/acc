@@ -3,6 +3,7 @@ package api
 
 import (
 	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/72nd/acc/pkg/schema"
@@ -54,10 +55,9 @@ func (e *Endpoint) Serve(port int) {
 func (e *Endpoint) GetCustomers(ctx echo.Context, params GetCustomersParams) error {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
+	cst := fromAccParties(e.schema.Parties.Customers)
 
-
-
-	return nil
+	return ctx.JSON(http.StatusOK, cst)
 }
 
 // Remove a customer
@@ -101,7 +101,6 @@ func (e *Endpoint) DeleteEmployeesId(ctx echo.Context, id string) error {
 func (e *Endpoint) GetEmployeesId(ctx echo.Context, id string) error {
 	return nil
 }
-
 
 // Add a employee
 // (POST /employees/{id})
