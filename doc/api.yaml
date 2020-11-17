@@ -191,7 +191,7 @@ paths:
       tags:
         - customer
       summary: Remove a customer
-      response:
+      responses:
         200:
           description: Customer deleted successfully.
         404:
@@ -284,7 +284,7 @@ paths:
       tags:
         - employee
       summary: Remove a employee
-      response:
+      responses:
         200:
           description: Employee deleted successfully.
         404:
@@ -377,7 +377,7 @@ paths:
       tags:
         - expense
       summary: Remove a Expense
-      response:
+      responses:
         200:
           description: Expense deleted successfully.
         404:
@@ -470,7 +470,7 @@ paths:
       tags:
         - invoice
       summary: Remove a Invoice
-      response:
+      responses:
         200:
           description: Invoice deleted successfully.
         404:
@@ -563,7 +563,7 @@ paths:
       tags:
         - misc_record
       summary: Remove a Miscellaneous Record
-      response:
+      responses:
         200:
           description: Miscellaneous Record deleted successfully.
         404:
@@ -656,7 +656,7 @@ paths:
       tags:
         - project
       summary: Remove a Project
-      response:
+      responses:
         200:
           description: Project deleted successfully.
         404:
