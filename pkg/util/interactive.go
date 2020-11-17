@@ -11,10 +11,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// GermanLayout defines the default date string layout for the interactive input. DD-MM-YYYY.
 const GermanLayout = "02-01-2006"
 
+// SearchItems are a collection of SearchItem's.
 type SearchItems []SearchItem
 
+// Match matches a given string against all items in the slice and returns all matching elements.
 func (s SearchItems) Match(search string) SearchItems {
 	var result SearchItems
 	for i := range s {
@@ -25,6 +28,7 @@ func (s SearchItems) Match(search string) SearchItems {
 	return result
 }
 
+// ByIndex returns an element of the slice by it's index.
 func (s SearchItems) ByIndex(index int) (*SearchItem, error) {
 	if index < 0 || len(s) <= index+1 {
 		return nil, errors.New(fmt.Sprintf("no item found for index %d", index))
@@ -32,11 +36,21 @@ func (s SearchItems) ByIndex(index int) (*SearchItem, error) {
 	return &s[index], nil
 }
 
+// SearchItem is a representation of an object used to be matched against some query. This
+// is used in the interactive input to search for items and for the query parameter in the
+// rest API.
 type SearchItem struct {
+	// Name is shown to the user and should adequately describe the element.
 	Name        string
+	// Type describes the type of the element for the user.
 	Type        string
+	// Value defines the value used to associate the element. Usually the id.
 	Value       interface{}
+	// SearchValue is the string the query is matched against. Normally contains contacted 
+	// values of the element.
 	SearchValue string
+	// The element as whole, used in the REST API.
+	Element     interface{}
 }
 
 type Strategy int
