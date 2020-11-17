@@ -24,7 +24,11 @@ func RelativeAssetPath(absolute, asset string) string {
 
 // AbsolutePathWithWD returns the absolute path of a given path in relation to the
 // current working dir. This is mainly used to normalize user inputs (like for assets).
+// If the path is already absolute it will be returned without any change.
 func AbsolutePathWithWD(path string) string {
+	if filepath.IsAbs(path) {
+		return path
+	}
 	wd, err := os.Getwd()
 	if err != nil {
 		logrus.Fatal("working directory not found: ", err)
