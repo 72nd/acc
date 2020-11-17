@@ -39,44 +39,44 @@ tags:
     x-displayName: Expense Model
     description: |
       ### Expenses
-      <SchemaDefinition schemaRef="#/models/expenses" />
+      <SchemaDefinition schemaRef="#/components/schemas/expenses" />
 
       ### Expense
-      <SchemaDefinition schemaRef="#/models/expense" />
+      <SchemaDefinition schemaRef="#/components/schemas/expense" />
 
   - name: invoice_model
     x-displayName: Invoice Model
     description: |
       ### Invoices
-      <SchemaDefinition schemaRef="#/models/invoices" />
+      <SchemaDefinition schemaRef="#/components/schemas/invoices" />
 
       ### Invoice
-      <SchemaDefinition schemaRef="#/models/invoice" />
+      <SchemaDefinition schemaRef="#/components/schemas/invoice" />
 
   - name: misc_record_model
     x-displayName: Miscellaneous Records Model
     description: |
       ### Miscellaneous Records
-      <SchemaDefinition schemaRef="#/models/miscRecords" />
+      <SchemaDefinition schemaRef="#/components/schemas/miscRecords" />
 
       ### Miscellaneous Record
-      <SchemaDefinition schemaRef="#/models/miscRecord" />
+      <SchemaDefinition schemaRef="#/components/schemas/miscRecord" />
   - name: party_model
     x-displayName: Party Model (Customer, Employee)
     description: |
       ### Parties
-      <SchemaDefinition schemaRef="#/models/parties" />
+      <SchemaDefinition schemaRef="#/components/schemas/parties" />
 
       ### Party
-      <SchemaDefinition schemaRef="#/models/party" />
+      <SchemaDefinition schemaRef="#/components/schemas/party" />
   - name: project_model
     x-displayName: Project Model
     description: |
       ### Projects
-      <SchemaDefinition schemaRef="#/models/projects" />
+      <SchemaDefinition schemaRef="#/components/schemas/projects" />
 
       ### Project
-      <SchemaDefinition schemaRef="#/models/project" />
+      <SchemaDefinition schemaRef="#/components/schemas/project" />
   - name: statement_model
     x-displayName: Bank Statement Model
     description: 
@@ -104,45 +104,967 @@ x-tagGroups:
       - transaction_model
 paths:
   /customers:
-    $ref: 'parties.yaml#/paths/customers'
+    get:
+      tags:
+        - customer
+      summary: Get all customers
+      description: Returns an Array of all customers with the option to query them. 
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Customers.
+        - in: query
+          name: identifier
+          schema:
+            type: string
+          description: Search for Customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching customers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parties'
+        500:
+          description: Internal Server Error
   /customers/{id}:
-    $ref: 'parties.yaml#/paths/customerById'
+    parameters:
+      - in: path
+        name: id
+        description: Unique ID of the requested customer
+        schema:
+          type: string
+        required: true
+        example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
+    get:
+      tags:
+        - customer
+      summary: Get a customer by ID
+      responses:
+        200:
+          description: A customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/party'
+        404:
+          description: No Customer with specified ID found.
+        500:
+          description: Internal Server Error
+    put:
+      tags:
+        - customer
+      summary: Update a customer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/partyBase'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No Customer with specified ID found.
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - customer
+      summary: Add a customer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/partyBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Customer failed.
+        500:
+          description: Internal Server Error
+    delete:
+      tags:
+        - customer
+      summary: Remove a customer
+      response:
+        200:
+          description: Customer deleted successfully.
+        404:
+          description: No Customer with specified ID found.
+        500:
+          description: Internal Server Error
   /employees:
-    $ref: 'parties.yaml#/paths/employees'
+    get:
+      tags:
+        - employee
+      summary: Get all employees
+      description: Returns an Array of all employees with the option to query them. 
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Employees.
+        - in: query
+          name: identifier
+          schema:
+            type: string
+          description: Search for Employees with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching employees
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/parties'
+        500:
+          description: Internal Server Error
+  /employees/{id}:
+    parameters:
+      - in: path
+        name: id
+        description: Unique ID of the requested customer
+        schema:
+          type: string
+        required: true
+        example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
+    get:
+      tags:
+        - employee
+      summary: Get a employee by ID
+      responses:
+        200:
+          description: A employee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/party'
+        404:
+          description: No Employee with specified ID found.
+        500:
+          description: Internal Server Error
+    put:
+      tags:
+        - employee
+      summary: Update a employee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/partyBase'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No Employee with specified ID found.
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - employee
+      summary: Add a employee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/partyBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Employee failed.
+        500:
+          description: Internal Server Error
+    delete:
+      tags:
+        - employee
+      summary: Remove a employee
+      response:
+        200:
+          description: Employee deleted successfully.
+        404:
+          description: No Employee with specified ID found.
+        500:
+          description: Internal Server Error
   /expenses:
-    $ref: 'expenses.yaml#/paths/expenses'
+    get:
+      tags:
+        - expense
+      summary: Get all Expenses
+      description: Returns an array of all Expenses which optionally matches to some query.
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Expenses.
+        - in: query
+          name: identifier
+          schema:
+            type: string
+          description: Search for Expenses with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching Expenses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/expenses'
+        500:
+          description: Internal Server Error
   /expenses/{id}:
-    $ref: 'expenses.yaml#/paths/expenseById'
+    parameters:
+      - in: path
+        name: id
+        description: Unique ID of the requested Expense
+        schema:
+          type: string
+        required: true
+        example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
+    get:
+      tags:
+        - expense
+      summary: Get a Expense by ID
+      responses:
+        200:
+          description: A expense
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/expense'
+        404:
+          description: No Expense with specified ID found.
+        500:
+          description: Internal Server Error
+    put:
+      tags:
+        - expense
+      summary: Update a Expense
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/expenseBase'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No Expense with specified ID found.
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - expense
+      summary: Add a Expense
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/expenseBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Expense failed.
+        500:
+          description: Internal Server Error
+    delete:
+      tags:
+        - expense
+      summary: Remove a Expense
+      response:
+        200:
+          description: Expense deleted successfully.
+        404:
+          description: No Expense with specified ID found.
+        500:
+          description: Internal Server Error
   /invoices:
-    $ref: 'invoices.yaml#/paths/invoices'
+    get:
+      tags:
+        - invoice
+      summary: Get all invoices
+      description: Returns an array of all invoices which optionally matches to some query.
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Invoices.
+        - in: query
+          name: identifier
+          schema:
+            type: string
+          description: Search for Invoices with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching Invoices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invoices'
+        500:
+          description: Internal Server Error
   /invoices/{id}:
-    $ref: 'invoices.yaml#/paths/invoiceById'
+    parameters:
+      - in: path
+        name: id
+        description: Unique ID of the requested Invoice
+        schema:
+          type: string
+        required: true
+        example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
+    get:
+      tags:
+        - invoice
+      summary: Get a Invoice by ID
+      responses:
+        200:
+          description: A Invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/invoice'
+        404:
+          description: No Invoice with specified ID found.
+        500:
+          description: Internal Server Error
+    put:
+      tags:
+        - invoice
+      summary: Update a Invoice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/invoiceBase'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No Invoice with specified ID found.
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - invoice
+      summary: Add a Invoice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/invoiceBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Invoice failed.
+        500:
+          description: Internal Server Error
+    delete:
+      tags:
+        - invoice
+      summary: Remove a Invoice
+      response:
+        200:
+          description: Invoice deleted successfully.
+        404:
+          description: No Invoice with specified ID found.
+        500:
+          description: Internal Server Error
   /misc_records:
-    $ref: 'misc.yaml#/paths/miscRecords'
+    get:
+      tags:
+        - misc_record
+      summary: Get all Miscellaneous Records
+      description: Returns an array of all Miscellaneous Records which optionally matches to some query.
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching customers.
+        - in: query
+          name: identifier
+          schema:
+            type: string
+          description: Search for Miscellaneous Records with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching Miscellaneous Records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/miscRecords'
+        500:
+          description: Internal Server Error
   /misc_records/{id}:
-    $ref: 'misc.yaml#/paths/miscRecordById'
+    parameters:
+      - in: path
+        name: id
+        description: Unique ID of the requested Miscellaneous Record
+        schema:
+          type: string
+        required: true
+        example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
+    get:
+      tags:
+        - misc_record
+      summary: Get a Miscellaneous Record by ID
+      responses:
+        200:
+          description: A misc
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/miscRecord'
+        404:
+          description: No Miscellaneous Record with specified ID found.
+        500:
+          description: Internal Server Error
+    put:
+      tags:
+        - misc_record
+      summary: Update a Miscellaneous Record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/miscRecordBase'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No Miscellaneous Record with specified ID found.
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - misc_record
+      summary: Add a Miscellaneous Record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/miscRecordBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Miscellaneous Record failed.
+        500:
+          description: Internal Server Error
+    delete:
+      tags:
+        - misc_record
+      summary: Remove a Miscellaneous Record
+      response:
+        200:
+          description: Miscellaneous Record deleted successfully.
+        404:
+          description: No Miscellaneous Record with specified ID found.
+        500:
+          description: Internal Server Error
   /projects:
-    $ref: 'projects.yaml#/paths/projects'
+    get:
+      tags:
+        - project
+      summary: Get all Projects
+      description: Returns an array of all Projects which optionally matches to some query.
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Projects.
+        - in: query
+          name: identifier
+          schema:
+            type: string
+          description: Search for Projects with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+      responses:
+        200:
+          description: All matching Projects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/projects'
+        500:
+          description: Internal Server Error
   /projects/{id}:
-    $ref: 'projects.yaml#/paths/projectById'
-models:
-  parties:
-    $ref: 'parties.yaml#/schemas/parties'
-  party:
-    $ref: 'parties.yaml#/schemas/party'
-  expenses:
-    $ref: 'expenses.yaml#/schemas/expenses'
-  expense:
-    $ref: 'expenses.yaml#/schemas/expense'
-  invoices:
-    $ref: 'invoices.yaml#/schemas/invoices'
-  invoice:
-    $ref: 'invoices.yaml#/schemas/invoice'
-  miscRecords:
-    $ref: 'misc.yaml#/schemas/miscRecords'
-  miscRecord:
-    $ref: 'misc.yaml#/schemas/miscRecord'
-  projects:
-    $ref: 'projects.yaml#/schemas/projects'
-  project:
-    $ref: 'projects.yaml#/schemas/project'
+    parameters:
+      - in: path
+        name: id
+        description: Unique ID of the requested Project
+        schema:
+          type: string
+        required: true
+        example: 8b205b3f-33c0-4758-a780-9f2c8119caf6
+    get:
+      tags:
+        - project
+      summary: Get a Project by ID
+      responses:
+        200:
+          description: A project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/project'
+        404:
+          description: No Project with specified ID found.
+        500:
+          description: Internal Server Error
+    put:
+      tags:
+        - project
+      summary: Update a Project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/projectBase'
+      responses:
+        200:
+          description: Updated successfully.
+        404:
+          description: No Project with specified ID found.
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - project
+      summary: Add a Project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/projectBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Project failed.
+        500:
+          description: Internal Server Error
+    delete:
+      tags:
+        - project
+      summary: Remove a Project
+      response:
+        200:
+          description: Project deleted successfully.
+        404:
+          description: No Project with specified ID found.
+        500:
+          description: Internal Server Error
+components:
+  schemas:
+    parties:
+      type: array
+      description: A collection of multiple parties (customers or employees)
+      items:
+        $ref: '#/components/schemas/party'
+    partyBase:
+      type: object
+      description: A company or person (customer or employee) which is in in some way relevant to the company
+      properties:
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Party, should be human readable
+          example: 'c-5'
+        name:
+          type: string
+          description: Name of the person/company
+          example: Max Mustermann
+        street: 
+          type: string
+          description: Name of the street the party residence in
+          example: Society Street
+        streetNr:
+          type: integer
+          description: Street number of party's address
+          example: 49
+        postalCode:
+          type: integer
+          description: ZIP/Postal-Code of the address
+          example: 8000
+        place:
+          type: string
+          description: Name of the place
+          example: Zürich
+        partyType:
+          type: integer
+          description: States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
+          enum:
+            - 0
+            - 1
+          example: 0
+    party:
+      type: object
+      description: A company or person (customer or employee) which is in in some way relevant to the company
+      properties:
+        id:
+          type: string
+          description: UUID of the object used for the universal identification of an element
+          example: 33eaa67e-3225-4d1e-962f-3c4fdd8b3602
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Invoice, should be human readable
+          example: 'i-28'
+        name:
+          type: string
+          description: Name of the person/company
+          example: Max Mustermann
+        street: 
+          type: string
+          description: Name of the street the party residence in
+          example: Society Street
+        streetNr:
+          type: integer
+          description: Street number of party's address
+          example: 49
+        postalCode:
+          type: integer
+          description: ZIP/Postal-Code of the address
+          example: 8000
+        place:
+          type: string
+          description: Name of the place
+          example: Zürich
+        partyType:
+          type: integer
+          description: States whether a party is a customer or a employee. 0 = Employee, 1 = Customer.
+          enum:
+            - 0
+            - 1
+          example: 0
+    expenses:
+      type: array
+      description: A collection of multiple Expenses
+      items:
+        $ref: '#/components/schemas/expense'
+    expenseBase:
+      type: object
+      description: Expense represents a payment done by the company or a third party to assure the ongoing of the business
+      properties:
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Expense, should be human readable
+          example: 'e-69'
+        name:
+          type: string
+          description: Describes meaningful manner the Expense
+          example: HAL 9000
+        amount:
+          type: string
+          pattern: '^\d*\.\d{2}\s[A-z]{3}$'
+          example: '230.42 CHF'
+          description: The costs of the Expense
+        path:
+          type: string
+          description: The full path to the business record document (PDF or PNG)
+          example: /path/to/expense.pdf
+        dateOfAccrual:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+          description: Day the obligation emerged
+        billable:
+          type: boolean
+          description: States whether the costs for the Expense will be forwarded to the customer
+        obligedCustomerId:
+          type: string
+          description: Refers to the customer which have to pay the Expense
+          example: c-15
+        advancedByThirdParty:
+          type: boolean
+          description: States whether a third party (employee, etc.) advanced the payment of this Expense for the company
+        advancedThirdPartyId:
+          type: string
+          description: Refers to the third party which advanced the payment
+          example: y-46
+        dateOfSettlement:
+          type: string
+          description: The date of the settlement of the Expense (the company has not to take further actions after this date)
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+        settlementTransactionId:
+          type: string
+          description: Refers to a possible bank transaction which settled the Expense for the company
+        expenseCategory:
+          type: string
+          description: "Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc."
+          example: Food
+        paidWithDebit:
+          type: boolean
+          description: States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
+        internal:
+          type: boolean
+          description: States whether this Expense is for an internal purpose or not.
+        projectId:
+          type: string
+          description: Refers to the associated project.
+    expense:
+      type: object
+      description: Expense represents a payment done by the company or a third party to assure the ongoing of the business
+      properties:
+        id:
+          type: string
+          description: UUID of the object used for the universal identification of an element
+          example: 33eaa67e-3225-4d1e-962f-3c4fdd8b3602
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Expense, should be human readable
+          example: 'e-69'
+        name:
+          type: string
+          description: Describes meaningful manner the Expense
+          example: HAL 9000
+        amount:
+          type: string
+          description: Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
+          pattern: '^\d*\.\d{2}\s[A-z]{3}$'
+          example: '230.42 CHF'
+        path:
+          type: string
+          description: The full path to the business record document (PDF or PNG)
+          example: /path/to/expense.pdf
+        dateOfAccrual:
+          type: string
+          description: Day the obligation emerged
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+        billable:
+          type: boolean
+          description: States whether the costs for the Expense will be forwarded to the customer
+        obligedCustomerId:
+          type: string
+          description: Refers to the customer which have to pay the Expense
+          example: c-15
+        advancedByThirdParty:
+          type: boolean
+          description: States whether a third party (employee, etc.) advanced the payment of this Expense for the company
+        advancedThirdPartyId:
+          type: string
+          description: Refers to the third party which advanced the payment
+          example: y-46
+        dateOfSettlement:
+          type: string
+          description: The date of the settlement of the Expense (the company has not to take further actions after this date)
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+        settlementTransactionId:
+          type: string
+          description: Refers to a possible bank transaction which settled the Expense for the company
+        expenseCategory:
+          type: string
+          description: "Classify the Expense into an Expense category. This information is used to generate the ledger entries for the Expense. Notice: The Expense category has to be existent in acc."
+          example: Food
+        paidWithDebit:
+          type: boolean
+          description: States whether the Expense was directly paid with the main account debithether the Expense was directly paid with the main account debit card.
+        internal:
+          type: boolean
+          description: States whether this Expense is for an internal purpose or not.
+        projectId:
+          type: string
+          description: Refers to the associated project.
+    invoices:
+      type: array
+      description: A collection of multiple Invoices
+      items:
+        $ref: '#/components/schemas/invoice'
+    invoiceBase:
+      type: object
+      description: A Invoice sent to a customer.
+      properties:
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Invoice, should be human readable
+          example: 'i-28'
+        name:
+          type: string
+          description: Describes the Invoice.
+          example: Your Invoice
+        amount:
+          description: Outstanding amount.
+          type: string
+          pattern: '^\d*\.\d{2}\s[A-z]{3}$'
+          example: '230.42 CHF'
+        path:
+          type: string
+          description: The full path to the business record document (PDF or PNG).
+          example: /path/to/invoice.pdf
+        revoked:
+          type: boolean
+          description: Revoked Invoices are disabled an no longer taken into account.
+        customerId:
+          type: string
+          description: Refers to the customer the Invoice was sent to.
+          example: c-17
+        sendDate:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+          description: Day the Invoice was sent to the customer.
+        dateOfSettlement:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+          description: The date the customer paid the outstanding amount.
+        settlementTransactionId:
+          type: string
+          description: Refers to a possible bank transaction which settled the Invoice for the company.
+          example: t-115
+        projectId:
+          type: string
+          description: Refers to the associated project.
+    invoice:
+      type: object
+      description: A Invoice sent to a customer.
+      properties:
+        id:
+          type: string
+          description: UUID of the object used for the universal identification of an element
+          example: 33eaa67e-3225-4d1e-962f-3c4fdd8b3602
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Invoice, should be human readable
+          example: 'i-28'
+        name:
+          type: string
+          description: Describes the Invoice.
+          example: Your Invoice
+        amount:
+          description: Outstanding amount.
+          type: string
+          pattern: '^\d*\.\d{2}\s[A-z]{3}$'
+          example: '230.42 CHF'
+        path:
+          type: string
+          description: The full path to the business record document (PDF or PNG).
+          example: /path/to/invoice.pdf
+        revoked:
+          type: boolean
+          description: Revoked Invoices are disabled an no longer taken into account.
+        customerId:
+          type: string
+          description: Refers to the customer the Invoice was sent to.
+          example: c-17
+        sendDate:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+          description: Day the Invoice was sent to the customer.
+        dateOfSettlement:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+          description: The date the customer paid the outstanding amount.
+        settlementTransactionId:
+          type: string
+          description: Refers to a possible bank transaction which settled the Invoice for the company.
+          example: t-115
+        projectId:
+          type: string
+          description: Refers to the associated project.
+    miscRecords:
+      type: array
+      description: A collection of multiple Miscellaneous Records
+      items:
+        $ref: '#/components/schemas/miscRecord'
+    miscRecordBase:
+      type: object
+      description: "Business records which are not invoices or expenses but still important for accounting. Example: A credit note from an insurance."
+      properties:
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Invoice, should be human readable
+          example: 'i-28'
+        name:
+          type: string
+          description: Name of the Miscellaneous Record.
+          example: Health insurance settlement
+        path:
+          type: string
+          description: The full path to the business record document (PDF or PNG)
+          example: /path/to/misc-record.pdf
+        date:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+          description: Day the Miscellaneous Record arrived emerged
+        settlementTransactionId:
+          type: string
+          description: Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
+          example: t-115
+    miscRecord:
+      type: object
+      description: "Business records which are not invoices or expenses but still important for accounting. Example: A credit note from an insurance."
+      properties:
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Miscellaneous Records, should be human readable
+          example: 'm-10'
+        name:
+          type: string
+          description: Name of the Miscellaneous Record.
+          example: Health insurance settlement
+        path:
+          type: string
+          description: The full path to the business record document (PDF or PNG)
+          example: /path/to/misc-record.pdf
+        date:
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
+          description: Day the Miscellaneous Record arrived emerged
+        settlementTransactionId:
+          type: string
+          description: Refers to an optional transaction which was issued upon the arrival of the Miscellaneous Record. Name of this property is misleading and will be changed in a future version.
+          example: t-115
+    projects:
+      type: array
+      description: A collection of multiple Projects
+      items:
+        $ref: '#/components/schemas/project'
+    projectBase:
+      type: object
+      description: A Project for a specific Customer.
+      properties:
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Project, should be human readable
+          example: 'c-5'
+        name:
+          type: string
+          description: Name of the Project.
+          example: Aktion neue soziale Marktwirtschaft
+        customerId:
+          type: string
+          description: Refers to the customer the project is associated to.
+          example: c-15
+    project:
+      type: object
+      description: A Project for a specific Customer.
+      properties:
+        id:
+          type: string
+          description: UUID of the object used for the universal identification of an element
+          example: 33eaa67e-3225-4d1e-962f-3c4fdd8b3602
+        identifier:
+          type: string
+          description: Unique user-chosen identifier for a Project, should be human readable
+          example: 'c-5'
+        name:
+          type: string
+          description: Name of the Project.
+          example: Aktion neue soziale Marktwirtschaft
+        customerId:
+          type: string
+          description: Refers to the customer the project is associated to.
+          example: c-15

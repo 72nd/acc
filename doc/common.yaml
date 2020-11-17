@@ -1,12 +1,12 @@
 money:
-  type: string
-  description: Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
-  pattern: '^\d*\.\d{2}\s[A-z]{3}$'
-  example: '230.42 CHF'
+          type: string
+          pattern: '^\d*\.\d{2}\s[A-z]{3}$'
+          example: '230.42 CHF'
+          description: Representation of a amount of money. Cents are appended as a two digit number separated by a dot. The value has to be appended with the three character currency code.
 id:
-  type: string
-  description: UUID of the object used for the universal identification of an element
-  example: 33eaa67e-3225-4d1e-962f-3c4fdd8b3602
+          type: string
+          description: UUID of the object used for the universal identification of an element
+          example: 33eaa67e-3225-4d1e-962f-3c4fdd8b3602
 idParam:
   in: path
   name: id
@@ -40,10 +40,9 @@ identifier:
     description: Unique user-chosen identifier for a Transaction, should be human readable
     example: 't-115'
 date:
-  type: string
-  description: A date in the calender in the format YYYY-MM-DD
-  pattern: '^\d{4}-\d{2}-\d{2}$'
-  example: 2014-05-23
+          type: string
+          pattern: '^\d{4}-\d{2}-\d{2}$'
+          example: 2014-05-23
 ref:
   type: string
   description: References to an element with another data type by UUID's
