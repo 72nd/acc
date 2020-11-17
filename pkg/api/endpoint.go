@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	middleware "github.com/labstack/echo/v4/middleware"
 	"github.com/neko-neko/echo-logrus/v2/log"
+	"github.com/sirupsen/logrus"
 )
 
 // Defines the endpoint for the REST interface.
@@ -31,13 +32,6 @@ func NewEndpoint(s *schema.Schema) Endpoint {
 
 // Serve Runs the REST endpoint on the given port.
 func (e *Endpoint) Serve(port int) {
-	/*
-		swagger, err := GetSwagger()
-		if err != nil {
-			logrus.Fatalf("error loading OpenAPI spec: %s", err)
-		}
-		swagger.Servers = nil
-	*/
 	echo := echo.New()
 	echo.Logger = log.Logger()
 	echo.Use(middleware.Logger())
@@ -47,6 +41,7 @@ func (e *Endpoint) Serve(port int) {
 	if port == 0 {
 		port = 8000
 	}
+	logrus.Warn("Do NOT expose this API to any network or use it with mutliple users")
 	echo.Logger.Fatal(echo.Start(fmt.Sprintf("0.0.0.0:%d", port)))
 }
 
@@ -55,9 +50,30 @@ func (e *Endpoint) Serve(port int) {
 func (e *Endpoint) GetCustomers(ctx echo.Context, params GetCustomersParams) error {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
-	cst := fromAccParties(e.schema.Parties.Customers)
+	var rsl Parties
 
-	return ctx.JSON(http.StatusOK, cst)
+	if params.Identifier != nil && params.Query != nil {
+		ctx.Logger().Error("using the query and identifier parameters at the same time is forbidden")
+		return ctx.String(http.StatusBadRequest, "using the query and identifier parameters at the same time is forbidden")
+	} else if params.Identifier != nil {
+		cst, err := e.schema.Parties.CustomerByIdentifier(*params.Identifier)
+		if err != nil {
+			msg := fmt.Sprintf("found multiple customers for given ident %sb, please fix this duplication first", *params.Identifier)
+			ctx.Logger().Error(msg)
+			return ctx.String(
+				http.StatusInternalServerError, msg)
+		}
+		rsl = Parties{fromAccParty(*cst)}
+	} else if params.Query != nil {
+		items := e.schema.Parties.CustomersSearchItems().Match(*params.Query)
+		rsl = make(Parties, len(items))
+		for i := range items {
+			rsl[i] = fromAccParty(items[i].Element.(schema.Party))
+		}
+	} else {
+		rsl = fromAccParties(e.schema.Parties.Customers)
+	}
+	return ctx.JSON(http.StatusOK, rsl)
 }
 
 // Remove a customer

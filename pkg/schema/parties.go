@@ -195,19 +195,19 @@ type Party struct {
 	// Id is the internal unique identifier of the Expense.
 	Id string `yaml:"id" default:""`
 	// Value is a unique user chosen identifier, has to be the same in all source files (bank statements, bimpf dumps...).
-	Identifier string    `yaml:"identifier" default:"?-1"`
+	Identifier string `yaml:"identifier" default:"?-1"`
 	// Name of the person/company
-	Name       string    `yaml:"name" default:"Max Mustermann"`
+	Name string `yaml:"name" default:"Max Mustermann"`
 	// Street number of party's address
-	Street     string    `yaml:"street" default:"Main Street"`
+	Street string `yaml:"street" default:"Main Street"`
 	// Street number of the party's address
-	StreetNr   int       `yaml:"streetNr" default:"1"`
+	StreetNr int `yaml:"streetNr" default:"1"`
 	// ZIP/Postal-Code of the address
-	PostalCode int       `yaml:"postalCode" default:"8000"`
+	PostalCode int `yaml:"postalCode" default:"8000"`
 	// Name of person's/company's place.
-	Place      string    `yaml:"place" default:"Zurich"`
+	Place string `yaml:"place" default:"Zurich"`
 	// States whether a party is a customer or a employee.
-	PartyType  PartyType `yaml:"partyType" default:"0"`
+	PartyType PartyType `yaml:"partyType" default:"0"`
 }
 
 // NewParty returns a new Party with the default values.
@@ -311,6 +311,7 @@ func (p Party) SearchItem(typ string) util.SearchItem {
 		Type:        typ,
 		Value:       p.Id,
 		SearchValue: fmt.Sprintf("%s %s %s", p.Name, p.Identifier, p.Place),
+		Element:     p,
 	}
 }
 

@@ -114,12 +114,12 @@ paths:
           name: query
           schema:
             type: string
-          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Customers.
+          description: The current version of Acc doesn't support searching in specific parameters it uses a fuzzy search over all advisable fields and returns any matching Customers. The use of both parameters is currently not supported as this makes no sense (every identifier can only exist once).
         - in: query
           name: identifier
           schema:
             type: string
-          description: Search for Customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever).
+          description: Search for Customers with a matching identifier. This returns only exact matching elements (no fuzzy search whatsoever). The use of both parameters is currently not supported as this makes no sense (every identifier can only exist once).
       responses:
         200:
           description: All matching customers
@@ -127,6 +127,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/parties'
+        400:
+          description: Malformed request, also when query and identifier parameters where used at the same time.
         500:
           description: Internal Server Error
   /customers/{id}:
