@@ -99,7 +99,7 @@ type Document struct {
 
 // ConvertAsInvoice converts the document to a Bimpf Invoice.
 // Amount is set to -1 as Bimpf does not provide such information.
-func (d Document) ConvertAsInvoice(pathPrefix, customerId, projectName string, parties schema.Parties) schema.Invoice {
+func (d Document) ConvertAsInvoice(pathPrefix, customerId, projectName string, parties schema.PartiesCollection) schema.Invoice {
 	inv := schema.Invoice{
 		Identifier:            d.SbId,
 		Name:                  d.Name,

@@ -216,7 +216,7 @@ func (t Transaction) parseAssociatedDocument(expenses Expenses, invoices Invoice
 	return invoice, nil
 }
 
-func (t Transaction) parseAssociatedParty(desc string, parties Parties) (Identifiable, error) {
+func (t Transaction) parseAssociatedParty(desc string, parties PartiesCollection) (Identifiable, error) {
 	desc = strings.ToLower(desc)
 	pty := append(parties.Customers, parties.Employees...)
 	for i := range pty {

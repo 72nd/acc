@@ -20,13 +20,13 @@ const (
 	CustomerType
 )
 
-type Parties struct {
+type PartiesCollection struct {
 	Employees []Party `yaml:"employees"`
 	Customers []Party `yaml:"customers"`
 }
 
 // NewParties returns a new Parties struct with the one Expense in it.
-func NewParties(useDefault bool) Parties {
+func NewParties(useDefault bool) PartiesCollection {
 	if useDefault {
 		cst := NewParty()
 		cst.Identifier = "c-1"
@@ -37,31 +37,31 @@ func NewParties(useDefault bool) Parties {
 		emp.PartyType = EmployeeType
 		emp.Name = "Working Max"
 
-		return Parties{
+		return PartiesCollection{
 			Employees: []Party{emp},
 			Customers: []Party{cst},
 		}
 	}
-	return Parties{
+	return PartiesCollection{
 		Employees: []Party{},
 		Customers: []Party{},
 	}
 }
 
 // OpenParties opens a Parties element saved in the json file given by the path.
-func OpenParties(path string) Parties {
-	var prt Parties
+func OpenParties(path string) PartiesCollection {
+	var prt PartiesCollection
 	util.OpenYaml(&prt, path, "parties")
 	return prt
 }
 
 // Save writes the element as a json to the given path.
-func (p Parties) Save(path string) {
+func (p PartiesCollection) Save(path string) {
 	util.SaveToYaml(p, path, "parties")
 }
 
 // SetId sets a unique id to all elements in the struct.
-func (p Parties) SetId() {
+func (p PartiesCollection) SetId() {
 	for i := range p.Employees {
 		p.Employees[i].SetId()
 	}
@@ -70,7 +70,7 @@ func (p Parties) SetId() {
 	}
 }
 
-func (p Parties) GetCustomerIdentifiables() []Identifiable {
+func (p PartiesCollection) GetCustomerIdentifiables() []Identifiable {
 	pty := make([]Identifiable, len(p.Customers))
 	for i := range p.Customers {
 		pty[i] = p.Customers[i]
@@ -78,7 +78,7 @@ func (p Parties) GetCustomerIdentifiables() []Identifiable {
 	return pty
 }
 
-func (p Parties) GetEmployeeIdentifiables() []Identifiable {
+func (p PartiesCollection) GetEmployeeIdentifiables() []Identifiable {
 	pty := make([]Identifiable, len(p.Employees))
 	for i := range p.Employees {
 		pty[i] = p.Employees[i]
@@ -87,7 +87,7 @@ func (p Parties) GetEmployeeIdentifiables() []Identifiable {
 }
 
 // EmployeeByIdentifier returns a Employee if there is one with the given identifier. Otherwise an error will be returned.
-func (p Parties) EmployeeByIdentifier(ident string) (*Party, error) {
+func (p PartiesCollection) EmployeeByIdentifier(ident string) (*Party, error) {
 	for i := range p.Employees {
 		if p.Employees[i].Identifier == ident {
 			return &p.Employees[i], nil
@@ -97,7 +97,7 @@ func (p Parties) EmployeeByIdentifier(ident string) (*Party, error) {
 }
 
 // CustomerByIdentifier returns a Customer if there is one with the given identifier. Otherwise an error will be returned.
-func (p Parties) CustomerByIdentifier(ident string) (*Party, error) {
+func (p PartiesCollection) CustomerByIdentifier(ident string) (*Party, error) {
 	for i := range p.Customers {
 		if p.Customers[i].Identifier == ident {
 			return &p.Customers[i], nil
@@ -106,7 +106,7 @@ func (p Parties) CustomerByIdentifier(ident string) (*Party, error) {
 	return nil, fmt.Errorf("no customer for identifier «%s» found", ident)
 }
 
-func (p Parties) EmployeeByRef(ref Ref) (*Party, error) {
+func (p PartiesCollection) EmployeeByRef(ref Ref) (*Party, error) {
 	for i := range p.Employees {
 		if ref.Match(p.Employees[i]) {
 			return &p.Employees[i], nil
@@ -115,7 +115,7 @@ func (p Parties) EmployeeByRef(ref Ref) (*Party, error) {
 	return nil, fmt.Errorf("no employee for id «%s» found", ref.Id)
 }
 
-func (p Parties) CustomerByRef(ref Ref) (*Party, error) {
+func (p PartiesCollection) CustomerByRef(ref Ref) (*Party, error) {
 	for i := range p.Customers {
 		if ref.Match(p.Customers[i]) {
 			return &p.Customers[i], nil
@@ -124,7 +124,7 @@ func (p Parties) CustomerByRef(ref Ref) (*Party, error) {
 	return nil, fmt.Errorf("no customer for id «%s» found", ref.Id)
 }
 
-func (p Parties) EmployeeStringByRef(ref Ref) string {
+func (p PartiesCollection) EmployeeStringByRef(ref Ref) string {
 	emp, err := p.EmployeeByRef(ref)
 	if err != nil {
 		logrus.Error("no employee found: ", err)
@@ -133,7 +133,7 @@ func (p Parties) EmployeeStringByRef(ref Ref) string {
 	return emp.String()
 }
 
-func (p Parties) CustomerStringByRef(ref Ref) string {
+func (p PartiesCollection) CustomerStringByRef(ref Ref) string {
 	if ref.Empty() {
 		return "no customer associated"
 	}
@@ -145,7 +145,7 @@ func (p Parties) CustomerStringByRef(ref Ref) string {
 	return cst.String()
 }
 
-func (p Parties) EmployeesSearchItems() util.SearchItems {
+func (p PartiesCollection) EmployeesSearchItems() util.SearchItems {
 	result := make(util.SearchItems, len(p.Employees))
 	for i := range p.Employees {
 		result[i] = p.Employees[i].SearchItem("Employe")
@@ -153,7 +153,7 @@ func (p Parties) EmployeesSearchItems() util.SearchItems {
 	return result
 }
 
-func (p Parties) CustomersSearchItems() util.SearchItems {
+func (p PartiesCollection) CustomersSearchItems() util.SearchItems {
 	result := make(util.SearchItems, len(p.Customers))
 	for i := range p.Customers {
 		result[i] = p.Customers[i].SearchItem("Customer")
@@ -161,7 +161,7 @@ func (p Parties) CustomersSearchItems() util.SearchItems {
 	return result
 }
 
-func (p Parties) Validate() util.ValidateResults {
+func (p PartiesCollection) Validate() util.ValidateResults {
 	var rsl util.ValidateResults
 	for i := range p.Customers {
 		rsl = append(rsl, util.Check(p.Customers[i]))

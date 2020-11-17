@@ -172,7 +172,7 @@ func Open(path string, cmp schema.Company, jfg schema.JournalConfig, saveFunc fu
 		Expenses:      append(cnt.exp, cnt.prj.Expenses()...),
 		Invoices:      cnt.prj.Invoices(),
 		JournalConfig: jfg,
-		Parties: schema.Parties{
+		Parties: schema.PartiesCollection{
 			Customers: cnt.cst,
 			Employees: cnt.emp,
 		},

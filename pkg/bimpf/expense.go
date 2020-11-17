@@ -93,7 +93,7 @@ func (e Expense) Validate() util.ValidateResults {
 
 // Convert returns the bimpf Expense as a acc Expense.
 // As the path in the Bimpf Expense structure is not absolute (is relative to project folder in a nextcloud folder), a folder prefix is needed.
-func (e Expense) Convert(pathPrefix, obligedCustomerId, project string, parties schema.Parties, bimpfEmployees Employees) schema.Expense {
+func (e Expense) Convert(pathPrefix, obligedCustomerId, project string, parties schema.PartiesCollection, bimpfEmployees Employees) schema.Expense {
 	exp := schema.Expense{
 		Identifier:            e.SbId,
 		Name:                  e.Name,
@@ -113,7 +113,7 @@ func (e Expense) Convert(pathPrefix, obligedCustomerId, project string, parties 
 
 // getAdvancedPartyId tries to find the Acc Id associated advancing employee.
 // In Bimpf only employees can advance payments.
-func (e Expense) getAdvancedPartyId(parties schema.Parties, bimpfEmployees Employees) string {
+func (e Expense) getAdvancedPartyId(parties schema.PartiesCollection, bimpfEmployees Employees) string {
 	if e.AdvancedByEmployee {
 		bimpfEmployee, err := bimpfEmployees.ById(e.EmployeeId)
 		if err != nil {

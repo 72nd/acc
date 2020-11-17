@@ -23,7 +23,7 @@ type Schema struct {
 	JournalConfig       JournalConfig
 	Currency            string
 	MiscRecords         MiscRecords
-	Parties             Parties
+	Parties             PartiesCollection
 	Projects            Projects
 	Statement           Statement
 	AppendExpenseSuffix func(suffix string, overwrite bool)

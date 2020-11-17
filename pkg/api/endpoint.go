@@ -62,7 +62,13 @@ func onIdNotFound(ctx echo.Context, id, typeName string) error {
 	msg := fmt.Sprintf("no %s for id %s found", typeName, id)
 	ctx.Logger().Error(msg)
 	return ctx.String(http.StatusNotFound, msg)
+}
 
+// onDeleteSuccess handles the result and logging when a element was removed.
+func onDeleteSuccess(ctx echo.Context, id, typeName string) error {
+	msg := fmt.Sprintf("%s with id %s successfully deleted", typeName, id)
+	ctx.Logger().Debug(msg)
+	return ctx.String(http.StatusOK, msg)
 }
 
 // Get all customers
@@ -99,7 +105,19 @@ func (e *Endpoint) GetCustomers(ctx echo.Context, params GetCustomersParams) err
 // Remove a customer
 // (DELETE /customers/{id})
 func (e *Endpoint) DeleteCustomersId(ctx echo.Context, id string) error {
-	return nil
+	e.mutex.Lock()
+	defer e.mutex.Unlock()
+	temp := e.schema.Parties.Customers
+	for i := range temp {
+		if temp[i].Id != id {
+			continue
+		}
+		temp[i] = temp[len(temp)-1]
+		temp = temp[:len(temp)-1]
+	}
+	e.schema.Parties.Customers = temp
+	e.schema.Save()
+	return onDeleteSuccess(ctx, id, "customer")
 }
 
 // Get a customer by ID

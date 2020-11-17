@@ -15,7 +15,7 @@ type Customers []Customer
 
 // ConvertExpenses cycles trough the Customers and returns all expenses found as a acc Expenses.
 // As the expenses in Bimpf only contain a relative path to receipts the nextcloud prefix has to be provided.
-func (c Customers) ConvertExpenses(folderPrefix string, parties schema.Parties, bimpfEmployees Employees) schema.Expenses {
+func (c Customers) ConvertExpenses(folderPrefix string, parties schema.PartiesCollection, bimpfEmployees Employees) schema.Expenses {
 	var exp schema.Expenses
 	for i := range c {
 		cst, err := parties.CustomerByIdentifier(c[i].SbId)
@@ -37,7 +37,7 @@ func (c Customers) ConvertExpenses(folderPrefix string, parties schema.Parties, 
 
 // ConvertInvoices cycles trough the Customers and returns all invoices found as a acc Invoice.
 // As the expenses in Bimpf only contain a relative path to receipts the nextcloud prefix has to be provided.
-func (c Customers) ConvertInvoices(folderPrefix string, parties schema.Parties) schema.Invoices {
+func (c Customers) ConvertInvoices(folderPrefix string, parties schema.PartiesCollection) schema.Invoices {
 	var inv []schema.Invoice
 	for i := range c {
 		cst, err := parties.CustomerByIdentifier(c[i].SbId)
