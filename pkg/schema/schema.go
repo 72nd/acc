@@ -186,3 +186,51 @@ func hash(data []byte) string {
 	h.Write(data)
 	return string(h.Sum(nil))
 }
+
+// Elements is the collection of individual Element's. Used to perform general operations
+// on the records like adding, updating and removing entries. First used in the REST API
+// but the intention is to reduce code duplications for the schemas in the future.
+type Elements []Element
+
+// ById returns the element with a given id. Returns an error when no element exists with
+// the id.
+func ById(e Elements, id string) (*Element, error) {
+	for i := range e {
+		if e[i].GetId() == id {
+			return &e[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no element with id %s found", id)
+}
+
+// ByIdentifier returns the element with a given id. Returns an error when no element exists
+// with the id.
+func ByIdentifier(e Elements, identifier string) (*Element, error) {
+	for i := range e {
+		if e[i].GetIdentifier() == identifier {
+			return &e[i], nil
+		}
+	}
+	return nil, fmt.Errorf("no element with identifier %s found", identifier)
+}
+
+// DeleteById removes an element with the given id. The error is returned when no element
+// with the given id was found.
+func DeleteById(e *Elements, id string) error {
+	temp := *e
+	for i := range temp {
+		if temp[i].GetId() != id {
+			continue
+		}
+		temp = append(temp[:i], temp[i+1:]...)
+		e = &temp
+		return nil
+	}
+	return fmt.Errorf("element with id %s was successfully deleted", id)
+}
+
+// Element represents the basic properties of all records.
+type Element interface {
+	GetId() string
+	GetIdentifier() string
+}
