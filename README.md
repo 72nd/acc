@@ -4,6 +4,8 @@
   <img width="128" height="128" src="misc/icon-text.png">
 </p>
 
+**This is the experimental Rust branch of Acc. The main development happens on the master this one is only for experiments and prototyping.**
+
 First planned as a simple tool chain for easing the work with the plain text accounting software [hledger](https://hledger.org/), acc evolved into some sort of plain-text ERP system. It's capable of keeping track of your customers, employees, expenses and invoices as well as importing bank statements (via [ISO 20022](https://en.wikipedia.org/wiki/ISO_20022) camt). Acc can generate most of your hledger account records based on this data. Also it's possible to export all business records (expenses etc.) with their respective receipt as a PDF for further archiving. There is also a quit powerful query functionality for easy finding of records. For adding new data, a interactive prompt can be used (you also can just edit the [YAML](https://en.wikipedia.org/wiki/YAML) files by yourself).
 
 _Current status:_ The project is under active use and development at the [Genossenschaft Solutionsbüro](https://buero.io) and Acc evolves along our needs. Almost all core features are implemented and we use this software in your everyday work. The biggest throwback in the moment are the missing tests and a bad code documentation (I'm working on it). Also a manual (or at least a detailed and long README) is missing at this point.

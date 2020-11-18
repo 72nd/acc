@@ -2,3 +2,5 @@ test/*
 .idea/*
 bank_statement.xml
 build/*
+go.sum
+target/*
