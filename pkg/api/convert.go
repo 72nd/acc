@@ -33,3 +33,37 @@ func fromAccParty(party schema.Party) Party {
 		StreetNr:   streetNr,
 	}
 }
+
+// fromApiParty converts a API Party into a schema.Party object. If no identifier is given
+// it will used the nextIdent value. An error is returned if some input data isn't valid.
+func fromApiParty(party Party, nextIdentifier string) (schema.Party, error) {
+	rsl := schema.NewPartyWithUuid()
+	rsl.Name = stringValueOrDefault(party.Name)
+	if party.Identifier != nil {
+		rsl.Identifier = *party.Identifier
+	} else {
+		rsl.Identifier = nextIdentifier
+	}
+	rsl.StreetNr = intValueOrDefault(party.StreetNr)
+	rsl.PostalCode = intValueOrDefault(party.PostalCode)
+	rsl.Place = stringValueOrDefault(party.Place)
+	return rsl, nil
+}
+
+// stringValueOrDefault takes a string reference and returns the content as a value or an
+// empty string if the pointer is nil.
+func stringValueOrDefault(ele *string) string {
+	if ele != nil {
+		return *ele
+	}
+	return ""
+}
+
+// intValueOrDefault takes a int reference and returns the content as a value or an
+// empty string if the pointer is nil.
+func intValueOrDefault(ele *int) int {
+	if ele != nil {
+		return *ele
+	}
+	return 0
+}

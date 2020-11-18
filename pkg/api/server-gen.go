@@ -338,8 +338,8 @@ type GetCustomersParams struct {
 	Identifier *string `json:"identifier,omitempty"`
 }
 
-// PostCustomersIdJSONBody defines parameters for PostCustomersId.
-type PostCustomersIdJSONBody PartyBase
+// PostCustomersJSONBody defines parameters for PostCustomers.
+type PostCustomersJSONBody PartyBase
 
 // PutCustomersIdJSONBody defines parameters for PutCustomersId.
 type PutCustomersIdJSONBody PartyBase
@@ -354,8 +354,8 @@ type GetEmployeesParams struct {
 	Identifier *string `json:"identifier,omitempty"`
 }
 
-// PostEmployeesIdJSONBody defines parameters for PostEmployeesId.
-type PostEmployeesIdJSONBody PartyBase
+// PostEmployeesJSONBody defines parameters for PostEmployees.
+type PostEmployeesJSONBody PartyBase
 
 // PutEmployeesIdJSONBody defines parameters for PutEmployeesId.
 type PutEmployeesIdJSONBody PartyBase
@@ -370,8 +370,8 @@ type GetExpensesParams struct {
 	Identifier *string `json:"identifier,omitempty"`
 }
 
-// PostExpensesIdJSONBody defines parameters for PostExpensesId.
-type PostExpensesIdJSONBody ExpenseBase
+// PostExpensesJSONBody defines parameters for PostExpenses.
+type PostExpensesJSONBody ExpenseBase
 
 // PutExpensesIdJSONBody defines parameters for PutExpensesId.
 type PutExpensesIdJSONBody ExpenseBase
@@ -386,8 +386,8 @@ type GetInvoicesParams struct {
 	Identifier *string `json:"identifier,omitempty"`
 }
 
-// PostInvoicesIdJSONBody defines parameters for PostInvoicesId.
-type PostInvoicesIdJSONBody InvoiceBase
+// PostInvoicesJSONBody defines parameters for PostInvoices.
+type PostInvoicesJSONBody InvoiceBase
 
 // PutInvoicesIdJSONBody defines parameters for PutInvoicesId.
 type PutInvoicesIdJSONBody InvoiceBase
@@ -402,8 +402,8 @@ type GetMiscRecordsParams struct {
 	Identifier *string `json:"identifier,omitempty"`
 }
 
-// PostMiscRecordsIdJSONBody defines parameters for PostMiscRecordsId.
-type PostMiscRecordsIdJSONBody MiscRecordBase
+// PostMiscRecordsJSONBody defines parameters for PostMiscRecords.
+type PostMiscRecordsJSONBody MiscRecordBase
 
 // PutMiscRecordsIdJSONBody defines parameters for PutMiscRecordsId.
 type PutMiscRecordsIdJSONBody MiscRecordBase
@@ -418,44 +418,44 @@ type GetProjectsParams struct {
 	Identifier *string `json:"identifier,omitempty"`
 }
 
-// PostProjectsIdJSONBody defines parameters for PostProjectsId.
-type PostProjectsIdJSONBody ProjectBase
+// PostProjectsJSONBody defines parameters for PostProjects.
+type PostProjectsJSONBody ProjectBase
 
 // PutProjectsIdJSONBody defines parameters for PutProjectsId.
 type PutProjectsIdJSONBody ProjectBase
 
-// PostCustomersIdRequestBody defines body for PostCustomersId for application/json ContentType.
-type PostCustomersIdJSONRequestBody PostCustomersIdJSONBody
+// PostCustomersRequestBody defines body for PostCustomers for application/json ContentType.
+type PostCustomersJSONRequestBody PostCustomersJSONBody
 
 // PutCustomersIdRequestBody defines body for PutCustomersId for application/json ContentType.
 type PutCustomersIdJSONRequestBody PutCustomersIdJSONBody
 
-// PostEmployeesIdRequestBody defines body for PostEmployeesId for application/json ContentType.
-type PostEmployeesIdJSONRequestBody PostEmployeesIdJSONBody
+// PostEmployeesRequestBody defines body for PostEmployees for application/json ContentType.
+type PostEmployeesJSONRequestBody PostEmployeesJSONBody
 
 // PutEmployeesIdRequestBody defines body for PutEmployeesId for application/json ContentType.
 type PutEmployeesIdJSONRequestBody PutEmployeesIdJSONBody
 
-// PostExpensesIdRequestBody defines body for PostExpensesId for application/json ContentType.
-type PostExpensesIdJSONRequestBody PostExpensesIdJSONBody
+// PostExpensesRequestBody defines body for PostExpenses for application/json ContentType.
+type PostExpensesJSONRequestBody PostExpensesJSONBody
 
 // PutExpensesIdRequestBody defines body for PutExpensesId for application/json ContentType.
 type PutExpensesIdJSONRequestBody PutExpensesIdJSONBody
 
-// PostInvoicesIdRequestBody defines body for PostInvoicesId for application/json ContentType.
-type PostInvoicesIdJSONRequestBody PostInvoicesIdJSONBody
+// PostInvoicesRequestBody defines body for PostInvoices for application/json ContentType.
+type PostInvoicesJSONRequestBody PostInvoicesJSONBody
 
 // PutInvoicesIdRequestBody defines body for PutInvoicesId for application/json ContentType.
 type PutInvoicesIdJSONRequestBody PutInvoicesIdJSONBody
 
-// PostMiscRecordsIdRequestBody defines body for PostMiscRecordsId for application/json ContentType.
-type PostMiscRecordsIdJSONRequestBody PostMiscRecordsIdJSONBody
+// PostMiscRecordsRequestBody defines body for PostMiscRecords for application/json ContentType.
+type PostMiscRecordsJSONRequestBody PostMiscRecordsJSONBody
 
 // PutMiscRecordsIdRequestBody defines body for PutMiscRecordsId for application/json ContentType.
 type PutMiscRecordsIdJSONRequestBody PutMiscRecordsIdJSONBody
 
-// PostProjectsIdRequestBody defines body for PostProjectsId for application/json ContentType.
-type PostProjectsIdJSONRequestBody PostProjectsIdJSONBody
+// PostProjectsRequestBody defines body for PostProjects for application/json ContentType.
+type PostProjectsJSONRequestBody PostProjectsJSONBody
 
 // PutProjectsIdRequestBody defines body for PutProjectsId for application/json ContentType.
 type PutProjectsIdJSONRequestBody PutProjectsIdJSONBody
@@ -536,16 +536,16 @@ type ClientInterface interface {
 	// GetCustomers request
 	GetCustomers(ctx context.Context, params *GetCustomersParams) (*http.Response, error)
 
+	// PostCustomers request  with any body
+	PostCustomersWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error)
+
+	PostCustomers(ctx context.Context, body PostCustomersJSONRequestBody) (*http.Response, error)
+
 	// DeleteCustomersId request
 	DeleteCustomersId(ctx context.Context, id string) (*http.Response, error)
 
 	// GetCustomersId request
 	GetCustomersId(ctx context.Context, id string) (*http.Response, error)
-
-	// PostCustomersId request  with any body
-	PostCustomersIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
-
-	PostCustomersId(ctx context.Context, id string, body PostCustomersIdJSONRequestBody) (*http.Response, error)
 
 	// PutCustomersId request  with any body
 	PutCustomersIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
@@ -555,16 +555,16 @@ type ClientInterface interface {
 	// GetEmployees request
 	GetEmployees(ctx context.Context, params *GetEmployeesParams) (*http.Response, error)
 
+	// PostEmployees request  with any body
+	PostEmployeesWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error)
+
+	PostEmployees(ctx context.Context, body PostEmployeesJSONRequestBody) (*http.Response, error)
+
 	// DeleteEmployeesId request
 	DeleteEmployeesId(ctx context.Context, id string) (*http.Response, error)
 
 	// GetEmployeesId request
 	GetEmployeesId(ctx context.Context, id string) (*http.Response, error)
-
-	// PostEmployeesId request  with any body
-	PostEmployeesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
-
-	PostEmployeesId(ctx context.Context, id string, body PostEmployeesIdJSONRequestBody) (*http.Response, error)
 
 	// PutEmployeesId request  with any body
 	PutEmployeesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
@@ -574,16 +574,16 @@ type ClientInterface interface {
 	// GetExpenses request
 	GetExpenses(ctx context.Context, params *GetExpensesParams) (*http.Response, error)
 
+	// PostExpenses request  with any body
+	PostExpensesWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error)
+
+	PostExpenses(ctx context.Context, body PostExpensesJSONRequestBody) (*http.Response, error)
+
 	// DeleteExpensesId request
 	DeleteExpensesId(ctx context.Context, id string) (*http.Response, error)
 
 	// GetExpensesId request
 	GetExpensesId(ctx context.Context, id string) (*http.Response, error)
-
-	// PostExpensesId request  with any body
-	PostExpensesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
-
-	PostExpensesId(ctx context.Context, id string, body PostExpensesIdJSONRequestBody) (*http.Response, error)
 
 	// PutExpensesId request  with any body
 	PutExpensesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
@@ -593,16 +593,16 @@ type ClientInterface interface {
 	// GetInvoices request
 	GetInvoices(ctx context.Context, params *GetInvoicesParams) (*http.Response, error)
 
+	// PostInvoices request  with any body
+	PostInvoicesWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error)
+
+	PostInvoices(ctx context.Context, body PostInvoicesJSONRequestBody) (*http.Response, error)
+
 	// DeleteInvoicesId request
 	DeleteInvoicesId(ctx context.Context, id string) (*http.Response, error)
 
 	// GetInvoicesId request
 	GetInvoicesId(ctx context.Context, id string) (*http.Response, error)
-
-	// PostInvoicesId request  with any body
-	PostInvoicesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
-
-	PostInvoicesId(ctx context.Context, id string, body PostInvoicesIdJSONRequestBody) (*http.Response, error)
 
 	// PutInvoicesId request  with any body
 	PutInvoicesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
@@ -612,16 +612,16 @@ type ClientInterface interface {
 	// GetMiscRecords request
 	GetMiscRecords(ctx context.Context, params *GetMiscRecordsParams) (*http.Response, error)
 
+	// PostMiscRecords request  with any body
+	PostMiscRecordsWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error)
+
+	PostMiscRecords(ctx context.Context, body PostMiscRecordsJSONRequestBody) (*http.Response, error)
+
 	// DeleteMiscRecordsId request
 	DeleteMiscRecordsId(ctx context.Context, id string) (*http.Response, error)
 
 	// GetMiscRecordsId request
 	GetMiscRecordsId(ctx context.Context, id string) (*http.Response, error)
-
-	// PostMiscRecordsId request  with any body
-	PostMiscRecordsIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
-
-	PostMiscRecordsId(ctx context.Context, id string, body PostMiscRecordsIdJSONRequestBody) (*http.Response, error)
 
 	// PutMiscRecordsId request  with any body
 	PutMiscRecordsIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
@@ -631,16 +631,16 @@ type ClientInterface interface {
 	// GetProjects request
 	GetProjects(ctx context.Context, params *GetProjectsParams) (*http.Response, error)
 
+	// PostProjects request  with any body
+	PostProjectsWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error)
+
+	PostProjects(ctx context.Context, body PostProjectsJSONRequestBody) (*http.Response, error)
+
 	// DeleteProjectsId request
 	DeleteProjectsId(ctx context.Context, id string) (*http.Response, error)
 
 	// GetProjectsId request
 	GetProjectsId(ctx context.Context, id string) (*http.Response, error)
-
-	// PostProjectsId request  with any body
-	PostProjectsIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
-
-	PostProjectsId(ctx context.Context, id string, body PostProjectsIdJSONRequestBody) (*http.Response, error)
 
 	// PutProjectsId request  with any body
 	PutProjectsIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error)
@@ -650,6 +650,36 @@ type ClientInterface interface {
 
 func (c *Client) GetCustomers(ctx context.Context, params *GetCustomersParams) (*http.Response, error) {
 	req, err := NewGetCustomersRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostCustomersWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewPostCustomersRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostCustomers(ctx context.Context, body PostCustomersJSONRequestBody) (*http.Response, error) {
+	req, err := NewPostCustomersRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -680,36 +710,6 @@ func (c *Client) DeleteCustomersId(ctx context.Context, id string) (*http.Respon
 
 func (c *Client) GetCustomersId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewGetCustomersIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostCustomersIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
-	req, err := NewPostCustomersIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostCustomersId(ctx context.Context, id string, body PostCustomersIdJSONRequestBody) (*http.Response, error) {
-	req, err := NewPostCustomersIdRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -768,6 +768,36 @@ func (c *Client) GetEmployees(ctx context.Context, params *GetEmployeesParams) (
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostEmployeesWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewPostEmployeesRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostEmployees(ctx context.Context, body PostEmployeesJSONRequestBody) (*http.Response, error) {
+	req, err := NewPostEmployeesRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) DeleteEmployeesId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewDeleteEmployeesIdRequest(c.Server, id)
 	if err != nil {
@@ -785,36 +815,6 @@ func (c *Client) DeleteEmployeesId(ctx context.Context, id string) (*http.Respon
 
 func (c *Client) GetEmployeesId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewGetEmployeesIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostEmployeesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
-	req, err := NewPostEmployeesIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostEmployeesId(ctx context.Context, id string, body PostEmployeesIdJSONRequestBody) (*http.Response, error) {
-	req, err := NewPostEmployeesIdRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -873,6 +873,36 @@ func (c *Client) GetExpenses(ctx context.Context, params *GetExpensesParams) (*h
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostExpensesWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewPostExpensesRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostExpenses(ctx context.Context, body PostExpensesJSONRequestBody) (*http.Response, error) {
+	req, err := NewPostExpensesRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) DeleteExpensesId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewDeleteExpensesIdRequest(c.Server, id)
 	if err != nil {
@@ -890,36 +920,6 @@ func (c *Client) DeleteExpensesId(ctx context.Context, id string) (*http.Respons
 
 func (c *Client) GetExpensesId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewGetExpensesIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostExpensesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
-	req, err := NewPostExpensesIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostExpensesId(ctx context.Context, id string, body PostExpensesIdJSONRequestBody) (*http.Response, error) {
-	req, err := NewPostExpensesIdRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -978,6 +978,36 @@ func (c *Client) GetInvoices(ctx context.Context, params *GetInvoicesParams) (*h
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostInvoicesWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewPostInvoicesRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostInvoices(ctx context.Context, body PostInvoicesJSONRequestBody) (*http.Response, error) {
+	req, err := NewPostInvoicesRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) DeleteInvoicesId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewDeleteInvoicesIdRequest(c.Server, id)
 	if err != nil {
@@ -995,36 +1025,6 @@ func (c *Client) DeleteInvoicesId(ctx context.Context, id string) (*http.Respons
 
 func (c *Client) GetInvoicesId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewGetInvoicesIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostInvoicesIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
-	req, err := NewPostInvoicesIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostInvoicesId(ctx context.Context, id string, body PostInvoicesIdJSONRequestBody) (*http.Response, error) {
-	req, err := NewPostInvoicesIdRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1083,6 +1083,36 @@ func (c *Client) GetMiscRecords(ctx context.Context, params *GetMiscRecordsParam
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostMiscRecordsWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewPostMiscRecordsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostMiscRecords(ctx context.Context, body PostMiscRecordsJSONRequestBody) (*http.Response, error) {
+	req, err := NewPostMiscRecordsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) DeleteMiscRecordsId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewDeleteMiscRecordsIdRequest(c.Server, id)
 	if err != nil {
@@ -1100,36 +1130,6 @@ func (c *Client) DeleteMiscRecordsId(ctx context.Context, id string) (*http.Resp
 
 func (c *Client) GetMiscRecordsId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewGetMiscRecordsIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostMiscRecordsIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
-	req, err := NewPostMiscRecordsIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostMiscRecordsId(ctx context.Context, id string, body PostMiscRecordsIdJSONRequestBody) (*http.Response, error) {
-	req, err := NewPostMiscRecordsIdRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1188,6 +1188,36 @@ func (c *Client) GetProjects(ctx context.Context, params *GetProjectsParams) (*h
 	return c.Client.Do(req)
 }
 
+func (c *Client) PostProjectsWithBody(ctx context.Context, contentType string, body io.Reader) (*http.Response, error) {
+	req, err := NewPostProjectsRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostProjects(ctx context.Context, body PostProjectsJSONRequestBody) (*http.Response, error) {
+	req, err := NewPostProjectsRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if c.RequestEditor != nil {
+		err = c.RequestEditor(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) DeleteProjectsId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewDeleteProjectsIdRequest(c.Server, id)
 	if err != nil {
@@ -1205,36 +1235,6 @@ func (c *Client) DeleteProjectsId(ctx context.Context, id string) (*http.Respons
 
 func (c *Client) GetProjectsId(ctx context.Context, id string) (*http.Response, error) {
 	req, err := NewGetProjectsIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostProjectsIdWithBody(ctx context.Context, id string, contentType string, body io.Reader) (*http.Response, error) {
-	req, err := NewPostProjectsIdRequestWithBody(c.Server, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if c.RequestEditor != nil {
-		err = c.RequestEditor(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) PostProjectsId(ctx context.Context, id string, body PostProjectsIdJSONRequestBody) (*http.Response, error) {
-	req, err := NewPostProjectsIdRequest(c.Server, id, body)
 	if err != nil {
 		return nil, err
 	}
@@ -1341,6 +1341,45 @@ func NewGetCustomersRequest(server string, params *GetCustomersParams) (*http.Re
 	return req, nil
 }
 
+// NewPostCustomersRequest calls the generic PostCustomers builder with application/json body
+func NewPostCustomersRequest(server string, body PostCustomersJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostCustomersRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostCustomersRequestWithBody generates requests for PostCustomers with any type of body
+func NewPostCustomersRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/customers")
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryUrl.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
 // NewDeleteCustomersIdRequest generates requests for DeleteCustomersId
 func NewDeleteCustomersIdRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -1406,52 +1445,6 @@ func NewGetCustomersIdRequest(server string, id string) (*http.Request, error) {
 		return nil, err
 	}
 
-	return req, nil
-}
-
-// NewPostCustomersIdRequest calls the generic PostCustomersId builder with application/json body
-func NewPostCustomersIdRequest(server string, id string, body PostCustomersIdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostCustomersIdRequestWithBody(server, id, "application/json", bodyReader)
-}
-
-// NewPostCustomersIdRequestWithBody generates requests for PostCustomersId with any type of body
-func NewPostCustomersIdRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
-	if err != nil {
-		return nil, err
-	}
-
-	queryUrl, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	basePath := fmt.Sprintf("/customers/%s", pathParam0)
-	if basePath[0] == '/' {
-		basePath = basePath[1:]
-	}
-
-	queryUrl, err = queryUrl.Parse(basePath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryUrl.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 	return req, nil
 }
 
@@ -1564,6 +1557,45 @@ func NewGetEmployeesRequest(server string, params *GetEmployeesParams) (*http.Re
 	return req, nil
 }
 
+// NewPostEmployeesRequest calls the generic PostEmployees builder with application/json body
+func NewPostEmployeesRequest(server string, body PostEmployeesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostEmployeesRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostEmployeesRequestWithBody generates requests for PostEmployees with any type of body
+func NewPostEmployeesRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/employees")
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryUrl.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
 // NewDeleteEmployeesIdRequest generates requests for DeleteEmployeesId
 func NewDeleteEmployeesIdRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -1629,52 +1661,6 @@ func NewGetEmployeesIdRequest(server string, id string) (*http.Request, error) {
 		return nil, err
 	}
 
-	return req, nil
-}
-
-// NewPostEmployeesIdRequest calls the generic PostEmployeesId builder with application/json body
-func NewPostEmployeesIdRequest(server string, id string, body PostEmployeesIdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostEmployeesIdRequestWithBody(server, id, "application/json", bodyReader)
-}
-
-// NewPostEmployeesIdRequestWithBody generates requests for PostEmployeesId with any type of body
-func NewPostEmployeesIdRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
-	if err != nil {
-		return nil, err
-	}
-
-	queryUrl, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	basePath := fmt.Sprintf("/employees/%s", pathParam0)
-	if basePath[0] == '/' {
-		basePath = basePath[1:]
-	}
-
-	queryUrl, err = queryUrl.Parse(basePath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryUrl.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 	return req, nil
 }
 
@@ -1787,6 +1773,45 @@ func NewGetExpensesRequest(server string, params *GetExpensesParams) (*http.Requ
 	return req, nil
 }
 
+// NewPostExpensesRequest calls the generic PostExpenses builder with application/json body
+func NewPostExpensesRequest(server string, body PostExpensesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostExpensesRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostExpensesRequestWithBody generates requests for PostExpenses with any type of body
+func NewPostExpensesRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/expenses")
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryUrl.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
 // NewDeleteExpensesIdRequest generates requests for DeleteExpensesId
 func NewDeleteExpensesIdRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -1852,52 +1877,6 @@ func NewGetExpensesIdRequest(server string, id string) (*http.Request, error) {
 		return nil, err
 	}
 
-	return req, nil
-}
-
-// NewPostExpensesIdRequest calls the generic PostExpensesId builder with application/json body
-func NewPostExpensesIdRequest(server string, id string, body PostExpensesIdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostExpensesIdRequestWithBody(server, id, "application/json", bodyReader)
-}
-
-// NewPostExpensesIdRequestWithBody generates requests for PostExpensesId with any type of body
-func NewPostExpensesIdRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
-	if err != nil {
-		return nil, err
-	}
-
-	queryUrl, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	basePath := fmt.Sprintf("/expenses/%s", pathParam0)
-	if basePath[0] == '/' {
-		basePath = basePath[1:]
-	}
-
-	queryUrl, err = queryUrl.Parse(basePath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryUrl.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 	return req, nil
 }
 
@@ -2010,6 +1989,45 @@ func NewGetInvoicesRequest(server string, params *GetInvoicesParams) (*http.Requ
 	return req, nil
 }
 
+// NewPostInvoicesRequest calls the generic PostInvoices builder with application/json body
+func NewPostInvoicesRequest(server string, body PostInvoicesJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostInvoicesRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostInvoicesRequestWithBody generates requests for PostInvoices with any type of body
+func NewPostInvoicesRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/invoices")
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryUrl.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
 // NewDeleteInvoicesIdRequest generates requests for DeleteInvoicesId
 func NewDeleteInvoicesIdRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -2075,52 +2093,6 @@ func NewGetInvoicesIdRequest(server string, id string) (*http.Request, error) {
 		return nil, err
 	}
 
-	return req, nil
-}
-
-// NewPostInvoicesIdRequest calls the generic PostInvoicesId builder with application/json body
-func NewPostInvoicesIdRequest(server string, id string, body PostInvoicesIdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostInvoicesIdRequestWithBody(server, id, "application/json", bodyReader)
-}
-
-// NewPostInvoicesIdRequestWithBody generates requests for PostInvoicesId with any type of body
-func NewPostInvoicesIdRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
-	if err != nil {
-		return nil, err
-	}
-
-	queryUrl, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	basePath := fmt.Sprintf("/invoices/%s", pathParam0)
-	if basePath[0] == '/' {
-		basePath = basePath[1:]
-	}
-
-	queryUrl, err = queryUrl.Parse(basePath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryUrl.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 	return req, nil
 }
 
@@ -2233,6 +2205,45 @@ func NewGetMiscRecordsRequest(server string, params *GetMiscRecordsParams) (*htt
 	return req, nil
 }
 
+// NewPostMiscRecordsRequest calls the generic PostMiscRecords builder with application/json body
+func NewPostMiscRecordsRequest(server string, body PostMiscRecordsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostMiscRecordsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostMiscRecordsRequestWithBody generates requests for PostMiscRecords with any type of body
+func NewPostMiscRecordsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/misc_records")
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryUrl.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
 // NewDeleteMiscRecordsIdRequest generates requests for DeleteMiscRecordsId
 func NewDeleteMiscRecordsIdRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -2298,52 +2309,6 @@ func NewGetMiscRecordsIdRequest(server string, id string) (*http.Request, error)
 		return nil, err
 	}
 
-	return req, nil
-}
-
-// NewPostMiscRecordsIdRequest calls the generic PostMiscRecordsId builder with application/json body
-func NewPostMiscRecordsIdRequest(server string, id string, body PostMiscRecordsIdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostMiscRecordsIdRequestWithBody(server, id, "application/json", bodyReader)
-}
-
-// NewPostMiscRecordsIdRequestWithBody generates requests for PostMiscRecordsId with any type of body
-func NewPostMiscRecordsIdRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
-	if err != nil {
-		return nil, err
-	}
-
-	queryUrl, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	basePath := fmt.Sprintf("/misc_records/%s", pathParam0)
-	if basePath[0] == '/' {
-		basePath = basePath[1:]
-	}
-
-	queryUrl, err = queryUrl.Parse(basePath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryUrl.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 	return req, nil
 }
 
@@ -2456,6 +2421,45 @@ func NewGetProjectsRequest(server string, params *GetProjectsParams) (*http.Requ
 	return req, nil
 }
 
+// NewPostProjectsRequest calls the generic PostProjects builder with application/json body
+func NewPostProjectsRequest(server string, body PostProjectsJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewPostProjectsRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewPostProjectsRequestWithBody generates requests for PostProjects with any type of body
+func NewPostProjectsRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	queryUrl, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	basePath := fmt.Sprintf("/projects")
+	if basePath[0] == '/' {
+		basePath = basePath[1:]
+	}
+
+	queryUrl, err = queryUrl.Parse(basePath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryUrl.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+	return req, nil
+}
+
 // NewDeleteProjectsIdRequest generates requests for DeleteProjectsId
 func NewDeleteProjectsIdRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -2521,52 +2525,6 @@ func NewGetProjectsIdRequest(server string, id string) (*http.Request, error) {
 		return nil, err
 	}
 
-	return req, nil
-}
-
-// NewPostProjectsIdRequest calls the generic PostProjectsId builder with application/json body
-func NewPostProjectsIdRequest(server string, id string, body PostProjectsIdJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewPostProjectsIdRequestWithBody(server, id, "application/json", bodyReader)
-}
-
-// NewPostProjectsIdRequestWithBody generates requests for PostProjectsId with any type of body
-func NewPostProjectsIdRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParam("simple", false, "id", id)
-	if err != nil {
-		return nil, err
-	}
-
-	queryUrl, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	basePath := fmt.Sprintf("/projects/%s", pathParam0)
-	if basePath[0] == '/' {
-		basePath = basePath[1:]
-	}
-
-	queryUrl, err = queryUrl.Parse(basePath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryUrl.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
 	return req, nil
 }
 
@@ -2648,16 +2606,16 @@ type ClientWithResponsesInterface interface {
 	// GetCustomers request
 	GetCustomersWithResponse(ctx context.Context, params *GetCustomersParams) (*GetCustomersResponse, error)
 
+	// PostCustomers request  with any body
+	PostCustomersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostCustomersResponse, error)
+
+	PostCustomersWithResponse(ctx context.Context, body PostCustomersJSONRequestBody) (*PostCustomersResponse, error)
+
 	// DeleteCustomersId request
 	DeleteCustomersIdWithResponse(ctx context.Context, id string) (*DeleteCustomersIdResponse, error)
 
 	// GetCustomersId request
 	GetCustomersIdWithResponse(ctx context.Context, id string) (*GetCustomersIdResponse, error)
-
-	// PostCustomersId request  with any body
-	PostCustomersIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostCustomersIdResponse, error)
-
-	PostCustomersIdWithResponse(ctx context.Context, id string, body PostCustomersIdJSONRequestBody) (*PostCustomersIdResponse, error)
 
 	// PutCustomersId request  with any body
 	PutCustomersIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PutCustomersIdResponse, error)
@@ -2667,16 +2625,16 @@ type ClientWithResponsesInterface interface {
 	// GetEmployees request
 	GetEmployeesWithResponse(ctx context.Context, params *GetEmployeesParams) (*GetEmployeesResponse, error)
 
+	// PostEmployees request  with any body
+	PostEmployeesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostEmployeesResponse, error)
+
+	PostEmployeesWithResponse(ctx context.Context, body PostEmployeesJSONRequestBody) (*PostEmployeesResponse, error)
+
 	// DeleteEmployeesId request
 	DeleteEmployeesIdWithResponse(ctx context.Context, id string) (*DeleteEmployeesIdResponse, error)
 
 	// GetEmployeesId request
 	GetEmployeesIdWithResponse(ctx context.Context, id string) (*GetEmployeesIdResponse, error)
-
-	// PostEmployeesId request  with any body
-	PostEmployeesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostEmployeesIdResponse, error)
-
-	PostEmployeesIdWithResponse(ctx context.Context, id string, body PostEmployeesIdJSONRequestBody) (*PostEmployeesIdResponse, error)
 
 	// PutEmployeesId request  with any body
 	PutEmployeesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PutEmployeesIdResponse, error)
@@ -2686,16 +2644,16 @@ type ClientWithResponsesInterface interface {
 	// GetExpenses request
 	GetExpensesWithResponse(ctx context.Context, params *GetExpensesParams) (*GetExpensesResponse, error)
 
+	// PostExpenses request  with any body
+	PostExpensesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostExpensesResponse, error)
+
+	PostExpensesWithResponse(ctx context.Context, body PostExpensesJSONRequestBody) (*PostExpensesResponse, error)
+
 	// DeleteExpensesId request
 	DeleteExpensesIdWithResponse(ctx context.Context, id string) (*DeleteExpensesIdResponse, error)
 
 	// GetExpensesId request
 	GetExpensesIdWithResponse(ctx context.Context, id string) (*GetExpensesIdResponse, error)
-
-	// PostExpensesId request  with any body
-	PostExpensesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostExpensesIdResponse, error)
-
-	PostExpensesIdWithResponse(ctx context.Context, id string, body PostExpensesIdJSONRequestBody) (*PostExpensesIdResponse, error)
 
 	// PutExpensesId request  with any body
 	PutExpensesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PutExpensesIdResponse, error)
@@ -2705,16 +2663,16 @@ type ClientWithResponsesInterface interface {
 	// GetInvoices request
 	GetInvoicesWithResponse(ctx context.Context, params *GetInvoicesParams) (*GetInvoicesResponse, error)
 
+	// PostInvoices request  with any body
+	PostInvoicesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostInvoicesResponse, error)
+
+	PostInvoicesWithResponse(ctx context.Context, body PostInvoicesJSONRequestBody) (*PostInvoicesResponse, error)
+
 	// DeleteInvoicesId request
 	DeleteInvoicesIdWithResponse(ctx context.Context, id string) (*DeleteInvoicesIdResponse, error)
 
 	// GetInvoicesId request
 	GetInvoicesIdWithResponse(ctx context.Context, id string) (*GetInvoicesIdResponse, error)
-
-	// PostInvoicesId request  with any body
-	PostInvoicesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostInvoicesIdResponse, error)
-
-	PostInvoicesIdWithResponse(ctx context.Context, id string, body PostInvoicesIdJSONRequestBody) (*PostInvoicesIdResponse, error)
 
 	// PutInvoicesId request  with any body
 	PutInvoicesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PutInvoicesIdResponse, error)
@@ -2724,16 +2682,16 @@ type ClientWithResponsesInterface interface {
 	// GetMiscRecords request
 	GetMiscRecordsWithResponse(ctx context.Context, params *GetMiscRecordsParams) (*GetMiscRecordsResponse, error)
 
+	// PostMiscRecords request  with any body
+	PostMiscRecordsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostMiscRecordsResponse, error)
+
+	PostMiscRecordsWithResponse(ctx context.Context, body PostMiscRecordsJSONRequestBody) (*PostMiscRecordsResponse, error)
+
 	// DeleteMiscRecordsId request
 	DeleteMiscRecordsIdWithResponse(ctx context.Context, id string) (*DeleteMiscRecordsIdResponse, error)
 
 	// GetMiscRecordsId request
 	GetMiscRecordsIdWithResponse(ctx context.Context, id string) (*GetMiscRecordsIdResponse, error)
-
-	// PostMiscRecordsId request  with any body
-	PostMiscRecordsIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostMiscRecordsIdResponse, error)
-
-	PostMiscRecordsIdWithResponse(ctx context.Context, id string, body PostMiscRecordsIdJSONRequestBody) (*PostMiscRecordsIdResponse, error)
 
 	// PutMiscRecordsId request  with any body
 	PutMiscRecordsIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PutMiscRecordsIdResponse, error)
@@ -2743,16 +2701,16 @@ type ClientWithResponsesInterface interface {
 	// GetProjects request
 	GetProjectsWithResponse(ctx context.Context, params *GetProjectsParams) (*GetProjectsResponse, error)
 
+	// PostProjects request  with any body
+	PostProjectsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostProjectsResponse, error)
+
+	PostProjectsWithResponse(ctx context.Context, body PostProjectsJSONRequestBody) (*PostProjectsResponse, error)
+
 	// DeleteProjectsId request
 	DeleteProjectsIdWithResponse(ctx context.Context, id string) (*DeleteProjectsIdResponse, error)
 
 	// GetProjectsId request
 	GetProjectsIdWithResponse(ctx context.Context, id string) (*GetProjectsIdResponse, error)
-
-	// PostProjectsId request  with any body
-	PostProjectsIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostProjectsIdResponse, error)
-
-	PostProjectsIdWithResponse(ctx context.Context, id string, body PostProjectsIdJSONRequestBody) (*PostProjectsIdResponse, error)
 
 	// PutProjectsId request  with any body
 	PutProjectsIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PutProjectsIdResponse, error)
@@ -2776,6 +2734,27 @@ func (r GetCustomersResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetCustomersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostCustomersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PostCustomersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostCustomersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2825,27 +2804,6 @@ func (r GetCustomersIdResponse) StatusCode() int {
 	return 0
 }
 
-type PostCustomersIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r PostCustomersIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostCustomersIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type PutCustomersIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2883,6 +2841,27 @@ func (r GetEmployeesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetEmployeesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostEmployeesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PostEmployeesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostEmployeesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2932,27 +2911,6 @@ func (r GetEmployeesIdResponse) StatusCode() int {
 	return 0
 }
 
-type PostEmployeesIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r PostEmployeesIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostEmployeesIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type PutEmployeesIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2990,6 +2948,27 @@ func (r GetExpensesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetExpensesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostExpensesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PostExpensesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostExpensesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3039,27 +3018,6 @@ func (r GetExpensesIdResponse) StatusCode() int {
 	return 0
 }
 
-type PostExpensesIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r PostExpensesIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostExpensesIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type PutExpensesIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3097,6 +3055,27 @@ func (r GetInvoicesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetInvoicesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostInvoicesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PostInvoicesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostInvoicesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3146,27 +3125,6 @@ func (r GetInvoicesIdResponse) StatusCode() int {
 	return 0
 }
 
-type PostInvoicesIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r PostInvoicesIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostInvoicesIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type PutInvoicesIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3204,6 +3162,27 @@ func (r GetMiscRecordsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetMiscRecordsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostMiscRecordsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PostMiscRecordsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostMiscRecordsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3253,27 +3232,6 @@ func (r GetMiscRecordsIdResponse) StatusCode() int {
 	return 0
 }
 
-type PostMiscRecordsIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r PostMiscRecordsIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostMiscRecordsIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type PutMiscRecordsIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3311,6 +3269,27 @@ func (r GetProjectsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetProjectsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostProjectsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r PostProjectsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostProjectsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3360,27 +3339,6 @@ func (r GetProjectsIdResponse) StatusCode() int {
 	return 0
 }
 
-type PostProjectsIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r PostProjectsIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostProjectsIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type PutProjectsIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3411,6 +3369,23 @@ func (c *ClientWithResponses) GetCustomersWithResponse(ctx context.Context, para
 	return ParseGetCustomersResponse(rsp)
 }
 
+// PostCustomersWithBodyWithResponse request with arbitrary body returning *PostCustomersResponse
+func (c *ClientWithResponses) PostCustomersWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostCustomersResponse, error) {
+	rsp, err := c.PostCustomersWithBody(ctx, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostCustomersResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostCustomersWithResponse(ctx context.Context, body PostCustomersJSONRequestBody) (*PostCustomersResponse, error) {
+	rsp, err := c.PostCustomers(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostCustomersResponse(rsp)
+}
+
 // DeleteCustomersIdWithResponse request returning *DeleteCustomersIdResponse
 func (c *ClientWithResponses) DeleteCustomersIdWithResponse(ctx context.Context, id string) (*DeleteCustomersIdResponse, error) {
 	rsp, err := c.DeleteCustomersId(ctx, id)
@@ -3427,23 +3402,6 @@ func (c *ClientWithResponses) GetCustomersIdWithResponse(ctx context.Context, id
 		return nil, err
 	}
 	return ParseGetCustomersIdResponse(rsp)
-}
-
-// PostCustomersIdWithBodyWithResponse request with arbitrary body returning *PostCustomersIdResponse
-func (c *ClientWithResponses) PostCustomersIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostCustomersIdResponse, error) {
-	rsp, err := c.PostCustomersIdWithBody(ctx, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostCustomersIdResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostCustomersIdWithResponse(ctx context.Context, id string, body PostCustomersIdJSONRequestBody) (*PostCustomersIdResponse, error) {
-	rsp, err := c.PostCustomersId(ctx, id, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostCustomersIdResponse(rsp)
 }
 
 // PutCustomersIdWithBodyWithResponse request with arbitrary body returning *PutCustomersIdResponse
@@ -3472,6 +3430,23 @@ func (c *ClientWithResponses) GetEmployeesWithResponse(ctx context.Context, para
 	return ParseGetEmployeesResponse(rsp)
 }
 
+// PostEmployeesWithBodyWithResponse request with arbitrary body returning *PostEmployeesResponse
+func (c *ClientWithResponses) PostEmployeesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostEmployeesResponse, error) {
+	rsp, err := c.PostEmployeesWithBody(ctx, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEmployeesResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostEmployeesWithResponse(ctx context.Context, body PostEmployeesJSONRequestBody) (*PostEmployeesResponse, error) {
+	rsp, err := c.PostEmployees(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostEmployeesResponse(rsp)
+}
+
 // DeleteEmployeesIdWithResponse request returning *DeleteEmployeesIdResponse
 func (c *ClientWithResponses) DeleteEmployeesIdWithResponse(ctx context.Context, id string) (*DeleteEmployeesIdResponse, error) {
 	rsp, err := c.DeleteEmployeesId(ctx, id)
@@ -3488,23 +3463,6 @@ func (c *ClientWithResponses) GetEmployeesIdWithResponse(ctx context.Context, id
 		return nil, err
 	}
 	return ParseGetEmployeesIdResponse(rsp)
-}
-
-// PostEmployeesIdWithBodyWithResponse request with arbitrary body returning *PostEmployeesIdResponse
-func (c *ClientWithResponses) PostEmployeesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostEmployeesIdResponse, error) {
-	rsp, err := c.PostEmployeesIdWithBody(ctx, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostEmployeesIdResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostEmployeesIdWithResponse(ctx context.Context, id string, body PostEmployeesIdJSONRequestBody) (*PostEmployeesIdResponse, error) {
-	rsp, err := c.PostEmployeesId(ctx, id, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostEmployeesIdResponse(rsp)
 }
 
 // PutEmployeesIdWithBodyWithResponse request with arbitrary body returning *PutEmployeesIdResponse
@@ -3533,6 +3491,23 @@ func (c *ClientWithResponses) GetExpensesWithResponse(ctx context.Context, param
 	return ParseGetExpensesResponse(rsp)
 }
 
+// PostExpensesWithBodyWithResponse request with arbitrary body returning *PostExpensesResponse
+func (c *ClientWithResponses) PostExpensesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostExpensesResponse, error) {
+	rsp, err := c.PostExpensesWithBody(ctx, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostExpensesResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostExpensesWithResponse(ctx context.Context, body PostExpensesJSONRequestBody) (*PostExpensesResponse, error) {
+	rsp, err := c.PostExpenses(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostExpensesResponse(rsp)
+}
+
 // DeleteExpensesIdWithResponse request returning *DeleteExpensesIdResponse
 func (c *ClientWithResponses) DeleteExpensesIdWithResponse(ctx context.Context, id string) (*DeleteExpensesIdResponse, error) {
 	rsp, err := c.DeleteExpensesId(ctx, id)
@@ -3549,23 +3524,6 @@ func (c *ClientWithResponses) GetExpensesIdWithResponse(ctx context.Context, id 
 		return nil, err
 	}
 	return ParseGetExpensesIdResponse(rsp)
-}
-
-// PostExpensesIdWithBodyWithResponse request with arbitrary body returning *PostExpensesIdResponse
-func (c *ClientWithResponses) PostExpensesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostExpensesIdResponse, error) {
-	rsp, err := c.PostExpensesIdWithBody(ctx, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostExpensesIdResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostExpensesIdWithResponse(ctx context.Context, id string, body PostExpensesIdJSONRequestBody) (*PostExpensesIdResponse, error) {
-	rsp, err := c.PostExpensesId(ctx, id, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostExpensesIdResponse(rsp)
 }
 
 // PutExpensesIdWithBodyWithResponse request with arbitrary body returning *PutExpensesIdResponse
@@ -3594,6 +3552,23 @@ func (c *ClientWithResponses) GetInvoicesWithResponse(ctx context.Context, param
 	return ParseGetInvoicesResponse(rsp)
 }
 
+// PostInvoicesWithBodyWithResponse request with arbitrary body returning *PostInvoicesResponse
+func (c *ClientWithResponses) PostInvoicesWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostInvoicesResponse, error) {
+	rsp, err := c.PostInvoicesWithBody(ctx, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostInvoicesResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostInvoicesWithResponse(ctx context.Context, body PostInvoicesJSONRequestBody) (*PostInvoicesResponse, error) {
+	rsp, err := c.PostInvoices(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostInvoicesResponse(rsp)
+}
+
 // DeleteInvoicesIdWithResponse request returning *DeleteInvoicesIdResponse
 func (c *ClientWithResponses) DeleteInvoicesIdWithResponse(ctx context.Context, id string) (*DeleteInvoicesIdResponse, error) {
 	rsp, err := c.DeleteInvoicesId(ctx, id)
@@ -3610,23 +3585,6 @@ func (c *ClientWithResponses) GetInvoicesIdWithResponse(ctx context.Context, id 
 		return nil, err
 	}
 	return ParseGetInvoicesIdResponse(rsp)
-}
-
-// PostInvoicesIdWithBodyWithResponse request with arbitrary body returning *PostInvoicesIdResponse
-func (c *ClientWithResponses) PostInvoicesIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostInvoicesIdResponse, error) {
-	rsp, err := c.PostInvoicesIdWithBody(ctx, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostInvoicesIdResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostInvoicesIdWithResponse(ctx context.Context, id string, body PostInvoicesIdJSONRequestBody) (*PostInvoicesIdResponse, error) {
-	rsp, err := c.PostInvoicesId(ctx, id, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostInvoicesIdResponse(rsp)
 }
 
 // PutInvoicesIdWithBodyWithResponse request with arbitrary body returning *PutInvoicesIdResponse
@@ -3655,6 +3613,23 @@ func (c *ClientWithResponses) GetMiscRecordsWithResponse(ctx context.Context, pa
 	return ParseGetMiscRecordsResponse(rsp)
 }
 
+// PostMiscRecordsWithBodyWithResponse request with arbitrary body returning *PostMiscRecordsResponse
+func (c *ClientWithResponses) PostMiscRecordsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostMiscRecordsResponse, error) {
+	rsp, err := c.PostMiscRecordsWithBody(ctx, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostMiscRecordsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostMiscRecordsWithResponse(ctx context.Context, body PostMiscRecordsJSONRequestBody) (*PostMiscRecordsResponse, error) {
+	rsp, err := c.PostMiscRecords(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostMiscRecordsResponse(rsp)
+}
+
 // DeleteMiscRecordsIdWithResponse request returning *DeleteMiscRecordsIdResponse
 func (c *ClientWithResponses) DeleteMiscRecordsIdWithResponse(ctx context.Context, id string) (*DeleteMiscRecordsIdResponse, error) {
 	rsp, err := c.DeleteMiscRecordsId(ctx, id)
@@ -3671,23 +3646,6 @@ func (c *ClientWithResponses) GetMiscRecordsIdWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParseGetMiscRecordsIdResponse(rsp)
-}
-
-// PostMiscRecordsIdWithBodyWithResponse request with arbitrary body returning *PostMiscRecordsIdResponse
-func (c *ClientWithResponses) PostMiscRecordsIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostMiscRecordsIdResponse, error) {
-	rsp, err := c.PostMiscRecordsIdWithBody(ctx, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostMiscRecordsIdResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostMiscRecordsIdWithResponse(ctx context.Context, id string, body PostMiscRecordsIdJSONRequestBody) (*PostMiscRecordsIdResponse, error) {
-	rsp, err := c.PostMiscRecordsId(ctx, id, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostMiscRecordsIdResponse(rsp)
 }
 
 // PutMiscRecordsIdWithBodyWithResponse request with arbitrary body returning *PutMiscRecordsIdResponse
@@ -3716,6 +3674,23 @@ func (c *ClientWithResponses) GetProjectsWithResponse(ctx context.Context, param
 	return ParseGetProjectsResponse(rsp)
 }
 
+// PostProjectsWithBodyWithResponse request with arbitrary body returning *PostProjectsResponse
+func (c *ClientWithResponses) PostProjectsWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader) (*PostProjectsResponse, error) {
+	rsp, err := c.PostProjectsWithBody(ctx, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostProjectsResponse(rsp)
+}
+
+func (c *ClientWithResponses) PostProjectsWithResponse(ctx context.Context, body PostProjectsJSONRequestBody) (*PostProjectsResponse, error) {
+	rsp, err := c.PostProjects(ctx, body)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostProjectsResponse(rsp)
+}
+
 // DeleteProjectsIdWithResponse request returning *DeleteProjectsIdResponse
 func (c *ClientWithResponses) DeleteProjectsIdWithResponse(ctx context.Context, id string) (*DeleteProjectsIdResponse, error) {
 	rsp, err := c.DeleteProjectsId(ctx, id)
@@ -3732,23 +3707,6 @@ func (c *ClientWithResponses) GetProjectsIdWithResponse(ctx context.Context, id 
 		return nil, err
 	}
 	return ParseGetProjectsIdResponse(rsp)
-}
-
-// PostProjectsIdWithBodyWithResponse request with arbitrary body returning *PostProjectsIdResponse
-func (c *ClientWithResponses) PostProjectsIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader) (*PostProjectsIdResponse, error) {
-	rsp, err := c.PostProjectsIdWithBody(ctx, id, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostProjectsIdResponse(rsp)
-}
-
-func (c *ClientWithResponses) PostProjectsIdWithResponse(ctx context.Context, id string, body PostProjectsIdJSONRequestBody) (*PostProjectsIdResponse, error) {
-	rsp, err := c.PostProjectsId(ctx, id, body)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostProjectsIdResponse(rsp)
 }
 
 // PutProjectsIdWithBodyWithResponse request with arbitrary body returning *PutProjectsIdResponse
@@ -3789,6 +3747,25 @@ func ParseGetCustomersResponse(rsp *http.Response) (*GetCustomersResponse, error
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParsePostCustomersResponse parses an HTTP response from a PostCustomersWithResponse call
+func ParsePostCustomersResponse(rsp *http.Response) (*PostCustomersResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostCustomersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	}
 
 	return response, nil
@@ -3839,25 +3816,6 @@ func ParseGetCustomersIdResponse(rsp *http.Response) (*GetCustomersIdResponse, e
 	return response, nil
 }
 
-// ParsePostCustomersIdResponse parses an HTTP response from a PostCustomersIdWithResponse call
-func ParsePostCustomersIdResponse(rsp *http.Response) (*PostCustomersIdResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer rsp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostCustomersIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	}
-
-	return response, nil
-}
-
 // ParsePutCustomersIdResponse parses an HTTP response from a PutCustomersIdWithResponse call
 func ParsePutCustomersIdResponse(rsp *http.Response) (*PutCustomersIdResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
@@ -3898,6 +3856,25 @@ func ParseGetEmployeesResponse(rsp *http.Response) (*GetEmployeesResponse, error
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParsePostEmployeesResponse parses an HTTP response from a PostEmployeesWithResponse call
+func ParsePostEmployeesResponse(rsp *http.Response) (*PostEmployeesResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostEmployeesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	}
 
 	return response, nil
@@ -3948,25 +3925,6 @@ func ParseGetEmployeesIdResponse(rsp *http.Response) (*GetEmployeesIdResponse, e
 	return response, nil
 }
 
-// ParsePostEmployeesIdResponse parses an HTTP response from a PostEmployeesIdWithResponse call
-func ParsePostEmployeesIdResponse(rsp *http.Response) (*PostEmployeesIdResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer rsp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostEmployeesIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	}
-
-	return response, nil
-}
-
 // ParsePutEmployeesIdResponse parses an HTTP response from a PutEmployeesIdWithResponse call
 func ParsePutEmployeesIdResponse(rsp *http.Response) (*PutEmployeesIdResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
@@ -4007,6 +3965,25 @@ func ParseGetExpensesResponse(rsp *http.Response) (*GetExpensesResponse, error) 
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParsePostExpensesResponse parses an HTTP response from a PostExpensesWithResponse call
+func ParsePostExpensesResponse(rsp *http.Response) (*PostExpensesResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostExpensesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	}
 
 	return response, nil
@@ -4057,25 +4034,6 @@ func ParseGetExpensesIdResponse(rsp *http.Response) (*GetExpensesIdResponse, err
 	return response, nil
 }
 
-// ParsePostExpensesIdResponse parses an HTTP response from a PostExpensesIdWithResponse call
-func ParsePostExpensesIdResponse(rsp *http.Response) (*PostExpensesIdResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer rsp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostExpensesIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	}
-
-	return response, nil
-}
-
 // ParsePutExpensesIdResponse parses an HTTP response from a PutExpensesIdWithResponse call
 func ParsePutExpensesIdResponse(rsp *http.Response) (*PutExpensesIdResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
@@ -4116,6 +4074,25 @@ func ParseGetInvoicesResponse(rsp *http.Response) (*GetInvoicesResponse, error) 
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParsePostInvoicesResponse parses an HTTP response from a PostInvoicesWithResponse call
+func ParsePostInvoicesResponse(rsp *http.Response) (*PostInvoicesResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostInvoicesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	}
 
 	return response, nil
@@ -4166,25 +4143,6 @@ func ParseGetInvoicesIdResponse(rsp *http.Response) (*GetInvoicesIdResponse, err
 	return response, nil
 }
 
-// ParsePostInvoicesIdResponse parses an HTTP response from a PostInvoicesIdWithResponse call
-func ParsePostInvoicesIdResponse(rsp *http.Response) (*PostInvoicesIdResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer rsp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostInvoicesIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	}
-
-	return response, nil
-}
-
 // ParsePutInvoicesIdResponse parses an HTTP response from a PutInvoicesIdWithResponse call
 func ParsePutInvoicesIdResponse(rsp *http.Response) (*PutInvoicesIdResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
@@ -4225,6 +4183,25 @@ func ParseGetMiscRecordsResponse(rsp *http.Response) (*GetMiscRecordsResponse, e
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParsePostMiscRecordsResponse parses an HTTP response from a PostMiscRecordsWithResponse call
+func ParsePostMiscRecordsResponse(rsp *http.Response) (*PostMiscRecordsResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostMiscRecordsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	}
 
 	return response, nil
@@ -4275,25 +4252,6 @@ func ParseGetMiscRecordsIdResponse(rsp *http.Response) (*GetMiscRecordsIdRespons
 	return response, nil
 }
 
-// ParsePostMiscRecordsIdResponse parses an HTTP response from a PostMiscRecordsIdWithResponse call
-func ParsePostMiscRecordsIdResponse(rsp *http.Response) (*PostMiscRecordsIdResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer rsp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostMiscRecordsIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	}
-
-	return response, nil
-}
-
 // ParsePutMiscRecordsIdResponse parses an HTTP response from a PutMiscRecordsIdWithResponse call
 func ParsePutMiscRecordsIdResponse(rsp *http.Response) (*PutMiscRecordsIdResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
@@ -4334,6 +4292,25 @@ func ParseGetProjectsResponse(rsp *http.Response) (*GetProjectsResponse, error) 
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParsePostProjectsResponse parses an HTTP response from a PostProjectsWithResponse call
+func ParsePostProjectsResponse(rsp *http.Response) (*PostProjectsResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostProjectsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
 	}
 
 	return response, nil
@@ -4384,25 +4361,6 @@ func ParseGetProjectsIdResponse(rsp *http.Response) (*GetProjectsIdResponse, err
 	return response, nil
 }
 
-// ParsePostProjectsIdResponse parses an HTTP response from a PostProjectsIdWithResponse call
-func ParsePostProjectsIdResponse(rsp *http.Response) (*PostProjectsIdResponse, error) {
-	bodyBytes, err := ioutil.ReadAll(rsp.Body)
-	defer rsp.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostProjectsIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	}
-
-	return response, nil
-}
-
 // ParsePutProjectsIdResponse parses an HTTP response from a PutProjectsIdWithResponse call
 func ParsePutProjectsIdResponse(rsp *http.Response) (*PutProjectsIdResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
@@ -4427,90 +4385,90 @@ type ServerInterface interface {
 	// Get all customers
 	// (GET /customers)
 	GetCustomers(ctx echo.Context, params GetCustomersParams) error
+	// Add a customer
+	// (POST /customers)
+	PostCustomers(ctx echo.Context) error
 	// Remove a customer
 	// (DELETE /customers/{id})
 	DeleteCustomersId(ctx echo.Context, id string) error
 	// Get a customer by ID
 	// (GET /customers/{id})
 	GetCustomersId(ctx echo.Context, id string) error
-	// Add a customer
-	// (POST /customers/{id})
-	PostCustomersId(ctx echo.Context, id string) error
 	// Update a customer
 	// (PUT /customers/{id})
 	PutCustomersId(ctx echo.Context, id string) error
 	// Get all employees
 	// (GET /employees)
 	GetEmployees(ctx echo.Context, params GetEmployeesParams) error
+	// Add a employee
+	// (POST /employees)
+	PostEmployees(ctx echo.Context) error
 	// Remove a employee
 	// (DELETE /employees/{id})
 	DeleteEmployeesId(ctx echo.Context, id string) error
 	// Get a employee by ID
 	// (GET /employees/{id})
 	GetEmployeesId(ctx echo.Context, id string) error
-	// Add a employee
-	// (POST /employees/{id})
-	PostEmployeesId(ctx echo.Context, id string) error
 	// Update a employee
 	// (PUT /employees/{id})
 	PutEmployeesId(ctx echo.Context, id string) error
 	// Get all Expenses
 	// (GET /expenses)
 	GetExpenses(ctx echo.Context, params GetExpensesParams) error
+	// Add a Expense
+	// (POST /expenses)
+	PostExpenses(ctx echo.Context) error
 	// Remove a Expense
 	// (DELETE /expenses/{id})
 	DeleteExpensesId(ctx echo.Context, id string) error
 	// Get a Expense by ID
 	// (GET /expenses/{id})
 	GetExpensesId(ctx echo.Context, id string) error
-	// Add a Expense
-	// (POST /expenses/{id})
-	PostExpensesId(ctx echo.Context, id string) error
 	// Update a Expense
 	// (PUT /expenses/{id})
 	PutExpensesId(ctx echo.Context, id string) error
 	// Get all invoices
 	// (GET /invoices)
 	GetInvoices(ctx echo.Context, params GetInvoicesParams) error
+	// Add a Invoice
+	// (POST /invoices)
+	PostInvoices(ctx echo.Context) error
 	// Remove a Invoice
 	// (DELETE /invoices/{id})
 	DeleteInvoicesId(ctx echo.Context, id string) error
 	// Get a Invoice by ID
 	// (GET /invoices/{id})
 	GetInvoicesId(ctx echo.Context, id string) error
-	// Add a Invoice
-	// (POST /invoices/{id})
-	PostInvoicesId(ctx echo.Context, id string) error
 	// Update a Invoice
 	// (PUT /invoices/{id})
 	PutInvoicesId(ctx echo.Context, id string) error
 	// Get all Miscellaneous Records
 	// (GET /misc_records)
 	GetMiscRecords(ctx echo.Context, params GetMiscRecordsParams) error
+	// Add a Miscellaneous Record
+	// (POST /misc_records)
+	PostMiscRecords(ctx echo.Context) error
 	// Remove a Miscellaneous Record
 	// (DELETE /misc_records/{id})
 	DeleteMiscRecordsId(ctx echo.Context, id string) error
 	// Get a Miscellaneous Record by ID
 	// (GET /misc_records/{id})
 	GetMiscRecordsId(ctx echo.Context, id string) error
-	// Add a Miscellaneous Record
-	// (POST /misc_records/{id})
-	PostMiscRecordsId(ctx echo.Context, id string) error
 	// Update a Miscellaneous Record
 	// (PUT /misc_records/{id})
 	PutMiscRecordsId(ctx echo.Context, id string) error
 	// Get all Projects
 	// (GET /projects)
 	GetProjects(ctx echo.Context, params GetProjectsParams) error
+	// Add a Project
+	// (POST /projects)
+	PostProjects(ctx echo.Context) error
 	// Remove a Project
 	// (DELETE /projects/{id})
 	DeleteProjectsId(ctx echo.Context, id string) error
 	// Get a Project by ID
 	// (GET /projects/{id})
 	GetProjectsId(ctx echo.Context, id string) error
-	// Add a Project
-	// (POST /projects/{id})
-	PostProjectsId(ctx echo.Context, id string) error
 	// Update a Project
 	// (PUT /projects/{id})
 	PutProjectsId(ctx echo.Context, id string) error
@@ -4546,6 +4504,15 @@ func (w *ServerInterfaceWrapper) GetCustomers(ctx echo.Context) error {
 	return err
 }
 
+// PostCustomers converts echo context to params.
+func (w *ServerInterfaceWrapper) PostCustomers(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostCustomers(ctx)
+	return err
+}
+
 // DeleteCustomersId converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteCustomersId(ctx echo.Context) error {
 	var err error
@@ -4575,22 +4542,6 @@ func (w *ServerInterfaceWrapper) GetCustomersId(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetCustomersId(ctx, id)
-	return err
-}
-
-// PostCustomersId converts echo context to params.
-func (w *ServerInterfaceWrapper) PostCustomersId(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostCustomersId(ctx, id)
 	return err
 }
 
@@ -4635,6 +4586,15 @@ func (w *ServerInterfaceWrapper) GetEmployees(ctx echo.Context) error {
 	return err
 }
 
+// PostEmployees converts echo context to params.
+func (w *ServerInterfaceWrapper) PostEmployees(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostEmployees(ctx)
+	return err
+}
+
 // DeleteEmployeesId converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteEmployeesId(ctx echo.Context) error {
 	var err error
@@ -4664,22 +4624,6 @@ func (w *ServerInterfaceWrapper) GetEmployeesId(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetEmployeesId(ctx, id)
-	return err
-}
-
-// PostEmployeesId converts echo context to params.
-func (w *ServerInterfaceWrapper) PostEmployeesId(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostEmployeesId(ctx, id)
 	return err
 }
 
@@ -4724,6 +4668,15 @@ func (w *ServerInterfaceWrapper) GetExpenses(ctx echo.Context) error {
 	return err
 }
 
+// PostExpenses converts echo context to params.
+func (w *ServerInterfaceWrapper) PostExpenses(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostExpenses(ctx)
+	return err
+}
+
 // DeleteExpensesId converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteExpensesId(ctx echo.Context) error {
 	var err error
@@ -4753,22 +4706,6 @@ func (w *ServerInterfaceWrapper) GetExpensesId(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetExpensesId(ctx, id)
-	return err
-}
-
-// PostExpensesId converts echo context to params.
-func (w *ServerInterfaceWrapper) PostExpensesId(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostExpensesId(ctx, id)
 	return err
 }
 
@@ -4813,6 +4750,15 @@ func (w *ServerInterfaceWrapper) GetInvoices(ctx echo.Context) error {
 	return err
 }
 
+// PostInvoices converts echo context to params.
+func (w *ServerInterfaceWrapper) PostInvoices(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostInvoices(ctx)
+	return err
+}
+
 // DeleteInvoicesId converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteInvoicesId(ctx echo.Context) error {
 	var err error
@@ -4842,22 +4788,6 @@ func (w *ServerInterfaceWrapper) GetInvoicesId(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetInvoicesId(ctx, id)
-	return err
-}
-
-// PostInvoicesId converts echo context to params.
-func (w *ServerInterfaceWrapper) PostInvoicesId(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostInvoicesId(ctx, id)
 	return err
 }
 
@@ -4902,6 +4832,15 @@ func (w *ServerInterfaceWrapper) GetMiscRecords(ctx echo.Context) error {
 	return err
 }
 
+// PostMiscRecords converts echo context to params.
+func (w *ServerInterfaceWrapper) PostMiscRecords(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostMiscRecords(ctx)
+	return err
+}
+
 // DeleteMiscRecordsId converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteMiscRecordsId(ctx echo.Context) error {
 	var err error
@@ -4931,22 +4870,6 @@ func (w *ServerInterfaceWrapper) GetMiscRecordsId(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetMiscRecordsId(ctx, id)
-	return err
-}
-
-// PostMiscRecordsId converts echo context to params.
-func (w *ServerInterfaceWrapper) PostMiscRecordsId(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostMiscRecordsId(ctx, id)
 	return err
 }
 
@@ -4991,6 +4914,15 @@ func (w *ServerInterfaceWrapper) GetProjects(ctx echo.Context) error {
 	return err
 }
 
+// PostProjects converts echo context to params.
+func (w *ServerInterfaceWrapper) PostProjects(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostProjects(ctx)
+	return err
+}
+
 // DeleteProjectsId converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteProjectsId(ctx echo.Context) error {
 	var err error
@@ -5020,22 +4952,6 @@ func (w *ServerInterfaceWrapper) GetProjectsId(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.GetProjectsId(ctx, id)
-	return err
-}
-
-// PostProjectsId converts echo context to params.
-func (w *ServerInterfaceWrapper) PostProjectsId(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "id" -------------
-	var id string
-
-	err = runtime.BindStyledParameter("simple", false, "id", ctx.Param("id"), &id)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter id: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostProjectsId(ctx, id)
 	return err
 }
 
@@ -5084,34 +5000,34 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/customers", wrapper.GetCustomers)
+	router.POST(baseURL+"/customers", wrapper.PostCustomers)
 	router.DELETE(baseURL+"/customers/:id", wrapper.DeleteCustomersId)
 	router.GET(baseURL+"/customers/:id", wrapper.GetCustomersId)
-	router.POST(baseURL+"/customers/:id", wrapper.PostCustomersId)
 	router.PUT(baseURL+"/customers/:id", wrapper.PutCustomersId)
 	router.GET(baseURL+"/employees", wrapper.GetEmployees)
+	router.POST(baseURL+"/employees", wrapper.PostEmployees)
 	router.DELETE(baseURL+"/employees/:id", wrapper.DeleteEmployeesId)
 	router.GET(baseURL+"/employees/:id", wrapper.GetEmployeesId)
-	router.POST(baseURL+"/employees/:id", wrapper.PostEmployeesId)
 	router.PUT(baseURL+"/employees/:id", wrapper.PutEmployeesId)
 	router.GET(baseURL+"/expenses", wrapper.GetExpenses)
+	router.POST(baseURL+"/expenses", wrapper.PostExpenses)
 	router.DELETE(baseURL+"/expenses/:id", wrapper.DeleteExpensesId)
 	router.GET(baseURL+"/expenses/:id", wrapper.GetExpensesId)
-	router.POST(baseURL+"/expenses/:id", wrapper.PostExpensesId)
 	router.PUT(baseURL+"/expenses/:id", wrapper.PutExpensesId)
 	router.GET(baseURL+"/invoices", wrapper.GetInvoices)
+	router.POST(baseURL+"/invoices", wrapper.PostInvoices)
 	router.DELETE(baseURL+"/invoices/:id", wrapper.DeleteInvoicesId)
 	router.GET(baseURL+"/invoices/:id", wrapper.GetInvoicesId)
-	router.POST(baseURL+"/invoices/:id", wrapper.PostInvoicesId)
 	router.PUT(baseURL+"/invoices/:id", wrapper.PutInvoicesId)
 	router.GET(baseURL+"/misc_records", wrapper.GetMiscRecords)
+	router.POST(baseURL+"/misc_records", wrapper.PostMiscRecords)
 	router.DELETE(baseURL+"/misc_records/:id", wrapper.DeleteMiscRecordsId)
 	router.GET(baseURL+"/misc_records/:id", wrapper.GetMiscRecordsId)
-	router.POST(baseURL+"/misc_records/:id", wrapper.PostMiscRecordsId)
 	router.PUT(baseURL+"/misc_records/:id", wrapper.PutMiscRecordsId)
 	router.GET(baseURL+"/projects", wrapper.GetProjects)
+	router.POST(baseURL+"/projects", wrapper.PostProjects)
 	router.DELETE(baseURL+"/projects/:id", wrapper.DeleteProjectsId)
 	router.GET(baseURL+"/projects/:id", wrapper.GetProjectsId)
-	router.POST(baseURL+"/projects/:id", wrapper.PostProjectsId)
 	router.PUT(baseURL+"/projects/:id", wrapper.PutProjectsId)
 
 }
@@ -5119,72 +5035,71 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"QVftCT53AAA=",
+	"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",
 }
 
 // GetSwagger returns the Swagger specification corresponding to the generated code

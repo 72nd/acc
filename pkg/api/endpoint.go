@@ -45,32 +45,6 @@ func (e *Endpoint) Serve(port int) {
 	echo.Logger.Fatal(echo.Start(fmt.Sprintf("0.0.0.0:%d", port)))
 }
 
-// validateGetRequest checks if the user has set both queries (identifier and query) at the
-// same time. If so an error message gets logged and also returned to the caller. Otherwise
-// the function will return nil.
-func validateGetRequest(ctx echo.Context, params GetCustomersParams) error {
-	if params.Identifier != nil && params.Query != nil {
-		ctx.Logger().Error("using the query and identifier parameters at the same time is forbidden")
-		return ctx.String(http.StatusBadRequest, "using the query and identifier parameters at the same time is forbidden")
-	}
-	return nil
-}
-
-// onIdNotFound handles the event when there was no element for an given id. The incident is
-// logged and the appropriate HTTP response is given to the callee.
-func onIdNotFound(ctx echo.Context, id, typeName string) error {
-	msg := fmt.Sprintf("no %s for id %s found", typeName, id)
-	ctx.Logger().Error(msg)
-	return ctx.String(http.StatusNotFound, msg)
-}
-
-// onDeleteSuccess handles the result and logging when a element was removed.
-func onDeleteSuccess(ctx echo.Context, id, typeName string) error {
-	msg := fmt.Sprintf("%s with id %s successfully deleted", typeName, id)
-	ctx.Logger().Debug(msg)
-	return ctx.String(http.StatusOK, msg)
-}
-
 // Get all customers
 // (GET /customers)
 func (e *Endpoint) GetCustomers(ctx echo.Context, params GetCustomersParams) error {
@@ -102,11 +76,21 @@ func (e *Endpoint) GetCustomers(ctx echo.Context, params GetCustomersParams) err
 	return ctx.JSON(http.StatusOK, rsl)
 }
 
+// Add a customer
+// (POST /customers)
+func (e *Endpoint) PostCustomers(ctx echo.Context) error {
+	var cst Customer
+	if err := ctx.Bind(&cst); err != nil {
+	}
+	return nil
+}
+
 // Remove a customer
 // (DELETE /customers/{id})
 func (e *Endpoint) DeleteCustomersId(ctx echo.Context, id string) error {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
+
 	temp := e.schema.Parties.Customers
 	for i := range temp {
 		if temp[i].Id != id {
@@ -134,12 +118,6 @@ func (e *Endpoint) GetCustomersId(ctx echo.Context, id string) error {
 	return ctx.JSON(http.StatusOK, fromAccParty(*rsl))
 }
 
-// Add a customer
-// (POST /customers/{id})
-func (e *Endpoint) PostCustomersId(ctx echo.Context, id string) error {
-	return nil
-}
-
 // Update a customer
 // (PUT /customers/{id})
 func (e *Endpoint) PutCustomersId(ctx echo.Context, id string) error {
@@ -149,6 +127,12 @@ func (e *Endpoint) PutCustomersId(ctx echo.Context, id string) error {
 // Get all employees
 // (GET /employees)
 func (e *Endpoint) GetEmployees(ctx echo.Context, params GetEmployeesParams) error {
+	return nil
+}
+
+// Add a employee
+// (POST /employees)
+func (e *Endpoint) PostEmployees(ctx echo.Context) error {
 	return nil
 }
 
@@ -164,12 +148,6 @@ func (e *Endpoint) GetEmployeesId(ctx echo.Context, id string) error {
 	return nil
 }
 
-// Add a employee
-// (POST /employees/{id})
-func (e *Endpoint) PostEmployeesId(ctx echo.Context, id string) error {
-	return nil
-}
-
 // Update a employee
 // (PUT /employees/{id})
 func (e *Endpoint) PutEmployeesId(ctx echo.Context, id string) error {
@@ -179,6 +157,12 @@ func (e *Endpoint) PutEmployeesId(ctx echo.Context, id string) error {
 // Get all Expenses
 // (GET /expenses)
 func (e *Endpoint) GetExpenses(ctx echo.Context, params GetExpensesParams) error {
+	return nil
+}
+
+// Add a Expense
+// (POST /expenses)
+func (e *Endpoint) PostExpenses(ctx echo.Context) error {
 	return nil
 }
 
@@ -194,12 +178,6 @@ func (e *Endpoint) GetExpensesId(ctx echo.Context, id string) error {
 	return nil
 }
 
-// Add a Expense
-// (POST /expenses/{id})
-func (e *Endpoint) PostExpensesId(ctx echo.Context, id string) error {
-	return nil
-}
-
 // Update a Expense
 // (PUT /expenses/{id})
 func (e *Endpoint) PutExpensesId(ctx echo.Context, id string) error {
@@ -209,6 +187,12 @@ func (e *Endpoint) PutExpensesId(ctx echo.Context, id string) error {
 // Get all invoices
 // (GET /invoices)
 func (e *Endpoint) GetInvoices(ctx echo.Context, params GetInvoicesParams) error {
+	return nil
+}
+
+// Add a Invoices
+// (POST /invoices)
+func (e *Endpoint) PostInvoices(ctx echo.Context) error {
 	return nil
 }
 
@@ -224,12 +208,6 @@ func (e *Endpoint) GetInvoicesId(ctx echo.Context, id string) error {
 	return nil
 }
 
-// Add a Invoice
-// (POST /invoices/{id})
-func (e *Endpoint) PostInvoicesId(ctx echo.Context, id string) error {
-	return nil
-}
-
 // Update a Invoice
 // (PUT /invoices/{id})
 func (e *Endpoint) PutInvoicesId(ctx echo.Context, id string) error {
@@ -239,6 +217,12 @@ func (e *Endpoint) PutInvoicesId(ctx echo.Context, id string) error {
 // Get all Miscellaneous Records
 // (GET /misc_records)
 func (e *Endpoint) GetMiscRecords(ctx echo.Context, params GetMiscRecordsParams) error {
+	return nil
+}
+
+// Add a Miscellaneous Record
+// (POST /misc_records)
+func (e *Endpoint) PostMiscRecords(ctx echo.Context) error {
 	return nil
 }
 
@@ -254,12 +238,6 @@ func (e *Endpoint) GetMiscRecordsId(ctx echo.Context, id string) error {
 	return nil
 }
 
-// Add a Miscellaneous Record
-// (POST /misc_records/{id})
-func (e *Endpoint) PostMiscRecordsId(ctx echo.Context, id string) error {
-	return nil
-}
-
 // Update a Miscellaneous Record
 // (PUT /misc_records/{id})
 func (e *Endpoint) PutMiscRecordsId(ctx echo.Context, id string) error {
@@ -269,6 +247,12 @@ func (e *Endpoint) PutMiscRecordsId(ctx echo.Context, id string) error {
 // Get all Projects
 // (GET /projects)
 func (e *Endpoint) GetProjects(ctx echo.Context, params GetProjectsParams) error {
+	return nil
+}
+
+// Add a Projects
+// (POST /projects)
+func (e *Endpoint) PostProjects(ctx echo.Context) error {
 	return nil
 }
 
@@ -284,14 +268,34 @@ func (e *Endpoint) GetProjectsId(ctx echo.Context, id string) error {
 	return nil
 }
 
-// Add a Project
-// (POST /projects/{id})
-func (e *Endpoint) PostProjectsId(ctx echo.Context, id string) error {
-	return nil
-}
-
 // Update a Project
 // (PUT /projects/{id})
 func (e *Endpoint) PutProjectsId(ctx echo.Context, id string) error {
 	return nil
+}
+
+// validateGetRequest checks if the user has set both queries (identifier and query) at the
+// same time. If so an error message gets logged and also returned to the caller. Otherwise
+// the function will return nil.
+func validateGetRequest(ctx echo.Context, params GetCustomersParams) error {
+	if params.Identifier != nil && params.Query != nil {
+		ctx.Logger().Error("using the query and identifier parameters at the same time is forbidden")
+		return ctx.String(http.StatusBadRequest, "using the query and identifier parameters at the same time is forbidden")
+	}
+	return nil
+}
+
+// onIdNotFound handles the event when there was no element for an given id. The incident is
+// logged and the appropriate HTTP response is given to the callee.
+func onIdNotFound(ctx echo.Context, id, typeName string) error {
+	msg := fmt.Sprintf("no %s for id %s found", typeName, id)
+	ctx.Logger().Error(msg)
+	return ctx.String(http.StatusNotFound, msg)
+}
+
+// onDeleteSuccess handles the result and logging when a element was removed.
+func onDeleteSuccess(ctx echo.Context, id, typeName string) error {
+	msg := fmt.Sprintf("%s with id %s successfully deleted", typeName, id)
+	ctx.Logger().Debug(msg)
+	return ctx.String(http.StatusOK, msg)
 }

@@ -131,6 +131,22 @@ paths:
           description: Malformed request, also when query and identifier parameters where used at the same time.
         500:
           description: Internal Server Error
+    post: 
+      tags:
+        - customer
+      summary: Add a customer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/partyBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Customer failed.
+        500:
+          description: Internal Server Error
   /customers/{id}:
     parameters:
       - in: path
@@ -171,22 +187,6 @@ paths:
           description: No Customer with specified ID found.
         500:
           description: Internal Server Error
-    post: 
-      tags:
-        - customer
-      summary: Add a customer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/partyBase'
-      responses:
-        200:
-          description: Added successfully.
-        404:
-          description: Adding Customer failed.
-        500:
-          description: Internal Server Error
     delete:
       tags:
         - customer
@@ -222,6 +222,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/parties'
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - employee
+      summary: Add a employee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/partyBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Employee failed.
         500:
           description: Internal Server Error
   /employees/{id}:
@@ -264,22 +280,6 @@ paths:
           description: No Employee with specified ID found.
         500:
           description: Internal Server Error
-    post: 
-      tags:
-        - employee
-      summary: Add a employee
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/partyBase'
-      responses:
-        200:
-          description: Added successfully.
-        404:
-          description: Adding Employee failed.
-        500:
-          description: Internal Server Error
     delete:
       tags:
         - employee
@@ -317,6 +317,23 @@ paths:
                 $ref: '#/components/schemas/expenses'
         500:
           description: Internal Server Error
+    post: 
+      tags:
+        - expense
+      summary: Add a Expense
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/expenseBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Expense failed.
+        500:
+          description: Internal Server Error
+
   /expenses/{id}:
     parameters:
       - in: path
@@ -357,22 +374,6 @@ paths:
           description: No Expense with specified ID found.
         500:
           description: Internal Server Error
-    post: 
-      tags:
-        - expense
-      summary: Add a Expense
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/expenseBase'
-      responses:
-        200:
-          description: Added successfully.
-        404:
-          description: Adding Expense failed.
-        500:
-          description: Internal Server Error
     delete:
       tags:
         - expense
@@ -410,6 +411,23 @@ paths:
                 $ref: '#/components/schemas/invoices'
         500:
           description: Internal Server Error
+    post: 
+      tags:
+        - invoice
+      summary: Add a Invoice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/invoiceBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Invoice failed.
+        500:
+          description: Internal Server Error
+
   /invoices/{id}:
     parameters:
       - in: path
@@ -450,22 +468,6 @@ paths:
           description: No Invoice with specified ID found.
         500:
           description: Internal Server Error
-    post: 
-      tags:
-        - invoice
-      summary: Add a Invoice
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/invoiceBase'
-      responses:
-        200:
-          description: Added successfully.
-        404:
-          description: Adding Invoice failed.
-        500:
-          description: Internal Server Error
     delete:
       tags:
         - invoice
@@ -503,6 +505,23 @@ paths:
                 $ref: '#/components/schemas/miscRecords'
         500:
           description: Internal Server Error
+    post: 
+      tags:
+        - misc_record
+      summary: Add a Miscellaneous Record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/miscRecordBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Miscellaneous Record failed.
+        500:
+          description: Internal Server Error
+
   /misc_records/{id}:
     parameters:
       - in: path
@@ -543,22 +562,6 @@ paths:
           description: No Miscellaneous Record with specified ID found.
         500:
           description: Internal Server Error
-    post: 
-      tags:
-        - misc_record
-      summary: Add a Miscellaneous Record
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/miscRecordBase'
-      responses:
-        200:
-          description: Added successfully.
-        404:
-          description: Adding Miscellaneous Record failed.
-        500:
-          description: Internal Server Error
     delete:
       tags:
         - misc_record
@@ -594,6 +597,22 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/projects'
+        500:
+          description: Internal Server Error
+    post: 
+      tags:
+        - project
+      summary: Add a Project
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/projectBase'
+      responses:
+        200:
+          description: Added successfully.
+        404:
+          description: Adding Project failed.
         500:
           description: Internal Server Error
   /projects/{id}:
@@ -634,22 +653,6 @@ paths:
           description: Updated successfully.
         404:
           description: No Project with specified ID found.
-        500:
-          description: Internal Server Error
-    post: 
-      tags:
-        - project
-      summary: Add a Project
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/projectBase'
-      responses:
-        200:
-          description: Added successfully.
-        404:
-          description: Adding Project failed.
         500:
           description: Internal Server Error
     delete:
