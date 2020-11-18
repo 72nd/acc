@@ -4,12 +4,12 @@ use rusty_money::{Formatter, Money as RMoney, Params, Position};
 use serde::de::{self, Deserialize, Deserializer};
 use serde::{Serialize, Serializer};
 
-/// Save representation of a amount of money containing the currency. Money uses the rusty_money
+/// Representation of a amount of money containing the currency. Money uses the rusty_money
 /// crate to handling money amounts.
 ///
 /// It expands the library with the Serde (de-)serialize in our in-house money representation.
 /// This format is described in the `Money::yaml_params` method.
-#[derive(Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct Money(RMoney);
 
 impl Money {

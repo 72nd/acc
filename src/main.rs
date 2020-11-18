@@ -1,7 +1,9 @@
 mod schema;
+mod test;
 
 use schema::Expense;
 
 fn main() {
-    let test: Expense;
+    let t: Expense;
+    test::test();
 }
