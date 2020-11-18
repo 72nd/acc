@@ -4,3 +4,4 @@ bank_statement.xml
 build/*
 go.sum
 target/*
+Cargo.lock
