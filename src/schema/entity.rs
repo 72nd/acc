@@ -1,6 +1,8 @@
 use super::common::{Ident, ID};
 use super::record::{Record, RecordType};
 
+use std::fmt;
+
 use serde::{Deserialize, Serialize};
 
 /// The type of en entity. Can be a customer or a employee.
@@ -79,6 +81,18 @@ impl<'a> Default for Entity<'a, Employee> {
             place: "District A",
             etype: Employee {},
         }
+    }
+}
+
+impl<'a> fmt::Display for Entity<'a, Customer> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Customer {} ({})", self.name, self.ident)
+    }
+}
+
+impl<'a> fmt::Display for Entity<'a, Employee> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Employee {} ({})", self.name, self.ident)
     }
 }
 
