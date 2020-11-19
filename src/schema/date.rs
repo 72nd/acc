@@ -1,3 +1,4 @@
+use std::convert::From;
 use std::fmt;
 
 use chrono::NaiveDate;
@@ -17,14 +18,27 @@ const YAML_DATE_FORMAT: &str = "%Y-%m-%d";
 pub struct Date(NaiveDate);
 
 impl Date {
-    pub fn from(date: NaiveDate) -> Self {
-        Self(date)
+    /// Shadows the NaiveDate::from_ymd method and returns a new Date instance.
+    pub fn from_ymd(year: i32, month: u32, day: u32) -> Self {
+        Self(NaiveDate::from_ymd(year, month, day))
+    }
+
+    /// Returns the year of the date in a two digit representation. This function is used to
+    /// generate identifiers containing the year.
+    pub fn year_2d(&self) -> String {
+        format!("{}", self.0.format("%y"))
     }
 }
 
 impl fmt::Display for Date {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.0.format("%a%e. %B %Y"))
+    }
+}
+
+impl From<NaiveDate> for Date {
+    fn from(date: NaiveDate) -> Self {
+        Self(date)
     }
 }
 
@@ -61,20 +75,26 @@ mod tests {
 
     #[test]
     fn test_fmt_display() {
-        let date = Date::from(NaiveDate::from_ymd(2020, 10, 2));
+        let date = Date::from_ymd(2020, 10, 2);
         assert_eq!("Fri 2. October 2020", format!("{}", date));
     }
 
     #[test]
+    fn test_2digit_year() {
+        let date = Date::from_ymd(2019, 10, 2);
+        assert_eq!("19", date.year_2d());
+    }
+
+    #[test]
     fn test_date_serialize() {
-        let date = Date::from(NaiveDate::from_ymd(2020, 10, 2));
+        let date = Date::from_ymd(2020, 10, 2);
         let serialized = serde_yaml::to_string(&date).unwrap();
         assert_eq!("---\n2020-10-02", serialized);
     }
 
     #[test]
     fn test_date_deserialize() {
-        let expected = Date::from(NaiveDate::from_ymd(2020, 10, 2));
+        let expected = Date::from_ymd(2020, 10, 2);
         let input = "---\n2020-10-02";
         assert_eq!(expected, serde_yaml::from_str(&input).unwrap());
     }
