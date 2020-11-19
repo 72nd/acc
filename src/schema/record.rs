@@ -1,24 +1,16 @@
-use super::common::{ID, Ident};
-use super::expense::Expense;
+use super::common::{Ident, ID};
 
 use std::fmt;
 
+/*
 /// A collection of multiple Records. This structure bundles all common and repeating task which
 /// are not specific to a certain type of Element collection.
-pub struct Records<R: Record>(Vec<R>);
+pub struct Records<R: Record<Typed>>(Vec<R>);
+*/
 
-/// Records are the fundamental building block of Acc. They represent one data entry in the system.
-/// Examples: Expense, Customer. As most of the operations on the different collections of records
-/// are the same, these are combined using this trait.
-pub trait Record {
-    /// Return the ID of a Record.
-    fn id(&self) -> ID;
-    /// Return the Identifier of a Record.
-    fn ident(&self) -> Ident;
-    /// Set the Identifier of a Record. As Identifiers have to be unique, it's important to set
-    /// this value always trough the Records type.
-    fn set_ident(&mut self, ident: Ident);
-    /// Returns the type of the record.
+/// Elements which can give some information about their record type.
+pub trait Typer {
+    /// Returns the record type of the element.
     fn record_type(&self) -> RecordType;
 }
 
@@ -35,6 +27,22 @@ pub enum RecordType {
     Misc,
     Project,
     Transaction,
+}
+
+/// Records are the fundamental building block of Acc. They represent one data entry in the system.
+/// Examples: Expense, Customer. As most of the operations on the different collections of records
+/// are the same, these are combined using this trait.
+pub trait Record<T>
+where
+    T: Typer,
+{
+    /// Return the ID of a Record.
+    fn id(&self) -> ID;
+    /// Return the Identifier of a Record.
+    fn ident(&self) -> Ident<T>;
+    /// Set the Identifier of a Record. As Identifiers have to be unique, it's important to set
+    /// this value always trough the Records type.
+    fn set_ident(&mut self, ident: Ident<T>);
 }
 
 impl fmt::Display for RecordType {

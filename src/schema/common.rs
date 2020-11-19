@@ -1,5 +1,5 @@
 use super::date::Date;
-use super::record::RecordType;
+use super::record::{RecordType, Typer};
 
 use std::fmt;
 
@@ -39,32 +39,53 @@ impl fmt::Display for ID {
 /// The structure provides some extra functionality to ease the handling with the ident system of
 /// the Solutionsbüro.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-pub struct Ident(String);
+pub struct Ident<T>
+where
+    T: Typer,
+{
+    /// The Typer of the Record which is described.
+    record: T,
+    /// The actual Identifier.
+    data: String,
+}
 
-impl Ident {
+impl<T> Ident<T>
+where
+    T: Typer,
+{
     /// Returns a new Identifier based on a freely-chosen string.
-    pub fn from<S: Into<String>>(ident: S) -> Self {
-        Self(ident.into())
+    pub fn from<S: Into<String>, U>(record: T, ident: S) -> Self {
+        Self {
+            record: record,
+            data: ident.into(),
+        }
     }
 
-    /// Returns a new Identifier containing the appropriate prefix followed by the given number.
-    pub fn from_n(rtype: RecordType, number: u64) -> Self {
-        Self(format!("{}-{}", Ident::prefix_by_type(rtype), number))
+    /// Returns a new Identifier containing the appropriate prefix followed by the given number. As
+    pub fn from_n(record: T, number: u64) -> Self {
+        Self {
+            record: record,
+            data: format!("{}-{}", Ident::prefix(), number),
+        }
     }
 
     /// Returns a new Identifier containing the appropriate prefix followed by the given year (two
     /// digit representation) and number.
-    pub fn from_year_n(rtype: RecordType, date: Date, number: u64) -> Self {
-        Self(format!(
-            "{}-{}-{}",
-            Ident::prefix_by_type(rtype),
-            date.year_2d(),
-            number
-        ))
+    pub fn from_year_n(record: T, date: Date, number: u64) -> Self {
+        Self {
+            record: record,
+            data: format!("{}-{}-{}", Ident::prefix(), date.year_2d(), number),
+        }
     }
 
     /// Returns the Solutionsbüro default prefix for any given record type. Each type has it's
-    /// individual prefix to clearly distinguish between the different types of records.
+    /// individual prefix to clearly distinguish between the different types of records. As this is
+    /// the default implementation it returns `?`.
+    fn prefix<'a>() -> &'a str {
+        "?"
+    }
+
+    /*
     fn prefix_by_type<'a>(rtype: RecordType) -> &'a str {
         match rtype {
             RecordType::Customer => "c",
@@ -77,6 +98,7 @@ impl Ident {
             RecordType::Transaction => "t",
         }
     }
+    */
 }
 
 impl fmt::Display for Ident {
