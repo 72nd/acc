@@ -4,6 +4,7 @@ mod date;
 mod entity;
 mod expense;
 mod invoice;
+mod misc;
 mod money;
 mod project;
 mod record;
