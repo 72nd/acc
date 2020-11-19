@@ -7,6 +7,7 @@ use super::record::{Record, RecordType};
 use super::relation::Relation;
 use super::transaction::Transaction;
 
+use std::fmt;
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
@@ -54,6 +55,12 @@ impl<'a> Record for ExpenseCategory<'a> {
     fn set_ident(&mut self, ident: Ident) {}
     fn record_type(&self) -> RecordType {
         RecordType::ExpenseCategory
+    }
+}
+
+impl<'a> fmt::Display for ExpenseCategory<'a> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "Expense Category {} ({})", self.name, self.ident)
     }
 }
 
