@@ -32,7 +32,7 @@ impl EntityType for Employee {
 /// to depict employees, customers and so on. This type was called "Party" in the go version of
 /// Acc.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Entity<T>
+pub struct Entity<'a, T>
 where
     T: EntityType,
 {
@@ -43,18 +43,46 @@ where
     ident: Ident,
     /// The name of the entity. For natural persons this should contain the full name (first and
     /// last name).
-    name: String,
+    name: &'a str,
     /// The street name with number and any additional delivery instructions.
-    street: String,
+    street: &'a str,
     /// The postal aka ZIP-code of the entities address.
-    postal_code: String,
+    postal_code: &'a str,
     /// The place of the entities address.
-    place: String,
+    place: &'a str,
     /// Gives information about the type of entity.
-    entity_type: T,
+    etype: T,
 }
 
-impl<T> Record for Entity<T>
+impl<'a> Default for Entity<'a, Customer> {
+    fn default() -> Self {
+        Self {
+            id: ID::new(),
+            ident: Ident::from_n(RecordType::Customer, 1),
+            name: "Acme Oceanic",
+            street: "Billowed Bag Street 5",
+            postal_code: "1123",
+            place: "Atlantis",
+            etype: Customer {},
+        }
+    }
+}
+
+impl<'a> Default for Entity<'a, Employee> {
+    fn default() -> Self {
+        Self {
+            id: ID::new(),
+            ident: Ident::from_n(RecordType::Employee, 1),
+            name: "Bimpf Birdy",
+            street: "Society Street 47",
+            postal_code: "2003",
+            place: "District A",
+            etype: Employee {},
+        }
+    }
+}
+
+impl<'a, T> Record for Entity<'a, T>
 where
     T: EntityType,
 {
@@ -66,6 +94,6 @@ where
     }
     fn set_ident(&mut self, ident: Ident) {}
     fn record_type(&self) -> RecordType {
-        self.entity_type.record_type()
+        self.etype.record_type()
     }
 }
