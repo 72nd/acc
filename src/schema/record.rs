@@ -28,6 +28,7 @@ pub trait Record {
 pub enum RecordType {
     Entity,
     Expense,
+    ExpenseCategory,
     Invoice,
     Misc,
     Project,
@@ -39,6 +40,7 @@ impl fmt::Display for RecordType {
         f.write_str(match self {
             Entity => "Entity",
             Expense => "Expense",
+            ExpenseCategory => "Expense Category",
             Invoice => "Invoice",
             Misc => "Miscellaneous Record",
             Project => "Project",
