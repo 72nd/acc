@@ -1,4 +1,5 @@
-use super::Expense;
+use super::common::ID;
+use super::expense::Expense;
 
 use std::fmt;
 
@@ -11,7 +12,7 @@ pub struct Records<R: Record>(Vec<R>);
 /// are the same, these are combined using this trait.
 pub trait Record {
     /// Return the ID of a Record.
-    fn id(&self) -> String;
+    fn id(&self) -> ID;
     /// Return the Identifier of a Record.
     fn ident(&self) -> String;
     /// Set the Identifier of a Record. As Identifiers have to be unique, it's important to set
@@ -48,4 +49,3 @@ impl fmt::Display for RecordType {
         })
     }
 }
-

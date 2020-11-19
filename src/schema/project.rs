@@ -1,3 +1,4 @@
+use super::common::ID;
 use super::record::{Record, RecordType};
 
 use serde::{Deserialize, Serialize};
@@ -6,8 +7,8 @@ use serde::{Deserialize, Serialize};
 pub struct Project;
 
 impl Record for Project {
-    fn id(&self) -> String {
-        return String::from("hoi");
+    fn id(&self) -> ID {
+        return ID::new();
     }
     fn ident(&self) -> String {
         return String::from("hoi");

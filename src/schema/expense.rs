@@ -14,8 +14,8 @@ use serde::{Deserialize, Serialize};
 pub struct ExpenseCategory;
 
 impl Record for ExpenseCategory {
-    fn id(&self) -> String {
-        return String::from("hoi");
+    fn id(&self) -> ID {
+        return ID::new();
     }
     fn ident(&self) -> String {
         return String::from("hoi");
@@ -83,8 +83,8 @@ pub struct Expense {
 }
 
 impl Record for Expense {
-    fn id(&self) -> String {
-        return String::from("hoi");
+    fn id(&self) -> ID {
+        return self.id;
     }
     fn ident(&self) -> String {
         return String::from("hoi");

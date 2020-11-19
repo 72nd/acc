@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use uuid::{Error as UuidError, Uuid};
 
 /// System wide UUID to identify all records. Using UUID Version 4.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
 pub struct ID(Uuid);
 
 impl ID {
