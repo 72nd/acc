@@ -51,7 +51,9 @@ impl fmt::Display for RecordType {
 pub struct Relation<T: Record>(T);
 
 impl<T: Record> Relation<T> {
+    /*
     pub fn element(&self) -> T {
         return self.0;
     }
+    */
 }

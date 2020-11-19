@@ -14,7 +14,7 @@ pub struct Money(RMoney);
 
 impl Money {
     /// Returns a new instance of the Money element. Needs an rusty_money Money instance.
-    pub fn new(money: RMoney) -> Self {
+    pub fn from(money: RMoney) -> Self {
         Self(money)
     }
 
@@ -81,7 +81,7 @@ impl<'de> Deserialize<'de> for Money {
             return Err(de::Error::custom(format!("given input value \"{}\" couldn't be parsed as a amount of money, contains to many whitespaces", value)));
         }
         match RMoney::from_str(parts[0], parts[1]) {
-            Ok(x) => Ok(Money::new(x)),
+            Ok(x) => Ok(Money::from(x)),
             Err(e) => Err(de::Error::custom(format!(
                 "given input value \"{}\" couldn't be parsed as a amount of money, {}",
                 value, e
@@ -98,15 +98,15 @@ mod tests {
 
     #[test]
     fn test_money_serialize() {
-        let money = Money::new(RMoney::from_str("2000", "CHF").unwrap());
+        let money = Money::from(RMoney::from_str("2000", "CHF").unwrap());
         let serialized = serde_yaml::to_string(&money).unwrap();
         assert_eq!("---\n2000.00 CHF", serialized);
     }
 
     #[test]
     fn test_money_deserialize() {
-        let expected = Money::new(RMoney::from_str("2000", "CHF").unwrap());
+        let expected = Money::from(RMoney::from_str("2000", "CHF").unwrap());
         let input = "---\n2000.00 CHF";
-        assert_eq!(expected, serde_yaml::from_str(&input).unwrap())
+        assert_eq!(expected, serde_yaml::from_str(&input).unwrap());
     }
 }
