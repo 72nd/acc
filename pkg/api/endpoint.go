@@ -79,9 +79,11 @@ func (e *Endpoint) GetCustomers(ctx echo.Context, params GetCustomersParams) err
 // Add a customer
 // (POST /customers)
 func (e *Endpoint) PostCustomers(ctx echo.Context) error {
+	/*
 	var cst Customer
 	if err := ctx.Bind(&cst); err != nil {
 	}
+	*/
 	return nil
 }
 
