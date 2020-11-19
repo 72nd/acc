@@ -3,6 +3,7 @@ mod common;
 mod date;
 mod entity;
 mod expense;
+mod invoice;
 mod money;
 mod project;
 mod record;
