@@ -1,6 +1,6 @@
 use std::fmt;
 
-use rusty_money::{Formatter, Money as RMoney, Params, Position};
+use rusty_money::{Currency, Formatter, Iso, Money as RMoney, Params, Position};
 use serde::de::{self, Deserialize, Deserializer};
 use serde::{Serialize, Serializer};
 
@@ -13,11 +13,6 @@ use serde::{Serialize, Serializer};
 pub struct Money(RMoney);
 
 impl Money {
-    /// Returns a new instance of the Money element. Needs an rusty_money Money instance.
-    pub fn from(money: RMoney) -> Self {
-        Self(money)
-    }
-
     /// Returns the money Formatter for saving a amount into YAML file. As different currencies
     /// have different formatting, orderings etc. it's important to define one form for the saving.
     ///
@@ -43,6 +38,18 @@ impl Money {
             symbol: Some(currency.symbol),
             code: Some(currency.iso_alpha_code),
         }
+    }
+}
+
+impl From<RMoney> for Money {
+    fn from(money: RMoney) -> Self {
+        Self(money)
+    }
+}
+
+impl Default for Money {
+    fn default() -> Self {
+        Money::from(RMoney::new(2350, Currency::get(Iso::CHF)))
     }
 }
 
