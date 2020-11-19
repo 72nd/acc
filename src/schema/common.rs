@@ -84,6 +84,12 @@ impl fmt::Display for Ident {
     }
 }
 
+impl Default for Ident {
+    fn default() -> Self {
+        Self::from("?-?")
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::Ident;
