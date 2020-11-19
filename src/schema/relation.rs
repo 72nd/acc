@@ -69,11 +69,11 @@ impl<'de, T: Record> Deserialize<'de> for Relation<T> {
 mod tests {
     use super::Relation;
     use super::ID;
-    use crate::schema::Entity;
+    use crate::schema::{Customer, Entity};
 
     #[test]
     fn test_relation_serialize() {
-        let relation = Relation::<Entity> {
+        let relation = Relation::<Entity<Customer>> {
             id: ID::new(),
             value: None,
         };
@@ -84,14 +84,16 @@ mod tests {
 
     #[test]
     fn test_relation_deserialize() {
-        let expected = Relation::<Entity> {
+        let expected = Relation::<Entity<Customer>> {
             id: ID::new(),
             value: None,
         };
         let input = format!("---\n{}", expected.id);
         assert_eq!(
             expected.id,
-            serde_yaml::from_str::<Relation<Entity>>(&input).unwrap().id
+            serde_yaml::from_str::<Relation<Entity<Customer>>>(&input)
+                .unwrap()
+                .id
         );
     }
 }

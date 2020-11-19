@@ -1,4 +1,4 @@
-use super::common::ID;
+use super::common::{ID, Ident};
 use super::expense::Expense;
 
 use std::fmt;
@@ -14,10 +14,10 @@ pub trait Record {
     /// Return the ID of a Record.
     fn id(&self) -> ID;
     /// Return the Identifier of a Record.
-    fn ident(&self) -> String;
+    fn ident(&self) -> Ident;
     /// Set the Identifier of a Record. As Identifiers have to be unique, it's important to set
     /// this value always trough the Records type.
-    fn set_ident(&mut self, ident: String);
+    fn set_ident(&mut self, ident: Ident);
     /// Returns the type of the record.
     fn record_type(&self) -> RecordType;
 }
@@ -27,7 +27,8 @@ pub trait Record {
 /// more helpful (debug) messages for the user.
 #[derive(Debug, Clone)]
 pub enum RecordType {
-    Entity,
+    Customer,
+    Employee,
     Expense,
     ExpenseCategory,
     Invoice,
@@ -39,7 +40,8 @@ pub enum RecordType {
 impl fmt::Display for RecordType {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.write_str(match self {
-            Entity => "Entity",
+            Customer => "Customer",
+            Employee => "Employee",
             Expense => "Expense",
             ExpenseCategory => "Expense Category",
             Invoice => "Invoice",

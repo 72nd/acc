@@ -1,10 +1,11 @@
-use super::common::ID;
+use super::common::{Ident, ID};
 use super::date::Date;
-use super::entity::Entity;
+use super::entity::{Customer, Employee, Entity};
 use super::money::Money;
 use super::project::Project;
 use super::record::{Record, RecordType};
 use super::relation::Relation;
+use super::transaction::Transaction;
 
 use std::path::PathBuf;
 
@@ -17,10 +18,10 @@ impl Record for ExpenseCategory {
     fn id(&self) -> ID {
         return ID::new();
     }
-    fn ident(&self) -> String {
-        return String::from("hoi");
+    fn ident(&self) -> Ident {
+        return Ident::from("ec-23");
     }
-    fn set_ident(&mut self, ident: String) {}
+    fn set_ident(&mut self, ident: Ident) {}
     fn record_type(&self) -> RecordType {
         RecordType::ExpenseCategory
     }
@@ -47,7 +48,7 @@ pub struct Expense {
     id: ID,
     /// User-chosen and human readable identifier. This is helpful to mark a record and it's
     /// attachments more understandable as only using some long UUID.
-    ident: String,
+    ident: Ident,
     /// Describes the Expense in a meaningful way.
     name: String,
     /// States the amount payed for the Expense.
@@ -60,16 +61,16 @@ pub struct Expense {
     /// States whether the Expense has to be forwarded to any third party.
     billable: bool,
     /// Refers to the customer which has to pay for the expense (if this is the case).
-    obliged_customer: Option<Relation<Entity>>,
+    obliged_customer: Option<Relation<Entity<Customer>>>,
     /// States whether any third party (most common: a employee) has advanced this expense for the
     /// company and needs a pay back.
     advanced_by_third_party: bool,
     /// Refers to the third party which advanced the payment.
-    advanced_third_party: Option<Relation<Entity>>,
+    advanced_third_party: Option<Relation<Entity<Employee>>>,
     /// The date of the settlement of the expense (the company has not to take further actions).
     date_of_settlement: Option<Date>,
     /// The bank transaction which settled the Expense for the company if one exists.
-    settlement_transaction: Option<Relation<Entity>>,
+    settlement_transaction: Option<Relation<Transaction>>,
     /// Categorizes the expense. This information is needed to create the correct transactions
     /// within the ledger.
     expense_category: Relation<ExpenseCategory>,
@@ -86,10 +87,10 @@ impl Record for Expense {
     fn id(&self) -> ID {
         return self.id;
     }
-    fn ident(&self) -> String {
+    fn ident(&self) -> Ident {
         return self.ident.clone();
     }
-    fn set_ident(&mut self, ident: String) {}
+    fn set_ident(&mut self, ident: Ident) {}
     fn record_type(&self) -> RecordType {
         RecordType::Expense
     }
