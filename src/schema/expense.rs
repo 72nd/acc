@@ -45,8 +45,8 @@ pub enum PaymentMethod {
 pub struct Expense {
     /// Internal unique identifier of the Expense.
     id: ID,
-    /// User chosen and human readable identifier. This is helpful to mark a record and it's
-    /// attachments more understandable as only using
+    /// User-chosen and human readable identifier. This is helpful to mark a record and it's
+    /// attachments more understandable as only using some long UUID.
     ident: String,
     /// Describes the Expense in a meaningful way.
     name: String,
@@ -87,7 +87,7 @@ impl Record for Expense {
         return self.id;
     }
     fn ident(&self) -> String {
-        return String::from("hoi");
+        return self.ident.clone();
     }
     fn set_ident(&mut self, ident: String) {}
     fn record_type(&self) -> RecordType {
