@@ -17,6 +17,8 @@ pub trait Record {
     /// Set the Identifier of a Record. As Identifiers have to be unique, it's important to set
     /// this value always trough the Records type.
     fn set_ident(&mut self, ident: String);
+    /// Returns the type of the record.
+    fn record_type(&self) -> RecordType;
 }
 
 /// The enumeration describes the different types of records existing. Each type is described in
@@ -45,15 +47,3 @@ impl fmt::Display for RecordType {
     }
 }
 
-/// A Relation is used to describe a relation between two Records. Currently relations only
-/// describes One-To-One relations.
-#[derive(Debug, Clone)]
-pub struct Relation<T: Record>(T);
-
-impl<T: Record> Relation<T> {
-    /*
-    pub fn element(&self) -> T {
-        return self.0;
-    }
-    */
-}
