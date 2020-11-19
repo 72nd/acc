@@ -42,6 +42,12 @@ impl From<NaiveDate> for Date {
     }
 }
 
+impl Default for Date {
+    fn default() -> Self {
+        Self::from_ymd(2003, 5, 23)
+    }
+}
+
 impl Serialize for Date {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
