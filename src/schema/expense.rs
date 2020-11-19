@@ -96,6 +96,38 @@ impl fmt::Display for PaymentMethod {
     }
 }
 
+/// States whether a third party has to pay for a expense or not.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+enum Billable {
+    /// The expense has to be paid with assets of the company.
+    No,
+    /// The expense has to be refunded by a third party.
+    ToThirdParty,
+}
+
+impl Default for Billable {
+    fn default() -> Self {
+        Billable::No
+    }
+}
+
+/// Describes why the Expense emerged in the first place. In the moment this can be a internal
+/// or external cause.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+enum Purpose {
+    /// The expense was spent on a internal purpose with no direct connection to any projects or
+    /// contracts. Example: Buy new hardware.
+    Internal,
+    /// The money was spent to accomplish some objective within a contract or similar.
+    External,
+}
+
+impl Default for Purpose {
+    fn default() -> Self {
+        Purpose::External
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 /// Expense represents a payment done by the company or a third party to assure the ongoing of
 /// the business.
@@ -115,7 +147,7 @@ pub struct Expense<'a> {
     /// The day the obligation of this expense emerged.
     date_of_accrual: Date,
     /// States whether the Expense has to be forwarded to any third party.
-    billable: bool,
+    billable: Billable,
     /// Refers to the customer which has to pay for the expense (if this is the case).
     obliged_customer: Option<Relation<Entity<'a, Customer>>>,
     /// States whether any third party (most common: a employee) has advanced this expense for the
@@ -133,8 +165,8 @@ pub struct Expense<'a> {
     /// The method used to pay for the expense. This information is needed to create the
     /// appropriate entries in the ledger.
     payment_method: PaymentMethod,
-    /// True if the expense was for internal proposes only.
-    internal: bool,
+    /// Describes why the Expense emerged in the first place.
+    purpose: Purpose,
     /// References to the project for which the expense was paid (if this is the case).
     project: Option<Relation<Project>>,
 }
@@ -148,7 +180,7 @@ impl<'a> Default for Expense<'a> {
             amount: Money::default(),
             path: PathBuf::from("/path/to/attachement.pdf"),
             date_of_accrual: Date::default(),
-            billable: false,
+            billable: Billable::default(),
             obliged_customer: None,
             advanced_by_third_party: false,
             advanced_third_party: None,
@@ -156,7 +188,7 @@ impl<'a> Default for Expense<'a> {
             settlement_transaction: None,
             expense_category: None,
             payment_method: PaymentMethod::default(),
-            internal: false,
+            purpose: Purpose::default(),
             project: None,
         }
     }
