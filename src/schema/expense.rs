@@ -2,7 +2,8 @@ use super::common::ID;
 use super::date::Date;
 use super::entity::Entity;
 use super::money::Money;
-use super::record::{Record, Relation};
+use super::record::{Record, RecordType};
+use super::relation::Relation;
 
 use std::path::PathBuf;
 
@@ -47,4 +48,7 @@ impl Record for Expense {
         return String::from("hoi");
     }
     fn set_ident(&mut self, ident: String) {}
+    fn record_type(&self) -> RecordType {
+        RecordType::Expense
+    }
 }

@@ -1,4 +1,4 @@
-use super::record::Record;
+use super::record::{Record, RecordType};
 
 use serde::{Deserialize, Serialize};
 
@@ -13,4 +13,7 @@ impl Record for Entity {
         return String::from("hoi");
     }
     fn set_ident(&mut self, ident: String) {}
+    fn record_type(&self) -> RecordType {
+        RecordType::Entity
+    }
 }
