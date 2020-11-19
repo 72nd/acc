@@ -73,7 +73,7 @@ impl<'a> Default for Entity<'a, Employee> {
         Self {
             id: ID::new(),
             ident: Ident::from_n(RecordType::Employee, 1),
-            name: "Bimpf Birdy",
+            name: "Birdy Bimpf",
             street: "Society Street 47",
             postal_code: "2003",
             place: "District A",

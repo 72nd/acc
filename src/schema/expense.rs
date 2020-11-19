@@ -11,10 +11,40 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
+/// The Expense Categories assign each type of Expense with the appropriate expense-account in the
+/// ledger. This is necessary as different types of expenses are treated differently in the
+/// accounting. For example your travel expenses are booked into another account as the social
+/// insurance bill.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ExpenseCategory;
+pub struct ExpenseCategory<'a> {
+    /// Internal unique identifier of the Expense.
+    id: ID,
+    /// User-chosen and human readable identifier. This is helpful to mark a record and it's
+    /// attachments more understandable as only using some long UUID.
+    ident: Ident,
+    /// Brief description of the purpose of the Expense Category.
+    name: &'a str,
+    /// HLedger conform account-path where the expense will added. The sub-accounts are
+    /// separated by a colon (`:`). Example:
+    ///
+    /// ```
+    /// 4 Aufwand:40 Materialaufwand:400 Materialaufwand
+    /// ```
+    account: &'a str,
+}
 
-impl Record for ExpenseCategory {
+impl<'a> Default for ExpenseCategory<'a> {
+    fn default() -> Self {
+        Self {
+            id: ID::new(),
+            ident: Ident::from_n(RecordType::ExpenseCategory, 1),
+            name: "Costs of Materials",
+            account: "4 Aufwand:40 Materialaufwand:400 Materialaufwand",
+        }
+    }
+}
+
+impl<'a> Record for ExpenseCategory<'a> {
     fn id(&self) -> ID {
         return ID::new();
     }
@@ -73,7 +103,7 @@ pub struct Expense<'a> {
     settlement_transaction: Option<Relation<Transaction>>,
     /// Categorizes the expense. This information is needed to create the correct transactions
     /// within the ledger.
-    expense_category: Relation<ExpenseCategory>,
+    expense_category: Relation<ExpenseCategory<'a>>,
     /// The method used to pay for the expense. This information is needed to create the
     /// appropriate entries in the ledger.
     payment_method: PaymentMethod,
