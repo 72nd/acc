@@ -1,8 +1,9 @@
 mod schema;
 mod test;
 
-use schema::Expense;
+use schema::{Customer, Entity};
 
 fn main() {
-    let t: Expense;
+    let t: Entity<Customer>;
+    println!("{:?}", t);
 }
