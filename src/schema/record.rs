@@ -1,4 +1,4 @@
-use super::common::{ID, Ident};
+use super::common::{Ident, ID};
 use super::expense::Expense;
 
 use std::fmt;
@@ -50,4 +50,110 @@ impl fmt::Display for RecordType {
             Transaction => "Transaction",
         })
     }
+}
+
+/// A collection of Requirements. Normally contains all Checks for one Record type.
+pub struct Check<T>
+where
+    T: Fn() -> bool,
+{
+    /// The name of the Check/the Record type it runs on to provide additional information to the
+    /// user where a Requirement isn't met yet.
+    record_name: String,
+    /// Contains the Requirements to be tested.
+    requirements: Vec<Requirement<T>>,
+}
+
+impl<T> Check<T>
+where
+    T: Fn() -> bool,
+{
+    /// Returns a new instance of the Check class.
+    pub fn new(record_name: String) -> Self {
+        Self {
+            record_name: record_name,
+            requirements: Vec::<Requirement<T>>::new(),
+        }
+    }
+
+    /// Add a Requirement to the Check.
+    pub fn add(&mut self, r: Requirement<T>) -> &mut Self {
+        self.requirements.push(r);
+        self
+    }
+
+    /// Run the check.
+    pub fn run(&self) -> CheckResult {
+        let mut rsl = CheckResult::new(&self.record_name);
+        for r in &self.requirements {
+            match &r.check {
+                Some(c) => match c() {
+                    true => {}
+                    false => rsl.add(r),
+                },
+                None => rsl.log_no_check(),
+            };
+        }
+        rsl
+    }
+}
+
+/// The results of a Check run. Contains the explanations for the user for each failed requirement
+/// check. The Check Results are in a separate to enable more complex feedback to the user in the
+/// future.
+pub struct CheckResult {
+    /// The name of the Check/the Record type it runs on to provide additional information to the
+    /// user where a Requirement isn't met yet.
+    record_name: String,
+    /// Contains all on_fail messages.
+    messages: Vec<String>,
+}
+
+impl CheckResult {
+    /// Returns a new instance of the CheckResult.
+    pub fn new<S: Into<String>>(record_name: S) -> Self {
+        Self {
+            record_name: record_name.into(),
+            messages: Vec::<String>::new(),
+        }
+    }
+
+    /// Adds a (failed) requirement to the result collection. Adds an generic message to the collection
+    /// if no on_fail message was specified.
+    pub fn add<T: Fn() -> bool>(&mut self, r: &Requirement<T>) {
+        self.push(match &r.on_fail {
+            Some(ref x) => x.to_string(),
+            None => "Some Requirement test failed but there is no explanation for it".to_string(),
+        });
+    }
+
+    /// Adds an error message that some Requirement doesn't contain a check closure.
+    pub fn log_no_check(&mut self) {
+        self.push("Got Requirement without a test. Please investigate.".to_string());
+    }
+
+    /// Outputs the Results to the standard output.
+    pub fn output(&self) {
+        for rsl in &self.messages {
+            println!("{}", rsl)
+        }
+    }
+
+    /// Pushes a new message to the collection and prepends it with the name of the record.
+    fn push(&mut self, msg: String) {
+        self.messages.push(format!("{}: {}", self.record_name, msg));
+    }
+}
+
+/// A Requirement represents a single check for one statement. Multiple Requirements make
+/// a Check witch checks a specific Record. Each Requirement should only test one case.
+pub struct Requirement<T>
+where
+    T: Fn() -> bool,
+{
+    /// Tests a certain requirement, returns true if this requirements is satisfied.
+    check: Option<T>,
+    /// The message shown to the user when the requirement doesn't hold. Should explain why the
+    /// Record doesn't hold the requirement.
+    on_fail: Option<String>,
 }
